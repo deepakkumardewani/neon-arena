@@ -252,16 +252,16 @@ All packages are installed here. No task after this one should introduce a new `
 
 **Acceptance criteria:**
 
-- [ ] `checkWinner(board)` returns `{ winner: 'X'|'O', line: number[] } | null`
-- [ ] `isDraw(board)` returns `true` when board is full with no winner
-- [ ] `getAvailableCells(board)` returns indices of `null` cells
-- [ ] All 8 win conditions covered (3 rows, 3 cols, 2 diagonals)
-- [ ] 100% line coverage on `logic.ts`
+- [x] `checkWinner(board)` returns `{ winner: 'X'|'O', line: number[] } | null`
+- [x] `isDraw(board)` returns `true` when board is full with no winner
+- [x] `getAvailableCells(board)` returns indices of `null` cells
+- [x] All 8 win conditions covered (3 rows, 3 cols, 2 diagonals)
+- [x] 100% line coverage on `logic.ts`
 
 **Verification:**
 
-- [ ] `vp test` passes all cases in `logic.test.ts`
-- [ ] Coverage report shows 100% for `src/lib/game/logic.ts`
+- [x] `vp test` passes all cases in `logic.test.ts`
+- [x] Coverage report shows 100% for `src/lib/game/logic.ts`
 
 **Dependencies:** Task 3
 
@@ -280,16 +280,16 @@ All packages are installed here. No task after this one should introduce a new `
 
 **Acceptance criteria:**
 
-- [ ] `easyMove(board)` returns a random available cell index
-- [ ] `mediumMove(board, aiMark)` checks for immediate win → immediate block → random
-- [ ] Both functions never select an occupied cell
-- [ ] Both functions return `null` on a full board (impossible in practice, guarded)
-- [ ] 100% line coverage on `easy.ts` and `medium.ts`
+- [x] `easyMove(board)` returns a random available cell index
+- [x] `mediumMove(board, aiMark)` checks for immediate win → immediate block → random
+- [x] Both functions never select an occupied cell
+- [x] Both functions return `null` on a full board (impossible in practice, guarded)
+- [x] 100% line coverage on `easy.ts` and `medium.ts`
 
 **Verification:**
 
-- [ ] `vp test` passes for easy/medium tests
-- [ ] Coverage report shows 100% for both files
+- [x] `vp test` passes for easy/medium tests
+- [x] Coverage report shows 100% for both files
 
 **Dependencies:** Task 7
 
@@ -308,17 +308,17 @@ All packages are installed here. No task after this one should introduce a new `
 
 **Acceptance criteria:**
 
-- [ ] `hardMove(board, aiMark)` returns the optimal cell index using minimax + alpha-beta
-- [ ] AI never loses in any test scenario (all board permutations tested for correctness)
-- [ ] AI takes the winning move when one is available
-- [ ] AI blocks the opponent's winning move
-- [ ] 100% line coverage on `minimax.ts`
+- [x] `hardMove(board, aiMark)` returns the optimal cell index using minimax + alpha-beta
+- [x] AI never loses in any test scenario (all board permutations tested for correctness)
+- [x] AI takes the winning move when one is available
+- [x] AI blocks the opponent's winning move
+- [x] 100% line coverage on `minimax.ts`
 
 **Verification:**
 
-- [ ] `vp test` passes for minimax tests
-- [ ] Test case: AI presented with winning move — always takes it
-- [ ] Test case: AI presented with opponent about to win — always blocks
+- [x] `vp test` passes for minimax tests
+- [x] Test case: AI presented with winning move — always takes it
+- [x] Test case: AI presented with opponent about to win — always blocks
 
 **Dependencies:** Task 7, Task 8
 
@@ -337,17 +337,17 @@ All packages are installed here. No task after this one should introduce a new `
 
 **Acceptance criteria:**
 
-- [ ] `board: BoardCell[9]`, `currentTurn: 'X'|'O'`, `status: GameStatus`, `winner`, `winLine` stored in Zustand
-- [ ] `makeMove(index)` places a glyph, advances turn, checks win/draw, updates status
-- [ ] `resetGame()` resets board to initial state, preserves mode/difficulty
-- [ ] `setMode(mode)`, `setDifficulty(difficulty)` actions exist
-- [ ] `isMyTurn` derived from `currentTurn` and player role (X or O)
-- [ ] `useGameStore.test.ts` covers move, win detection, and reset
+- [x] `board: BoardCell[9]`, `currentTurn: 'X'|'O'`, `status: GameStatus`, `winner`, `winLine` stored in Zustand
+- [x] `makeMove(index)` places a glyph, advances turn, checks win/draw, updates status
+- [x] `resetGame()` resets board to initial state, preserves mode/difficulty
+- [x] `setMode(mode)`, `setDifficulty(difficulty)` actions exist
+- [x] `isMyTurn` derived from `currentTurn` and player role (X or O)
+- [x] `useGameStore.test.ts` covers move, win detection, and reset
 
 **Verification:**
 
-- [ ] `vp test` passes for `useGameStore.test.ts`
-- [ ] Manual: import store in browser console, call `makeMove(0)` — board updates
+- [x] `vp test` passes for `useGameStore.test.ts`
+- [x] Manual: import store in browser console, call `makeMove(0)` — board updates
 
 **Dependencies:** Task 3, Task 7
 
@@ -366,16 +366,16 @@ All packages are installed here. No task after this one should introduce a new `
 
 **Acceptance criteria:**
 
-- [ ] `playerStore` holds `nickname`, `uid`, `role: 'X'|'O'|null`, `score: ScoreDoc`
-- [ ] `playerStore` persists `nickname` and `uid` to localStorage; rehydrates on load
-- [ ] `audioStore` holds `masterMuted`, `sfxVolume`, `musicVolume`
-- [ ] `audioStore` persists all fields to localStorage
-- [ ] `vp check` passes
+- [x] `playerStore` holds `nickname`, `uid`, `role: 'X'|'O'|null`, `score: ScoreDoc`
+- [x] `playerStore` persists `nickname` and `uid` to localStorage; rehydrates on load
+- [x] `audioStore` holds `masterMuted`, `sfxVolume`, `musicVolume`
+- [x] `audioStore` persists all fields to localStorage
+- [x] `vp check` passes
 
 **Verification:**
 
-- [ ] `vp check` passes
-- [ ] Manual: set nickname, refresh page — nickname rehydrates from localStorage
+- [x] `vp check` passes
+- [x] Manual: set nickname, refresh page — nickname rehydrates from localStorage
 
 **Dependencies:** Task 3
 
@@ -390,11 +390,11 @@ All packages are installed here. No task after this one should introduce a new `
 
 ### Checkpoint: Core Game Logic
 
-- [ ] `vp test` passes — zero failures
-- [ ] `src/lib/game/logic.ts` at 100% coverage
-- [ ] `src/lib/ai/` all files at 100% coverage
-- [ ] All 8 win conditions have explicit test cases
-- [ ] Hard AI never loses in any test permutation
+- [x] `vp test` passes — zero failures
+- [x] `src/lib/game/logic.ts` at 100% coverage
+- [x] `src/lib/ai/` all files at 100% coverage
+- [x] All 8 win conditions have explicit test cases
+- [x] Hard AI never loses in any test permutation
 
 ---
 
