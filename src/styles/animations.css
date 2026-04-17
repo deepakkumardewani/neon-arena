@@ -19,11 +19,24 @@
 @keyframes glow-pulse-win {
   0%,
   100% {
-    filter: drop-shadow(0 0 8px var(--na-cyan));
+    filter: drop-shadow(0 0 8px var(--na-win-pulse, var(--na-cyan)));
   }
   50% {
-    filter: drop-shadow(0 0 24px var(--na-cyan)) drop-shadow(0 0 48px var(--na-cyan));
+    filter: drop-shadow(0 0 24px var(--na-win-pulse, var(--na-cyan)))
+      drop-shadow(0 0 48px var(--na-win-pulse, var(--na-cyan)));
   }
+}
+
+.na-draw-x-1 {
+  animation: draw-x-stroke 100ms ease-out forwards;
+}
+
+.na-draw-x-2 {
+  animation: draw-x-stroke 100ms ease-out 100ms forwards;
+}
+
+.na-draw-o {
+  animation: draw-o-stroke 200ms ease-out forwards;
 }
 
 @keyframes radar-pulse {

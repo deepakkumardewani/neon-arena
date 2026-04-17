@@ -16,6 +16,7 @@ beforeEach(() => {
   localStorage.clear();
   usePlayerStore.setState({
     nickname: "",
+    localGuestNickname: "Player 2",
     uid: "",
     role: null,
     score: emptyScore(),

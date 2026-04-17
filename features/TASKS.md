@@ -408,16 +408,16 @@ All packages are installed here. No task after this one should introduce a new `
 
 **Acceptance criteria:**
 
-- [ ] `GlyphX` renders two `<line>` elements in `var(--na-cyan)` with `filter: var(--na-glow-x)`
-- [ ] `GlyphO` renders a `<circle>` or `<path>` in `var(--na-rose)` with `filter: var(--na-glow-o)`
-- [ ] When `animate={true}`, strokes draw on via `stroke-dashoffset` CSS animation (200ms for X, sequential strokes; 200ms for O)
-- [ ] When `animate={false}`, glyphs render instantly (no animation)
-- [ ] Glyphs scale to fill parent container via `viewBox`
-- [ ] `useReducedMotion()` hook disables animation when system preference is set
+- [x] `GlyphX` renders two `<line>` elements in `var(--na-cyan)` with `filter: var(--na-glow-x)`
+- [x] `GlyphO` renders a `<circle>` or `<path>` in `var(--na-rose)` with `filter: var(--na-glow-o)`
+- [x] When `animate={true}`, strokes draw on via `stroke-dashoffset` CSS animation (200ms for X, sequential strokes; 200ms for O)
+- [x] When `animate={false}`, glyphs render instantly (no animation)
+- [x] Glyphs scale to fill parent container via `viewBox`
+- [x] `useReducedMotion()` hook disables animation when system preference is set
 
 **Verification:**
 
-- [ ] `vp check` passes
+- [x] `vp check` passes
 - [ ] Manual: render both glyphs in isolation — confirm glow visible, draw-on animation plays
 
 **Dependencies:** Task 2, Task 3
@@ -437,17 +437,17 @@ All packages are installed here. No task after this one should introduce a new `
 
 **Acceptance criteria:**
 
-- [ ] 3×3 CSS grid with `gap: 2px`, `aspect-ratio: 1`, `max-width: 480px`, centered
-- [ ] Grid lines styled with `var(--na-glow-grid)` glow via `box-shadow`
-- [ ] Each cell renders `<GlyphX animate />` or `<GlyphO animate />` based on `board[index]`
-- [ ] Empty cells are clickable; occupied cells have `disabled` + `cursor: not-allowed`
-- [ ] `onCellClick(index)` prop called on click; component is controlled (no internal state)
-- [ ] `aria-label` on each cell for accessibility
-- [ ] `GameBoard.test.tsx`: renders correct glyphs, clicking occupied cell fires no callback
+- [x] 3×3 CSS grid with `gap: 2px`, `aspect-ratio: 1`, `max-width: 480px`, centered
+- [x] Grid lines styled with `var(--na-glow-grid)` glow via `box-shadow`
+- [x] Each cell renders `<GlyphX animate />` or `<GlyphO animate />` based on `board[index]`
+- [x] Empty cells are clickable; occupied cells have `disabled` + `cursor: not-allowed`
+- [x] `onCellClick(index)` prop called on click; component is controlled (no internal state)
+- [x] `aria-label` on each cell for accessibility
+- [x] `GameBoard.test.tsx`: renders correct glyphs, clicking occupied cell fires no callback
 
 **Verification:**
 
-- [ ] `vp test` passes for `GameBoard.test.tsx`
+- [x] `vp test` passes for `GameBoard.test.tsx`
 - [ ] Manual: render board with partial moves — correct glyphs appear, disabled cells unclickable
 
 **Dependencies:** Task 12, Task 10
@@ -467,16 +467,16 @@ All packages are installed here. No task after this one should introduce a new `
 
 **Acceptance criteria:**
 
-- [ ] Displays `playerX.nickname` and `playerO.nickname` (or "AI" for solo)
-- [ ] Active player's name highlighted in their color (`--na-cyan` for X, `--na-rose` for O)
-- [ ] W/L/D shown as `W: N | L: N | D: N` in Orbitron font
-- [ ] Mute FAB (🔇/🔊) toggles `audioStore.masterMuted`
-- [ ] Home button with confirmation dialog before leaving a live game (online modes only)
-- [ ] Reads state from `useGameStore` and `usePlayerStore`
+- [x] Displays `playerX.nickname` and `playerO.nickname` (or "AI" for solo)
+- [x] Active player's name highlighted in their color (`--na-cyan` for X, `--na-rose` for O)
+- [x] W/L/D shown as `W: N | L: N | D: N` in Orbitron font
+- [x] Mute FAB (🔇/🔊) toggles `audioStore.masterMuted`
+- [x] Home button with confirmation dialog before leaving a live game (online modes only)
+- [x] Reads state from `useGameStore` and `usePlayerStore`
 
 **Verification:**
 
-- [ ] `vp check` passes
+- [x] `vp check` passes
 - [ ] Manual: render HUD with mock state — turn indicator changes color per turn
 
 **Dependencies:** Task 10, Task 11, Task 2
@@ -495,18 +495,18 @@ All packages are installed here. No task after this one should introduce a new `
 
 **Acceptance criteria:**
 
-- [ ] Shows "YOU WIN", "YOU LOSE", or "DRAW" in large Orbitron text
-- [ ] Winner's color scheme applied (cyan for X win, rose for O win, purple for draw)
-- [ ] tsparticles confetti burst fires in winner's color on mount
-- [ ] Updated W/L/D score displayed
-- [ ] Two buttons: "Play Again" and "Home"
-- [ ] Auto-dismisses after 8 seconds with no action
-- [ ] Framer Motion entrance/exit animation
-- [ ] `WinOverlay.test.tsx`: renders correct text for each outcome, buttons fire callbacks
+- [x] Shows "YOU WIN", "YOU LOSE", or "DRAW" in large Orbitron text
+- [x] Winner's color scheme applied (cyan for X win, rose for O win, purple for draw)
+- [x] tsparticles confetti burst fires in winner's color on mount
+- [x] Updated W/L/D score displayed
+- [x] Two buttons: "Play Again" and "Home"
+- [x] Auto-dismisses after 8 seconds with no action
+- [x] Framer Motion entrance/exit animation
+- [x] `WinOverlay.test.tsx`: renders correct text for each outcome, buttons fire callbacks
 
 **Verification:**
 
-- [ ] `vp test` passes for `WinOverlay.test.tsx`
+- [x] `vp test` passes for `WinOverlay.test.tsx`
 - [ ] Manual: trigger overlay — confetti fires, text correct, auto-dismiss works
 
 **Dependencies:** Task 2, Task 11
@@ -526,18 +526,18 @@ All packages are installed here. No task after this one should introduce a new `
 
 **Acceptance criteria:**
 
-- [ ] Player can click any empty cell; glyph renders with animation
-- [ ] After player move, AI responds in 300–600ms (random delay) using difficulty from store
-- [ ] AI move also triggers glyph animation
-- [ ] Win/draw detection fires after each move; `WinOverlay` appears
-- [ ] Winning line cells pulse with `glow-pulse-win` animation
-- [ ] "Play Again" resets the board; same mode/difficulty continues
-- [ ] "Home" navigates to `/`
-- [ ] `Game.test.tsx`: full vs-AI game can be played to completion in tests
+- [x] Player can click any empty cell; glyph renders with animation
+- [x] After player move, AI responds in 300–600ms (random delay) using difficulty from store
+- [x] AI move also triggers glyph animation
+- [x] Win/draw detection fires after each move; `WinOverlay` appears
+- [x] Winning line cells pulse with `glow-pulse-win` animation
+- [x] "Play Again" resets the board; same mode/difficulty continues
+- [x] "Home" navigates to `/`
+- [x] `Game.test.tsx`: full vs-AI game can be played to completion in tests
 
 **Verification:**
 
-- [ ] `vp test` passes for `Game.test.tsx`
+- [x] `vp test` passes for `Game.test.tsx`
 - [ ] Manual: play a full game vs Hard AI — AI responds, win detected, overlay shown
 
 **Dependencies:** Task 13, Task 14, Task 15, Task 9, Task 10
@@ -557,15 +557,15 @@ All packages are installed here. No task after this one should introduce a new `
 
 **Acceptance criteria:**
 
-- [ ] Both players' nicknames rendered in HUD
-- [ ] Turn indicator shows the active player's color and name
-- [ ] After a move, turn switches immediately (no AI delay)
-- [ ] Win/draw detection identical to vs-AI mode
-- [ ] "Play Again" restores initial turn order (X goes first)
+- [x] Both players' nicknames rendered in HUD
+- [x] Turn indicator shows the active player's color and name
+- [x] After a move, turn switches immediately (no AI delay)
+- [x] Win/draw detection identical to vs-AI mode
+- [x] "Play Again" restores initial turn order (X goes first)
 
 **Verification:**
 
-- [ ] `vp check` passes
+- [x] `vp check` passes
 - [ ] Manual: play a local 2P game to completion on a 375px viewport (mobile simulation)
 
 **Dependencies:** Task 16
@@ -581,7 +581,7 @@ All packages are installed here. No task after this one should introduce a new `
 
 ### Checkpoint: Offline Game Modes
 
-- [ ] `vp test` passes — zero failures
+- [x] `vp test` passes — zero failures
 - [ ] vs AI: Easy, Medium, Hard all complete a full game correctly
 - [ ] Local 2P: pass-and-play works, turn indicator updates correctly
 - [ ] WinOverlay: renders for win, loss, and draw; auto-dismisses at 8s

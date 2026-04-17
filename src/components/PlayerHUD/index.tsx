@@ -1,0 +1,88 @@
+import { useNavigate } from "react-router-dom";
+
+import { useAudioStore } from "@/hooks/useAudioStore";
+import { useGameStore } from "@/hooks/useGameStore";
+import { usePlayerStore } from "@/hooks/usePlayerStore";
+
+function scoreLine(wins: number, losses: number, draws: number): string {
+  return `W: ${wins} | L: ${losses} | D: ${draws}`;
+}
+
+export function PlayerHUD() {
+  const navigate = useNavigate();
+  const mode = useGameStore((s) => s.mode);
+  const currentTurn = useGameStore((s) => s.currentTurn);
+  const nickname = usePlayerStore((s) => s.nickname);
+  const localGuestNickname = usePlayerStore((s) => s.localGuestNickname);
+  const score = usePlayerStore((s) => s.score);
+  const masterMuted = useAudioStore((s) => s.masterMuted);
+  const setMasterMuted = useAudioStore((s) => s.setMasterMuted);
+
+  const playerXName = nickname.trim() === "" ? "Player X" : nickname;
+  const playerOName =
+    mode === "solo" ? "AI" : localGuestNickname.trim() === "" ? "Player O" : localGuestNickname;
+
+  const goHome = (): void => {
+    if (mode === "online") {
+      const ok = window.confirm("Leave the live game and return home?");
+      if (!ok) return;
+    }
+    void navigate("/");
+  };
+
+  return (
+    <header className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-[color:var(--na-border)] pb-4">
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 text-sm">
+          <span
+            className="truncate font-semibold"
+            style={{
+              color: currentTurn === "X" ? "var(--na-cyan)" : "var(--na-text-muted)",
+              fontFamily: "var(--na-font-display)",
+            }}
+          >
+            {playerXName}
+            {currentTurn === "X" ? " (turn)" : ""}
+          </span>
+          <span className="text-[color:var(--na-text-muted)]">vs</span>
+          <span
+            className="truncate font-semibold"
+            style={{
+              color: currentTurn === "O" ? "var(--na-rose)" : "var(--na-text-muted)",
+              fontFamily: "var(--na-font-display)",
+            }}
+          >
+            {playerOName}
+            {currentTurn === "O" ? " (turn)" : ""}
+          </span>
+        </div>
+        <p
+          className="text-xs tracking-wide text-[color:var(--na-text-muted)]"
+          style={{ fontFamily: "var(--na-font-display)" }}
+        >
+          {scoreLine(score.wins, score.losses, score.draws)}
+        </p>
+      </div>
+      <div className="flex shrink-0 gap-2">
+        <button
+          type="button"
+          aria-label={masterMuted ? "Unmute sound" : "Mute sound"}
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-[color:var(--na-border)] bg-[color:var(--na-surface)] text-lg text-[color:var(--na-text)] shadow-[var(--na-glow-grid)]"
+          onClick={() => {
+            setMasterMuted(!masterMuted);
+          }}
+        >
+          {masterMuted ? "🔇" : "🔊"}
+        </button>
+        <button
+          type="button"
+          className="rounded-full border border-[color:var(--na-border)] bg-[color:var(--na-surface)] px-4 py-2 text-sm text-[color:var(--na-cyan)]"
+          style={{ fontFamily: "var(--na-font-display)" }}
+          onClick={goHome}
+        >
+          Home
+        </button>
+      </div>
+    </header>
+  );
+}

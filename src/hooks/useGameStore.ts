@@ -15,10 +15,15 @@ export interface GameStoreState {
   readonly mode: GameMode;
   readonly difficulty: Difficulty;
   readonly getIsMyTurn: () => boolean;
-  makeMove: (index: number) => void;
+  makeMove: (index: number, meta?: { actor?: "human" | "system" }) => void;
   resetGame: () => void;
   setMode: (mode: GameMode) => void;
   setDifficulty: (difficulty: Difficulty) => void;
+}
+
+function soloAiMark(role: "X" | "O" | null): "X" | "O" {
+  const human = role ?? "X";
+  return human === "X" ? "O" : "X";
 }
 
 function computeIsMyTurn(
@@ -52,12 +57,20 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
     return computeIsMyTurn(status, currentTurn, mode, role);
   },
 
-  makeMove: (index: number) => {
+  makeMove: (index: number, meta) => {
     if (index < 0 || index > 8) return;
     const state = get();
     if (state.board[index] !== null) return;
     if (state.status === "win" || state.status === "draw") return;
-    if (!state.getIsMyTurn()) return;
+
+    const actor = meta?.actor ?? "human";
+    if (actor === "human" && !state.getIsMyTurn()) return;
+    if (actor === "system") {
+      if (state.mode !== "solo") return;
+      const { role } = usePlayerStore.getState();
+      const ai = soloAiMark(role);
+      if (state.currentTurn !== ai) return;
+    }
 
     const mark = state.currentTurn;
     const board = [...state.board];
