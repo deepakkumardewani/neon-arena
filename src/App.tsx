@@ -1,9 +1,6 @@
 import { useEffect } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import { useAudioStore } from "@/hooks/useAudioStore";
-import { useGameStore } from "@/hooks/useGameStore";
-import { usePlayerStore } from "@/hooks/usePlayerStore";
 import { authService } from "@/lib/services";
 import { GamePage } from "@/pages/Game";
 import { HomePage } from "@/pages/Home";
@@ -23,10 +20,6 @@ const router = createBrowserRouter([
 
 export function App() {
   useEffect(() => {
-    void useGameStore.getState().bootstrapped;
-    void usePlayerStore.getState().bootstrapped;
-    void useAudioStore.getState().bootstrapped;
-
     void authService
       .signInAnonymously()
       .then((u) => {
