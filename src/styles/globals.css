@@ -1,0 +1,43 @@
+@import "tailwindcss";
+@import "./animations.css";
+
+/* All components MUST use these variables — never raw hex in TSX */
+:root {
+  /* Colors */
+  --na-bg: #0a0a0f;
+  --na-surface: #12121a;
+  --na-border: #1e1e2e;
+  --na-cyan: #00f5ff;
+  --na-rose: #ff2d78;
+  --na-purple: #7b61ff;
+  --na-text: #e2e8f0;
+  --na-text-muted: #64748b;
+
+  /* Glows (box-shadow / filter stacks) */
+  --na-glow-x: 0 0 12px #00f5ff, 0 0 40px #00f5ff66;
+  --na-glow-o: 0 0 12px #ff2d78, 0 0 40px #ff2d7866;
+  --na-glow-grid: 0 0 8px #7b61ff44;
+  --na-glow-win: 0 0 20px #00f5ff, 0 0 60px #00f5ffaa;
+
+  /* Typography */
+  --na-font-display: "Orbitron", sans-serif;
+  --na-font-body: "Inter", sans-serif;
+
+  /* Breakpoints (reference for Tailwind @theme / media) */
+  --na-bp-sm: 375px;
+  --na-bp-md: 768px;
+  --na-bp-lg: 1280px;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--na-font-body);
+  background-color: var(--na-bg);
+  color: var(--na-text);
+}

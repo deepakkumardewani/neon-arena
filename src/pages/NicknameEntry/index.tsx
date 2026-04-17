@@ -1,0 +1,13 @@
+import { Link } from "react-router-dom";
+
+export function NicknameEntryPage() {
+  return (
+    <main className="mx-auto flex max-w-lg flex-col gap-6 p-8">
+      <h1 className="text-2xl text-[color:var(--na-rose)]">Nickname</h1>
+      <nav className="flex flex-col gap-2 text-[color:var(--na-cyan)]">
+        <Link to="/play/tictactoe">Back</Link>
+        <Link to="/play/tictactoe/matchmaking">Matchmaking</Link>
+      </nav>
+    </main>
+  );
+}
