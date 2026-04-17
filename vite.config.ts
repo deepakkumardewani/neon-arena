@@ -19,6 +19,19 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
+    // `vp test run --coverage` may print a Vitest “mixed versions” warning: `vitest` is
+    // aliased to `@voidzero-dev/vite-plus-test` (npm semver 0.1.x) while `@vitest/coverage-v8`
+    // reports 4.1.x. The runner still bundles Vitest 4.1.x; the warning is a false positive.
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "text-summary"],
+      include: [
+        "src/lib/game/logic.ts",
+        "src/lib/ai/easy.ts",
+        "src/lib/ai/medium.ts",
+        "src/lib/ai/minimax.ts",
+      ],
+    },
   },
   fmt: {
     ignorePatterns: [
