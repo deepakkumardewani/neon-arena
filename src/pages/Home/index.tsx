@@ -1,9 +1,13 @@
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { GameCard } from "@/components/GameCard";
 import { OnlineCounter } from "@/components/OnlineCounter";
 import { ParticleBackground } from "@/components/ParticleBackground";
+import { SettingsPanel } from "@/components/SettingsPanel";
+import { audioManager } from "@/lib/audio/audioManager";
+import { hapticManager } from "@/lib/haptics/hapticManager";
 
 function TicTacToeThumb() {
   return (
@@ -66,6 +70,7 @@ function PlaceholderThumb({ label }: { readonly label: string }) {
 
 export function HomePage() {
   const navigate = useNavigate();
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   return (
     <div className="na-pregame-scene relative min-h-screen">
@@ -102,11 +107,23 @@ export function HomePage() {
               </div>
             </motion.div>
             <motion.div
-              className="shrink-0 lg:-translate-y-1 lg:translate-x-2"
+              className="flex shrink-0 flex-wrap items-center gap-3 lg:-translate-y-1 lg:translate-x-2"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.48, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             >
+              <button
+                type="button"
+                aria-label="Open settings"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-(--na-border) bg-(--na-surface) text-lg text-(--na-text) shadow-(--na-glow-grid)"
+                onClick={() => {
+                  audioManager.play("click");
+                  hapticManager.tap();
+                  setSettingsOpen(true);
+                }}
+              >
+                {"\u2699\ufe0f"}
+              </button>
               <OnlineCounter />
             </motion.div>
           </div>
@@ -161,6 +178,8 @@ export function HomePage() {
                 title="Tic Tac Toe"
                 thumbnail={<TicTacToeThumb />}
                 onSelect={() => {
+                  audioManager.play("click");
+                  hapticManager.tap();
                   void navigate("/play/tictactoe");
                 }}
               />
@@ -198,6 +217,7 @@ export function HomePage() {
           </motion.div>
         </main>
       </div>
+      <SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </div>
   );
 }

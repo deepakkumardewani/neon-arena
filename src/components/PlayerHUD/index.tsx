@@ -3,12 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { useAudioStore } from "@/hooks/useAudioStore";
 import { useGameStore } from "@/hooks/useGameStore";
 import { usePlayerStore } from "@/hooks/usePlayerStore";
+import { audioManager } from "@/lib/audio/audioManager";
+import { hapticManager } from "@/lib/haptics/hapticManager";
 
 function scoreLine(wins: number, losses: number, draws: number): string {
   return `W: ${wins} | L: ${losses} | D: ${draws}`;
 }
 
-export function PlayerHUD() {
+export interface PlayerHUDProps {
+  readonly onOpenSettings?: () => void;
+}
+
+export function PlayerHUD({ onOpenSettings }: PlayerHUDProps) {
   const navigate = useNavigate();
   const mode = useGameStore((s) => s.mode);
   const currentTurn = useGameStore((s) => s.currentTurn);
@@ -23,6 +29,8 @@ export function PlayerHUD() {
     mode === "solo" ? "AI" : localGuestNickname.trim() === "" ? "Player O" : localGuestNickname;
 
   const goHome = (): void => {
+    audioManager.play("click");
+    hapticManager.tap();
     if (mode === "online") {
       const ok = window.confirm("Leave the live game and return home?");
       if (!ok) return;
@@ -64,15 +72,31 @@ export function PlayerHUD() {
         </p>
       </div>
       <div className="flex shrink-0 gap-2">
+        {onOpenSettings ? (
+          <button
+            type="button"
+            aria-label="Open settings"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-(--na-border) bg-(--na-surface) text-lg text-(--na-text) shadow-(--na-glow-grid)"
+            onClick={() => {
+              audioManager.play("click");
+              hapticManager.tap();
+              onOpenSettings();
+            }}
+          >
+            {"\u2699\ufe0f"}
+          </button>
+        ) : null}
         <button
           type="button"
           aria-label={masterMuted ? "Unmute sound" : "Mute sound"}
           className="flex h-11 w-11 items-center justify-center rounded-full border border-(--na-border) bg-(--na-surface) text-lg text-(--na-text) shadow-(--na-glow-grid)"
           onClick={() => {
+            audioManager.play("click");
+            hapticManager.tap();
             setMasterMuted(!masterMuted);
           }}
         >
-          {masterMuted ? "🔇" : "🔊"}
+          {masterMuted ? "\u{1F507}" : "\u{1F50A}"}
         </button>
         <button
           type="button"

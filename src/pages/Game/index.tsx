@@ -1,13 +1,16 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import { GameBoard } from "@/components/GameBoard";
 import { PlayerHUD } from "@/components/PlayerHUD";
+import { SettingsPanel } from "@/components/SettingsPanel";
 import { WinOverlay, type WinOverlayPalette } from "@/components/WinOverlay";
 import { useGameStore } from "@/hooks/useGameStore";
 import { usePlayerStore } from "@/hooks/usePlayerStore";
 import { useScore } from "@/hooks/useScore";
 import { pickAiMove } from "@/lib/ai/pick-move";
+import { audioManager } from "@/lib/audio/audioManager";
+import { hapticManager } from "@/lib/haptics/hapticManager";
 import { scoreService } from "@/lib/services";
 import type { Difficulty, GameMode } from "@/types/game";
 
@@ -90,6 +93,7 @@ export function GamePage() {
   const { gameId } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const board = useGameStore((s) => s.board);
   const winLine = useGameStore((s) => s.winLine);
@@ -102,6 +106,7 @@ export function GamePage() {
   const resetGame = useGameStore((s) => s.resetGame);
 
   const score = usePlayerStore((s) => s.score);
+  const role = usePlayerStore((s) => s.role);
   const applySoloOutcome = usePlayerStore((s) => s.applySoloOutcome);
   const setScore = usePlayerStore((s) => s.setScore);
   const uid = usePlayerStore((s) => s.uid);
@@ -109,6 +114,50 @@ export function GamePage() {
   useScore(uid === "" ? undefined : uid);
 
   const endgame = useEndgamePresentation();
+
+  const filledPlaced = useRef(0);
+  useEffect(() => {
+    const n = board.filter(Boolean).length;
+    if (n === 0) {
+      filledPlaced.current = 0;
+      return;
+    }
+    if (n > filledPlaced.current) {
+      audioManager.play("place");
+      hapticManager.place();
+    }
+    filledPlaced.current = n;
+  }, [board]);
+
+  const endgameSfxKey = useRef<string | null>(null);
+  useEffect(() => {
+    if (status !== "win" && status !== "draw") {
+      endgameSfxKey.current = null;
+      return;
+    }
+    const key = `${status}-${winner ?? "none"}-${board.join("")}`;
+    if (endgameSfxKey.current === key) return;
+    endgameSfxKey.current = key;
+
+    if (status === "draw") {
+      audioManager.play("draw");
+      return;
+    }
+
+    if (mode === "solo") {
+      const human = role ?? "X";
+      if (winner === human) {
+        audioManager.play("win");
+        hapticManager.win();
+      } else {
+        audioManager.play("lose");
+      }
+      return;
+    }
+
+    audioManager.play("win");
+    hapticManager.win();
+  }, [status, winner, mode, board, role]);
 
   useEffect(() => {
     resetSoloOutcomeLock();
@@ -201,6 +250,14 @@ export function GamePage() {
     [makeMove],
   );
 
+  const withUiFeedback = useCallback((fn: () => void) => {
+    return (): void => {
+      audioManager.play("click");
+      hapticManager.tap();
+      fn();
+    };
+  }, []);
+
   const handlePlayAgain = useCallback(() => {
     resetSoloOutcomeLock();
     resetGame();
@@ -223,7 +280,7 @@ export function GamePage() {
       {gameId ? (
         <p className="mb-2 text-sm text-(--na-text-muted)">Online match: {gameId}</p>
       ) : null}
-      <PlayerHUD />
+      <PlayerHUD onOpenSettings={() => setSettingsOpen(true)} />
       <GameBoard board={board} winLine={winLine} winner={winner} onCellClick={handleCellClick} />
       <WinOverlay
         open={endgame.open}
@@ -232,10 +289,11 @@ export function GamePage() {
         scoreWins={score.wins}
         scoreLosses={score.losses}
         scoreDraws={score.draws}
-        onPlayAgain={handlePlayAgain}
-        onHome={handleOverlayHome}
+        onPlayAgain={withUiFeedback(handlePlayAgain)}
+        onHome={withUiFeedback(handleOverlayHome)}
         onAutoDismiss={handleAutoDismiss}
       />
+      <SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </main>
   );
 }
