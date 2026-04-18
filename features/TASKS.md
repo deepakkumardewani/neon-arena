@@ -600,16 +600,16 @@ All packages are installed here. No task after this one should introduce a new `
 
 **Acceptance criteria:**
 
-- [ ] Input accepts 2–16 characters, alphanumeric + underscore only, no spaces
-- [ ] Default value: `Guest_` + 4 random digits
-- [ ] Real-time validation error shown below input on invalid input
-- [ ] "Continue" button disabled until input is valid
-- [ ] `NicknameInput.test.tsx`: rejects <2 chars, >16 chars, spaces, specials; accepts valid
-- [ ] Styled with neon theme (border glows on focus using `--na-cyan`)
+- [x] Input accepts 2–16 characters, alphanumeric + underscore only, no spaces
+- [x] Default value: `Guest_` + 4 random digits
+- [x] Real-time validation error shown below input on invalid input
+- [x] "Continue" button disabled until input is valid
+- [x] `NicknameInput.test.tsx`: rejects <2 chars, >16 chars, spaces, specials; accepts valid
+- [x] Styled with neon theme (border glows on focus using `--na-cyan`)
 
 **Verification:**
 
-- [ ] `vp test` passes for `NicknameInput.test.tsx`
+- [x] `vp test` passes for `NicknameInput.test.tsx`
 - [ ] Manual: try invalid nicknames — correct error messages appear
 
 **Dependencies:** Task 2, Task 11
@@ -629,16 +629,16 @@ All packages are installed here. No task after this one should introduce a new `
 
 **Acceptance criteria:**
 
-- [ ] Displays mode context (e.g. "Playing: vs AI — Hard")
-- [ ] For Local 2P: shows "Player 1" step, then "Player 2" step — sequential
-- [ ] Saved nickname pre-filled from `playerStore`; user can edit or confirm and skip
-- [ ] On submit: nickname saved to `playerStore` + localStorage; navigates to next step
-- [ ] Triggers `authService.signInAnonymously()` if UID not yet set
-- [ ] `NicknameEntry.test.tsx`: single-player flow and 2P sequential flow tested
+- [x] Displays mode context (e.g. "Playing: vs AI — Hard")
+- [x] For Local 2P: shows "Player 1" step, then "Player 2" step — sequential
+- [x] Saved nickname pre-filled from `playerStore`; user can edit or confirm and skip
+- [x] On submit: nickname saved to `playerStore` + localStorage; navigates to next step
+- [x] Triggers `authService.signInAnonymously()` if UID not yet set
+- [x] `NicknameEntry.test.tsx`: single-player flow and 2P sequential flow tested
 
 **Verification:**
 
-- [ ] `vp test` passes for `NicknameEntry.test.tsx`
+- [x] `vp test` passes for `NicknameEntry.test.tsx`
 - [ ] Manual: full flow from ModeSelect → NicknameEntry → Game with saved + new nickname
 
 **Dependencies:** Task 18, Task 5, Task 11, Task 6
@@ -658,16 +658,16 @@ All packages are installed here. No task after this one should introduce a new `
 
 **Acceptance criteria:**
 
-- [ ] `FirebaseScoreService` implements `IScoreService` fully
-- [ ] `getScore(uid)` reads from `scores/{uid}` — returns `null` if no doc yet
-- [ ] `incrementScore(uid, result, nickname)` atomically increments the correct counter using Firestore `increment()`
-- [ ] Creates score doc on first game if it doesn't exist
-- [ ] `src/lib/services/index.ts` updated: `scoreService = new FirebaseScoreService()`
-- [ ] All Firebase calls are inside this service class only
+- [x] `FirebaseScoreService` implements `IScoreService` fully
+- [x] `getScore(uid)` reads from `scores/{uid}` — returns `null` if no doc yet
+- [x] `incrementScore(uid, result, nickname)` atomically increments the correct counter using Firestore `increment()`
+- [x] Creates score doc on first game if it doesn't exist
+- [x] `src/lib/services/index.ts` updated: `scoreService = new FirebaseScoreService()`
+- [x] All Firebase calls are inside this service class only
 
 **Verification:**
 
-- [ ] `vp build` succeeds
+- [x] `vp build` succeeds
 - [ ] Manual: play a game to completion — check Firestore console for score increment
 
 **Dependencies:** Task 4, Task 5
@@ -687,15 +687,15 @@ All packages are installed here. No task after this one should introduce a new `
 
 **Acceptance criteria:**
 
-- [ ] `useScore(uid)` fetches score from `scoreService.getScore()` on mount
-- [ ] Score stored in `playerStore`
-- [ ] At game end, `scoreService.incrementScore()` called with correct result
-- [ ] HUD displays live W/L/D from store
-- [ ] Score persists across page refresh (same UID recovered from localStorage)
+- [x] `useScore(uid)` fetches score from `scoreService.getScore()` on mount
+- [x] Score stored in `playerStore`
+- [x] At game end, `scoreService.incrementScore()` called with correct result
+- [x] HUD displays live W/L/D from store
+- [x] Score persists across page refresh (same UID recovered from localStorage)
 
 **Verification:**
 
-- [ ] `vp build` succeeds
+- [x] `vp build` succeeds
 - [ ] Manual: play 3 games — W/L/D increments correctly; refresh page — scores persist
 
 **Dependencies:** Task 20, Task 14, Task 11
@@ -829,6 +829,58 @@ All packages are installed here. No task after this one should introduce a new `
 
 ---
 
+---
+
+#### Task 25.5: UI Design Pass — Pre-Game Screens
+
+**Description:** Apply the full NeonArena visual design to all pre-game screens. These pages are functional stubs; this task makes them production-grade. The goal is "aggressive, electric, nostalgic" arcade energy — something players will remember and return to. Design system changes (fonts, spacing tokens) are also locked in here before online multiplayer UI is built.
+
+**Scope:** Home, ModeSelect, NicknameEntry, Matchmaking pages + global design tokens update. Does NOT touch GameBoard, WinOverlay, or PlayerHUD (those are designed post-game-logic stabilisation).
+
+**Design direction:**
+- Dark theme (near-black background, viewed at night/indoors by competitive casual players)
+- Fonts: replace Inter body font with a non-reflex pairing that suits "aggressive + electric + nostalgic" — see `.impeccable.md` for full design context
+- OKLCH color system: keep brand hues (cyan, rose, purple) but migrate raw hex tokens to OKLCH in CSS for perceptually uniform mixing
+- Asymmetric layouts, varied spacing rhythm — not centered everything
+- Framer Motion page transitions between routes
+- No glassmorphism, no gradient text, no side-stripe card borders
+
+**Acceptance criteria:**
+
+- [ ] `globals.css` updated: body font changed from Inter to chosen replacement; OKLCH values for all `--na-*` tokens
+- [ ] Home page: arcade portal feel — game cards with hover states, animated entrance, particle background active, `OnlineCounter` badge visible
+- [ ] ModeSelect page: 4 mode cards with icons, descriptions, and clear selection affordance; difficulty selector inline for vs AI
+- [ ] NicknameEntry page: styled input with focus glow, default nickname pre-filled, validation errors styled
+- [ ] Matchmaking page: radar pulse animation, queue count, AI fallback prompt at 30s — all visually polished
+- [ ] Framer Motion route transitions wired between all 4 pages
+- [ ] All pages pass `vp check` (no TS errors, no lint errors)
+- [ ] All pages responsive at 375px, 768px, 1280px
+
+**Verification:**
+
+- [ ] Manual: navigate all 4 screens — no layout breaks at mobile and desktop
+- [ ] Manual: the AI slop test — show it to someone and ask "does this look generic?" — answer must be no
+- [ ] `vp check` passes
+
+**Dependencies:** Task 24, Task 25, Task 18, Task 19
+
+**Files likely touched:**
+
+- `src/styles/globals.css`
+- `src/pages/Home/index.tsx`
+- `src/pages/ModeSelect/index.tsx`
+- `src/pages/NicknameEntry/index.tsx`
+- `src/pages/Matchmaking/index.tsx`
+- `src/components/GameCard/index.tsx`
+- `src/components/ModeCard/index.tsx`
+- `src/components/NicknameInput/index.tsx`
+- `src/components/OnlineCounter/index.tsx`
+- `src/App.tsx` (route transition wrapper)
+
+**Estimated scope:** Large
+
+---
+
 ### Checkpoint: Portal & Identity
 
 - [ ] `vp test` passes — zero failures
@@ -836,6 +888,7 @@ All packages are installed here. No task after this one should introduce a new `
 - [ ] Returning user: nickname pre-filled from localStorage
 - [ ] Scores save to Firestore and reload after refresh
 - [ ] Home page responsive grid correct at 375px / 768px / 1280px
+- [ ] UI design pass complete: all pre-game screens are production-grade and visually distinctive
 
 ---
 
