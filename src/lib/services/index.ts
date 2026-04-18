@@ -1,11 +1,11 @@
 import { FirebaseAuthService } from "@/lib/services/firebase/FirebaseAuthService";
+import { FirebaseScoreService } from "@/lib/services/firebase/FirebaseScoreService";
 import type { IAuthService } from "@/lib/services/interfaces/IAuthService";
 import type { IGameService } from "@/lib/services/interfaces/IGameService";
 import type { IPresenceService } from "@/lib/services/interfaces/IPresenceService";
 import type { IQueueService } from "@/lib/services/interfaces/IQueueService";
 import type { IScoreService } from "@/lib/services/interfaces/IScoreService";
 import type { GameDoc } from "@/types/firebase";
-import type { ScoreDoc } from "@/types/player";
 
 const noopUnsub = (): void => {};
 
@@ -39,16 +39,6 @@ class StubGameService implements IGameService {
   }
 }
 
-class StubScoreService implements IScoreService {
-  getScore(_uid: string): Promise<ScoreDoc | null> {
-    return Promise.resolve(null);
-  }
-
-  incrementScore(_uid: string, _result: "win" | "loss" | "draw", _nickname: string): Promise<void> {
-    return Promise.resolve();
-  }
-}
-
 class StubPresenceService implements IPresenceService {
   connect(_uid: string, _nickname: string): Promise<void> {
     return Promise.resolve();
@@ -79,6 +69,6 @@ class StubQueueService implements IQueueService {
 
 export const authService: IAuthService = new FirebaseAuthService();
 export const gameService: IGameService = new StubGameService();
-export const scoreService: IScoreService = new StubScoreService();
+export const scoreService: IScoreService = new FirebaseScoreService();
 export const presenceService: IPresenceService = new StubPresenceService();
 export const queueService: IQueueService = new StubQueueService();
