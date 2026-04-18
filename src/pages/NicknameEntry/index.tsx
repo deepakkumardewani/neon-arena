@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
@@ -125,49 +126,87 @@ export function NicknameEntryPage() {
   const canContinue = isNicknameValid(value);
 
   return (
-    <main className="mx-auto flex max-w-lg flex-col gap-8 p-8">
-      <div>
-        <p
-          className="text-xs tracking-[0.2em] text-(--na-text-muted) uppercase"
-          style={{ fontFamily: "var(--na-font-display)" }}
+    <div
+      className="na-pregame-scene flex min-h-screen flex-col overflow-x-hidden"
+      style={{
+        paddingLeft: "var(--na-space-page-x)",
+        paddingRight: "var(--na-space-page-x)",
+        paddingTop: "var(--na-space-page-y)",
+        paddingBottom: "var(--na-space-section)",
+      }}
+    >
+      <main className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-10 lg:ml-8 lg:mr-auto lg:max-w-lg xl:ml-12">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
         >
-          Identity
-        </p>
-        <h1
-          className="mt-1 text-2xl text-(--na-cyan)"
-          style={{ fontFamily: "var(--na-font-display)" }}
-        >
-          Enter nickname
-        </h1>
-        <p className="mt-2 text-sm text-(--na-text-muted)">{modeContextLine(mode, difficulty)}</p>
-      </div>
+          <div className="border-l-2 border-(--na-rose) pl-5 md:pl-6">
+            <p
+              className="text-[11px] tracking-[0.32em] text-(--na-text-muted) uppercase"
+              style={{ fontFamily: "var(--na-font-display)" }}
+            >
+              Identity
+            </p>
+            <h1
+              className="mt-3 text-2xl font-bold tracking-[0.05em] text-(--na-cyan) md:text-3xl"
+              style={{ fontFamily: "var(--na-font-display)" }}
+            >
+              Enter nickname
+            </h1>
+            <p className="mt-3 text-sm leading-relaxed text-(--na-text-muted) md:text-base">
+              {modeContextLine(mode, difficulty)}
+            </p>
+          </div>
+          {isLocal ? (
+            <p
+              className="mt-6 text-xs tracking-[0.25em] text-(--na-purple) uppercase"
+              style={{ fontFamily: "var(--na-font-display)" }}
+            >
+              Step {localStep + 1} of 2
+            </p>
+          ) : null}
+        </motion.div>
 
-      <NicknameInput
-        id={isLocal ? `nick-${localStep}` : "nick-solo"}
-        label={label}
-        value={value}
-        onValueChange={setValue}
-      />
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <NicknameInput
+            id={isLocal ? `nick-${localStep}` : "nick-solo"}
+            label={label}
+            value={value}
+            onValueChange={setValue}
+          />
+        </motion.div>
 
-      <div className="flex flex-wrap gap-3">
-        <button
-          type="button"
-          disabled={!canContinue}
-          className="rounded-full border border-(--na-cyan) bg-(--na-surface) px-6 py-2.5 text-sm font-semibold text-(--na-cyan) shadow-(--na-glow-grid) disabled:cursor-not-allowed disabled:border-(--na-border) disabled:text-(--na-text-muted) disabled:shadow-none"
-          style={{ fontFamily: "var(--na-font-display)" }}
-          onClick={() => {
-            void handleContinue();
-          }}
+        <motion.div
+          className="mt-auto flex flex-wrap items-center gap-3 pt-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.12, duration: 0.35 }}
         >
-          Continue
-        </button>
-        <Link
-          to="/play/tictactoe"
-          className="inline-flex items-center rounded-full border border-(--na-border) px-6 py-2.5 text-sm text-(--na-text-muted)"
-        >
-          Back
-        </Link>
-      </div>
-    </main>
+          <button
+            type="button"
+            disabled={!canContinue}
+            className="rounded-tl-full rounded-br-full rounded-tr-full rounded-bl-full border-2 border-(--na-cyan) bg-(--na-surface) px-8 py-3 text-sm font-semibold text-(--na-cyan) shadow-(--na-glow-grid) transition-opacity disabled:cursor-not-allowed disabled:border-(--na-border) disabled:text-(--na-text-muted) disabled:shadow-none"
+            style={{ fontFamily: "var(--na-font-display)" }}
+            onClick={() => {
+              void handleContinue();
+            }}
+          >
+            Continue
+          </button>
+          <Link
+            to="/play/tictactoe"
+            className="inline-flex items-center rounded-tl-full rounded-br-full rounded-tr-full rounded-bl-full border-2 border-(--na-border) px-7 py-3 text-sm text-(--na-text-muted) transition-colors hover:border-(--na-purple) hover:text-(--na-text)"
+            style={{ fontFamily: "var(--na-font-display)" }}
+          >
+            Back
+          </Link>
+        </motion.div>
+      </main>
+    </div>
   );
 }

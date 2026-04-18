@@ -16,7 +16,11 @@ export function NicknameInput({ value, onValueChange, id, label }: NicknameInput
 
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={inputId} className="text-sm font-medium text-(--na-text-muted)">
+      <label
+        htmlFor={inputId}
+        className="text-xs font-semibold tracking-[0.18em] text-(--na-text-muted) uppercase"
+        style={{ fontFamily: "var(--na-font-display)" }}
+      >
         {label}
       </label>
       <input
@@ -29,14 +33,26 @@ export function NicknameInput({ value, onValueChange, id, label }: NicknameInput
         onChange={(e) => {
           onValueChange(e.target.value);
         }}
-        className="rounded-md border border-(--na-border) bg-(--na-surface) px-3 py-2.5 text-(--na-text) outline-none transition-[box-shadow,border-color] focus:border-(--na-cyan) focus:shadow-[0_0_0_1px_var(--na-cyan),0_0_18px_color-mix(in_oklab,var(--na-cyan)_35%,transparent)]"
+        className={`rounded-lg border-2 bg-(--na-surface) px-4 py-3.5 text-(--na-text) outline-none transition-[border-color,box-shadow] ${
+          error !== null
+            ? "border-(--na-rose) shadow-[0_0_0_1px_color-mix(in_oklch,var(--na-rose)_45%,transparent),0_0_22px_color-mix(in_oklch,var(--na-rose)_22%,transparent)]"
+            : "border-(--na-border) focus:border-(--na-cyan) focus:shadow-[0_0_0_1px_var(--na-cyan),0_0_26px_color-mix(in_oklch,var(--na-cyan)_32%,transparent)]"
+        }`}
         style={{ fontFamily: "var(--na-font-body, sans-serif)" }}
         aria-invalid={error !== null}
         aria-describedby={error ? `${inputId}-error` : undefined}
       />
       {error ? (
-        <p id={`${inputId}-error`} className="text-sm text-(--na-rose)" role="alert">
-          {error}
+        <p
+          id={`${inputId}-error`}
+          className="flex items-start gap-2 text-sm leading-snug text-(--na-rose)"
+          role="alert"
+        >
+          <span
+            aria-hidden
+            className="mt-0.5 inline-block size-1.5 shrink-0 rounded-full bg-(--na-rose)"
+          />
+          <span>{error}</span>
         </p>
       ) : null}
     </div>

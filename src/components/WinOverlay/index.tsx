@@ -1,9 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useId, useMemo, useState } from "react";
-import Particles, { initParticlesEngine } from "@tsparticles/react";
+import Particles from "@tsparticles/react";
 import type { ISourceOptions } from "@tsparticles/engine";
-import { loadEmittersPlugin } from "@tsparticles/plugin-emitters";
-import { loadSlim } from "@tsparticles/slim";
+
+import { ensureParticlesEngine } from "@/lib/particles/ensureEngine";
 
 export type WinOverlayPalette = "cyan" | "rose" | "purple";
 
@@ -17,18 +17,6 @@ export interface WinOverlayProps {
   readonly onPlayAgain: () => void;
   readonly onHome: () => void;
   readonly onAutoDismiss: () => void;
-}
-
-let engineBoot: Promise<void> | null = null;
-
-function ensureEngine(): Promise<void> {
-  if (!engineBoot) {
-    engineBoot = initParticlesEngine(async (engine) => {
-      await loadSlim(engine);
-      await loadEmittersPlugin(engine);
-    });
-  }
-  return engineBoot;
 }
 
 function paletteToParticleColor(palette: WinOverlayPalette): string {
@@ -108,7 +96,7 @@ export function WinOverlay({
   useEffect(() => {
     if (!open) return;
     let cancelled = false;
-    void ensureEngine().then(() => {
+    void ensureParticlesEngine().then(() => {
       if (!cancelled) setEngineReady(true);
     });
     return () => {
