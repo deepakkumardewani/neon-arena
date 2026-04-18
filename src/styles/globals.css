@@ -3,25 +3,36 @@
 
 /* All components MUST use these variables — never raw hex in TSX */
 :root {
-  /* Colors */
-  --na-bg: #0a0a0f;
-  --na-surface: #12121a;
-  --na-border: #1e1e2e;
-  --na-cyan: #00f5ff;
-  --na-rose: #ff2d78;
-  --na-purple: #7b61ff;
-  --na-text: #e2e8f0;
-  --na-text-muted: #64748b;
+  /* Colors (OKLCH — perceptually uniform; neutrals tinted toward brand purple) */
+  --na-bg: oklch(0.09 0.014 285);
+  --na-surface: oklch(0.13 0.018 285);
+  --na-border: oklch(0.21 0.028 285);
+  --na-cyan: oklch(0.9 0.175 211);
+  --na-rose: oklch(0.64 0.235 12);
+  --na-purple: oklch(0.58 0.275 285);
+  --na-text: oklch(0.92 0.018 260);
+  --na-text-muted: oklch(0.58 0.028 260);
 
   /* Glows (box-shadow / filter stacks) */
-  --na-glow-x: 0 0 12px #00f5ff, 0 0 40px #00f5ff66;
-  --na-glow-o: 0 0 12px #ff2d78, 0 0 40px #ff2d7866;
-  --na-glow-grid: 0 0 8px #7b61ff44;
-  --na-glow-win: 0 0 20px #00f5ff, 0 0 60px #00f5ffaa;
+  --na-glow-x:
+    0 0 12px color-mix(in oklch, var(--na-cyan) 88%, transparent),
+    0 0 40px color-mix(in oklch, var(--na-cyan) 42%, transparent);
+  --na-glow-o:
+    0 0 12px color-mix(in oklch, var(--na-rose) 88%, transparent),
+    0 0 40px color-mix(in oklch, var(--na-rose) 42%, transparent);
+  --na-glow-grid: 0 0 10px color-mix(in oklch, var(--na-purple) 35%, transparent);
+  --na-glow-win:
+    0 0 22px color-mix(in oklch, var(--na-cyan) 90%, transparent),
+    0 0 56px color-mix(in oklch, var(--na-cyan) 55%, transparent);
 
   /* Typography */
   --na-font-display: "Orbitron", sans-serif;
-  --na-font-body: "Inter", sans-serif;
+  --na-font-body: "Chakra Petch", sans-serif;
+
+  /* Spacing rhythm (pregame layouts) */
+  --na-space-page-x: clamp(1.15rem, 4.2vw, 2.75rem);
+  --na-space-page-y: clamp(2.25rem, 6vw, 4rem);
+  --na-space-section: clamp(2rem, 5vw, 3.25rem);
 
   /* Breakpoints (reference for Tailwind @theme / media) */
   --na-bp-sm: 375px;
@@ -40,4 +51,40 @@ body {
   font-family: var(--na-font-body);
   background-color: var(--na-bg);
   color: var(--na-text);
+}
+
+/**
+ * Full-viewport pre-game scenes: grid + top violet wash, no glassmorphism.
+ */
+.na-pregame-scene {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  background-color: var(--na-bg);
+  background-image:
+    radial-gradient(
+      120% 70% at 0% -10%,
+      color-mix(in oklch, var(--na-purple) 16%, transparent),
+      transparent 55%
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in oklch, var(--na-border) 45%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(color-mix(in oklch, var(--na-border) 45%, transparent) 1px, transparent 1px);
+  background-size:
+    100% 100%,
+    52px 52px,
+    52px 52px;
+  background-position:
+    0 0,
+    -1px -1px,
+    -1px -1px;
+}
+
+/** Staggered radar rings — uses `radar-pulse` in animations.css */
+.na-radar-ring {
+  animation: radar-pulse 2.35s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  will-change: transform, opacity;
 }
