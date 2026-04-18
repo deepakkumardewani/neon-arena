@@ -31,7 +31,7 @@ export function PlayerHUD() {
   };
 
   return (
-    <header className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-[color:var(--na-border)] pb-4">
+    <header className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-(--na-border) pb-4">
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 text-sm">
           <span
@@ -44,7 +44,7 @@ export function PlayerHUD() {
             {playerXName}
             {currentTurn === "X" ? " (turn)" : ""}
           </span>
-          <span className="text-[color:var(--na-text-muted)]">vs</span>
+          <span className="text-(--na-text-muted)">vs</span>
           <span
             className="truncate font-semibold"
             style={{
@@ -57,7 +57,7 @@ export function PlayerHUD() {
           </span>
         </div>
         <p
-          className="text-xs tracking-wide text-[color:var(--na-text-muted)]"
+          className="text-xs tracking-wide text-(--na-text-muted)"
           style={{ fontFamily: "var(--na-font-display)" }}
         >
           {scoreLine(score.wins, score.losses, score.draws)}
@@ -67,7 +67,7 @@ export function PlayerHUD() {
         <button
           type="button"
           aria-label={masterMuted ? "Unmute sound" : "Mute sound"}
-          className="flex h-11 w-11 items-center justify-center rounded-full border border-[color:var(--na-border)] bg-[color:var(--na-surface)] text-lg text-[color:var(--na-text)] shadow-[var(--na-glow-grid)]"
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-(--na-border) bg-(--na-surface) text-lg text-(--na-text) shadow-(--na-glow-grid)"
           onClick={() => {
             setMasterMuted(!masterMuted);
           }}
@@ -76,7 +76,7 @@ export function PlayerHUD() {
         </button>
         <button
           type="button"
-          className="rounded-full border border-[color:var(--na-border)] bg-[color:var(--na-surface)] px-4 py-2 text-sm text-[color:var(--na-cyan)]"
+          className="rounded-full border border-(--na-border) bg-(--na-surface) px-4 py-2 text-sm text-(--na-cyan)"
           style={{ fontFamily: "var(--na-font-display)" }}
           onClick={goHome}
         >

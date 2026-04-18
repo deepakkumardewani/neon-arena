@@ -48,7 +48,7 @@ export function GameBoard({ board, winLine, winner, onCellClick }: GameBoardProp
 
   return (
     <div
-      className="mx-auto w-full max-w-[480px] rounded-sm p-[2px] shadow-[var(--na-glow-grid)]"
+      className="mx-auto w-full max-w-[480px] rounded-sm p-[2px] shadow-(--na-glow-grid)"
       style={{
         aspectRatio: "1",
         display: "grid",
@@ -80,7 +80,7 @@ export function GameBoard({ board, winLine, winner, onCellClick }: GameBoardProp
             type="button"
             aria-label={ariaLabel}
             disabled={occupied}
-            className="relative flex min-h-0 min-w-0 items-center justify-center border-0 bg-[color:var(--na-surface)] p-0 disabled:cursor-not-allowed enabled:cursor-pointer enabled:hover:brightness-110"
+            className="relative flex min-h-0 min-w-0 items-center justify-center border-0 bg-(--na-surface) p-0 disabled:cursor-not-allowed enabled:cursor-pointer enabled:hover:brightness-110"
             style={winPulse}
             onClick={() => {
               onCellClick(index);

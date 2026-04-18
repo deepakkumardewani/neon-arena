@@ -143,7 +143,7 @@ export function WinOverlay({
             </div>
           ) : null}
           <motion.div
-            className="relative z-[1] flex max-w-md flex-col items-center gap-6 rounded-2xl border border-[color:var(--na-border)] bg-[color:var(--na-surface)] px-8 py-10 text-center shadow-[var(--na-glow-grid)]"
+            className="relative z-1 flex max-w-md flex-col items-center gap-6 rounded-2xl border border-(--na-border) bg-(--na-surface) px-8 py-10 text-center shadow-(--na-glow-grid)"
             initial={{ scale: 0.92, y: 16 }}
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.95, y: 12 }}
@@ -160,7 +160,7 @@ export function WinOverlay({
               {headline}
             </h2>
             <p
-              className="text-sm text-[color:var(--na-text-muted)]"
+              className="text-sm text-(--na-text-muted)"
               style={{ fontFamily: "var(--na-font-display)" }}
             >
               W: {scoreWins} | L: {scoreLosses} | D: {scoreDraws}
@@ -168,7 +168,7 @@ export function WinOverlay({
             <div className="flex flex-wrap justify-center gap-3">
               <button
                 type="button"
-                className="rounded-full border border-[color:var(--na-cyan)] px-6 py-2 text-sm text-[color:var(--na-cyan)]"
+                className="rounded-full border border-(--na-cyan) px-6 py-2 text-sm text-(--na-cyan)"
                 style={{ fontFamily: "var(--na-font-display)" }}
                 onClick={onPlayAgain}
               >
@@ -176,7 +176,7 @@ export function WinOverlay({
               </button>
               <button
                 type="button"
-                className="rounded-full border border-[color:var(--na-purple)] px-6 py-2 text-sm text-[color:var(--na-purple)]"
+                className="rounded-full border border-(--na-purple) px-6 py-2 text-sm text-(--na-purple)"
                 style={{ fontFamily: "var(--na-font-display)" }}
                 onClick={onHome}
               >

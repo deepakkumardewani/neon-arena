@@ -6,7 +6,9 @@ import { PlayerHUD } from "@/components/PlayerHUD";
 import { WinOverlay, type WinOverlayPalette } from "@/components/WinOverlay";
 import { useGameStore } from "@/hooks/useGameStore";
 import { usePlayerStore } from "@/hooks/usePlayerStore";
+import { useScore } from "@/hooks/useScore";
 import { pickAiMove } from "@/lib/ai/pick-move";
+import { scoreService } from "@/lib/services";
 import type { Difficulty, GameMode } from "@/types/game";
 
 /** Prevents duplicate score bumps (e.g. React Strict Mode) for the same finished board. */
@@ -101,6 +103,10 @@ export function GamePage() {
 
   const score = usePlayerStore((s) => s.score);
   const applySoloOutcome = usePlayerStore((s) => s.applySoloOutcome);
+  const setScore = usePlayerStore((s) => s.setScore);
+  const uid = usePlayerStore((s) => s.uid);
+
+  useScore(uid === "" ? undefined : uid);
 
   const endgame = useEndgamePresentation();
 
@@ -121,15 +127,41 @@ export function GamePage() {
     const key = `${mode}-${status}-${winner ?? "none"}-${board.join("")}`;
     if (!trySoloOutcomeLock(key)) return;
 
-    if (status === "draw") {
-      applySoloOutcome("draw");
+    const store = usePlayerStore.getState();
+    const playerUid = store.uid;
+    const nick = store.nickname.trim() === "" ? "Player" : store.nickname.trim();
+    const human = store.role ?? "X";
+
+    const applyLocal = (): void => {
+      if (status === "draw") {
+        applySoloOutcome("draw");
+        return;
+      }
+      if (winner === human) applySoloOutcome("win");
+      else applySoloOutcome("loss");
+    };
+
+    if (playerUid === "") {
+      applyLocal();
       return;
     }
 
-    const human = usePlayerStore.getState().role ?? "X";
-    if (winner === human) applySoloOutcome("win");
-    else applySoloOutcome("loss");
-  }, [status, winner, mode, board, applySoloOutcome]);
+    void (async () => {
+      try {
+        if (status === "draw") {
+          await scoreService.incrementScore(playerUid, "draw", nick);
+        } else if (winner !== null) {
+          const result = winner === human ? "win" : "loss";
+          await scoreService.incrementScore(playerUid, result, nick);
+        }
+        const next = await scoreService.getScore(playerUid);
+        if (next !== null) setScore(next);
+      } catch (e) {
+        console.warn("[NeonArena] Remote score update failed:", e);
+        applyLocal();
+      }
+    })();
+  }, [status, winner, mode, board, applySoloOutcome, setScore]);
 
   const aiBusy = useRef(false);
 
@@ -189,7 +221,7 @@ export function GamePage() {
     <main className="mx-auto flex min-h-0 w-full max-w-lg flex-col p-4 sm:p-8">
       <h1 className="sr-only">Game</h1>
       {gameId ? (
-        <p className="mb-2 text-sm text-[color:var(--na-text-muted)]">Online match: {gameId}</p>
+        <p className="mb-2 text-sm text-(--na-text-muted)">Online match: {gameId}</p>
       ) : null}
       <PlayerHUD />
       <GameBoard board={board} winLine={winLine} winner={winner} onCellClick={handleCellClick} />
