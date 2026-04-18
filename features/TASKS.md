@@ -899,7 +899,7 @@ All packages are installed here. No task after this one should introduce a new `
 
 ---
 
-#### Task 26: Haptic Manager
+#### Task 26: Haptic Manager ✅
 
 **Description:** Implement `hapticManager.ts` — the abstraction layer over `web-haptics`. All haptic calls are wrapped in try/catch and fail silently on unsupported devices.
 
@@ -926,7 +926,7 @@ All packages are installed here. No task after this one should introduce a new `
 
 ---
 
-#### Task 27: Audio Manager
+#### Task 27: Audio Manager ✅
 
 **Description:** Implement the Howler.js singleton `audioManager`. Handles all SFX and music playback, volume control, mute state, and music crossfade between home and game screens.
 
@@ -956,7 +956,7 @@ All packages are installed here. No task after this one should introduce a new `
 
 ---
 
-#### Task 28: SettingsPanel & Audio Integration
+#### Task 28: SettingsPanel & Audio Integration ✅
 
 **Description:** Build the slide-in settings drawer. Wire haptics and audio triggers to all game events.
 
