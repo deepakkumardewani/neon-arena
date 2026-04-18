@@ -1,5 +1,7 @@
 import "@testing-library/jest-dom/vitest";
 
+window.scrollTo = (): void => undefined;
+
 Object.defineProperty(window, "matchMedia", {
   writable: true,
   configurable: true,
