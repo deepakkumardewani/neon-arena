@@ -2,14 +2,22 @@ import { WebHaptics } from "web-haptics";
 
 const haptics = new WebHaptics();
 
+function safeTrigger(input: number | number[]): void {
+  try {
+    void haptics.trigger(input).catch(() => {});
+  } catch {
+    /* unsupported or transient failure */
+  }
+}
+
 export const hapticManager = {
   place: () => {
-    void haptics.trigger(50).catch(() => {});
+    safeTrigger(50);
   },
   win: () => {
-    void haptics.trigger([80, 60, 80, 60, 80]).catch(() => {});
+    safeTrigger([80, 60, 80, 60, 80]);
   },
   tap: () => {
-    void haptics.trigger(20).catch(() => {});
+    safeTrigger(20);
   },
 };
