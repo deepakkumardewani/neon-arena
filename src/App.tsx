@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
 import { createBrowserRouter, Outlet, RouterProvider, useLocation } from "react-router-dom";
 
+import { audioManager, primeAudioGestureUnlock } from "@/lib/audio/audioManager";
 import { authService } from "@/lib/services";
 import { GamePage } from "@/pages/Game";
 import { HomePage } from "@/pages/Home";
@@ -12,6 +13,13 @@ import { AppProviders } from "@/providers/AppProviders";
 
 function PageTransitionLayout() {
   const location = useLocation();
+
+  useEffect(() => {
+    const path = location.pathname;
+    const isGame = path === "/play/tictactoe/game" || path.startsWith("/game/");
+    audioManager.playMusic(isGame ? "bg-game" : "bg-home");
+  }, [location.pathname]);
+
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -43,6 +51,10 @@ const router = createBrowserRouter([
 ]);
 
 export function App() {
+  useEffect(() => {
+    primeAudioGestureUnlock();
+  }, []);
+
   useEffect(() => {
     void authService
       .signInAnonymously()
