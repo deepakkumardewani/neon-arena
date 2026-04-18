@@ -1,0 +1,30 @@
+---
+description: Use Tailwind v4 shorthand for CSS variables in class names (avoid verbose arbitrary syntax).
+globs: "**/*.{tsx,jsx}"
+alwaysApply: falsse
+---
+
+# Tailwind v4 — CSS variables in `className`
+
+This project uses **Tailwind CSS v4**. For theme tokens defined as CSS custom properties (for example `--na-cyan`, `--na-border`), use the **v4 variable shorthand** on utilities. Do not use the older verbose arbitrary forms.
+
+## Required
+
+- **Text / border / background colors from variables**  
+  Use `utility-(--var-name)`:
+  - `text-(--na-cyan)` not `text-[color:var(--na-cyan)]`
+  - `border-(--na-border)` not `border-[color:var(--na-border)]`
+  - `bg-(--na-surface)` not `bg-[color:var(--na-surface)]`
+
+- **Box shadow from a variable**
+  - `shadow-(--na-glow-grid)` not `shadow-[var(--na-glow-grid)]`
+
+## Also prefer
+
+- Integer z-index utilities when valid: `z-1` not `z-[1]` (when the linter suggests the simpler form).
+
+## Why
+
+The verbose `[color:var(...)]` / `[var(...)]` forms trigger Tailwind IntelliSense warnings and are redundant in v4; the shorthand is shorter and is the supported style for “pass a CSS variable into this utility.”
+
+When adding or editing `className` strings in TSX/JSX, default to the shorthand for any `--na-*` (or other project) CSS variables.
