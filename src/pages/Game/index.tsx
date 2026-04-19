@@ -5,17 +5,22 @@ import { GameBoard } from "@/components/GameBoard";
 import { PlayerHUD } from "@/components/PlayerHUD";
 import { SettingsPanel } from "@/components/SettingsPanel";
 import { WinOverlay, type WinOverlayPalette } from "@/components/WinOverlay";
+import { FriendLobby } from "@/pages/FriendLobby/FriendLobby";
 import { useGameStore } from "@/hooks/useGameStore";
+import { useOnlineGame } from "@/hooks/useOnlineGame";
 import { usePlayerStore } from "@/hooks/usePlayerStore";
 import { useScore } from "@/hooks/useScore";
 import { pickAiMove } from "@/lib/ai/pick-move";
 import { audioManager } from "@/lib/audio/audioManager";
 import { hapticManager } from "@/lib/haptics/hapticManager";
-import { scoreService } from "@/lib/services";
+import { gameService, scoreService } from "@/lib/services";
 import type { Difficulty, GameMode } from "@/types/game";
 
 /** Prevents duplicate score bumps (e.g. React Strict Mode) for the same finished board. */
 let soloOutcomeLock: string | null = null;
+
+/** Reused for online / friend score bumps to Firestore. */
+let networkOutcomeLock: string | null = null;
 
 function resetSoloOutcomeLock(): void {
   soloOutcomeLock = null;
@@ -24,6 +29,16 @@ function resetSoloOutcomeLock(): void {
 function trySoloOutcomeLock(key: string): boolean {
   if (soloOutcomeLock === key) return false;
   soloOutcomeLock = key;
+  return true;
+}
+
+function resetNetworkOutcomeLock(): void {
+  networkOutcomeLock = null;
+}
+
+function tryNetworkOutcomeLock(key: string): boolean {
+  if (networkOutcomeLock === key) return false;
+  networkOutcomeLock = key;
   return true;
 }
 
@@ -84,16 +99,35 @@ function useEndgamePresentation(): {
       };
     }
 
+    if (mode === "online" || mode === "friend") {
+      const human = role ?? "X";
+      if (winner === human) {
+        return {
+          open: true,
+          headline: "YOU WIN",
+          palette: (human === "X" ? "cyan" : "rose") as WinOverlayPalette,
+        };
+      }
+      return {
+        open: true,
+        headline: "YOU LOSE",
+        palette: (winner === "X" ? "cyan" : "rose") as WinOverlayPalette,
+      };
+    }
+
     if (winner === "X") return { open: true, headline: "X WINS", palette: "cyan" as const };
     return { open: true, headline: "O WINS", palette: "rose" as const };
   }, [status, winner, mode, nickname, localGuestNickname, role]);
 }
 
 export function GamePage() {
-  const { gameId } = useParams();
+  const { gameId: routeGameId } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const searchGameId = searchParams.get("gameId");
+  const effectiveGameId =
+    routeGameId !== undefined && routeGameId !== "" ? routeGameId : (searchGameId ?? undefined);
 
   const board = useGameStore((s) => s.board);
   const winLine = useGameStore((s) => s.winLine);
@@ -104,6 +138,7 @@ export function GamePage() {
   const currentTurn = useGameStore((s) => s.currentTurn);
   const makeMove = useGameStore((s) => s.makeMove);
   const resetGame = useGameStore((s) => s.resetGame);
+  const onlineHudNames = useGameStore((s) => s.onlineHudNames);
 
   const score = usePlayerStore((s) => s.score);
   const role = usePlayerStore((s) => s.role);
@@ -112,6 +147,17 @@ export function GamePage() {
   const uid = usePlayerStore((s) => s.uid);
 
   useScore(uid === "" ? undefined : uid);
+
+  const { submitOnlineMove, acceptNetworkRematch, declineNetworkRematch, notifyLeaveGame } =
+    useOnlineGame({ gameId: effectiveGameId, mode });
+
+  const isNetworked = mode === "online" || mode === "friend";
+  const isFriendHostLobby =
+    mode === "friend" &&
+    status === "idle" &&
+    role === "X" &&
+    onlineHudNames !== null &&
+    onlineHudNames.o === "Waiting…";
 
   const endgame = useEndgamePresentation();
 
@@ -144,7 +190,7 @@ export function GamePage() {
       return;
     }
 
-    if (mode === "solo") {
+    if (mode === "solo" || mode === "online" || mode === "friend") {
       const human = role ?? "X";
       if (winner === human) {
         audioManager.play("win");
@@ -161,20 +207,46 @@ export function GamePage() {
 
   useEffect(() => {
     resetSoloOutcomeLock();
+    resetNetworkOutcomeLock();
     resetGame();
     const m = parseMode(searchParams.get("mode"));
     const d = parseDifficulty(searchParams.get("difficulty"));
-    if (m !== null) useGameStore.getState().setMode(m);
+    if (m !== null) {
+      useGameStore.getState().setMode(m);
+    } else if (routeGameId !== undefined && routeGameId !== "") {
+      useGameStore.getState().setMode("friend");
+    }
     if (d !== null) useGameStore.getState().setDifficulty(d);
-  }, [searchParams, resetGame]);
+  }, [searchParams, routeGameId, resetGame]);
+
+  const joinNavigated = useRef(false);
+  useEffect(() => {
+    const gid = effectiveGameId;
+    if (joinNavigated.current) return;
+    if (gid === undefined || gid === "") return;
+    const urlMode = parseMode(searchParams.get("mode"));
+    void gameService.getGame(gid).then((g) => {
+      if (g === null) return;
+      if (g.expiresAt > 0 && Date.now() > g.expiresAt) return;
+      if (g.status !== "waiting") return;
+      if (uid === "") return;
+      if (g.playerX.uid === uid) return;
+      if (g.playerO !== null && g.playerO.uid === uid) return;
+      const treatAsFriend = urlMode === "friend" || routeGameId === gid;
+      if (!treatAsFriend) return;
+      joinNavigated.current = true;
+      void navigate(`/play/tictactoe/nickname?mode=friend&joinGameId=${encodeURIComponent(gid)}`);
+    });
+  }, [effectiveGameId, navigate, routeGameId, searchParams, uid]);
 
   useEffect(() => {
     if (status !== "win" && status !== "draw") return;
 
-    if (mode !== "solo") return;
+    if (mode !== "solo" && mode !== "online" && mode !== "friend") return;
 
     const key = `${mode}-${status}-${winner ?? "none"}-${board.join("")}`;
-    if (!trySoloOutcomeLock(key)) return;
+    const lockFn = mode === "solo" ? trySoloOutcomeLock : tryNetworkOutcomeLock;
+    if (!lockFn(key)) return;
 
     const store = usePlayerStore.getState();
     const playerUid = store.uid;
@@ -245,9 +317,14 @@ export function GamePage() {
 
   const handleCellClick = useCallback(
     (index: number) => {
+      if (isFriendHostLobby) return;
+      if (isNetworked && effectiveGameId !== undefined && effectiveGameId !== "") {
+        void submitOnlineMove(index);
+        return;
+      }
       makeMove(index);
     },
-    [makeMove],
+    [effectiveGameId, isFriendHostLobby, isNetworked, makeMove, submitOnlineMove],
   );
 
   const withUiFeedback = useCallback((fn: () => void) => {
@@ -259,28 +336,58 @@ export function GamePage() {
   }, []);
 
   const handlePlayAgain = useCallback(() => {
+    if (isNetworked && effectiveGameId !== undefined && effectiveGameId !== "") {
+      resetNetworkOutcomeLock();
+      void acceptNetworkRematch();
+      return;
+    }
     resetSoloOutcomeLock();
     resetGame();
-  }, [resetGame]);
+  }, [acceptNetworkRematch, effectiveGameId, isNetworked, resetGame]);
 
   const handleOverlayHome = useCallback(() => {
+    if (
+      isNetworked &&
+      effectiveGameId !== undefined &&
+      effectiveGameId !== "" &&
+      (status === "win" || status === "draw")
+    ) {
+      void declineNetworkRematch();
+    }
     resetSoloOutcomeLock();
+    resetNetworkOutcomeLock();
     resetGame();
     void navigate("/");
-  }, [resetGame, navigate]);
+  }, [declineNetworkRematch, effectiveGameId, isNetworked, navigate, resetGame, status]);
 
   const handleAutoDismiss = useCallback(() => {
+    if (
+      isNetworked &&
+      effectiveGameId !== undefined &&
+      effectiveGameId !== "" &&
+      (status === "win" || status === "draw")
+    ) {
+      void declineNetworkRematch();
+    }
     resetSoloOutcomeLock();
+    resetNetworkOutcomeLock();
     resetGame();
-  }, [resetGame]);
+    void navigate("/");
+  }, [declineNetworkRematch, effectiveGameId, isNetworked, navigate, resetGame, status]);
 
   return (
     <main className="mx-auto flex min-h-0 w-full max-w-lg flex-col p-4 sm:p-8">
       <h1 className="sr-only">Game</h1>
-      {gameId ? (
-        <p className="mb-2 text-sm text-(--na-text-muted)">Online match: {gameId}</p>
+      {effectiveGameId !== undefined && effectiveGameId !== "" ? (
+        <p className="mb-2 text-sm text-(--na-text-muted)">Match: {effectiveGameId}</p>
       ) : null}
-      <PlayerHUD onOpenSettings={() => setSettingsOpen(true)} />
+      {isFriendHostLobby && effectiveGameId !== undefined ? (
+        <FriendLobby gameId={effectiveGameId} />
+      ) : null}
+      <PlayerHUD
+        onOpenSettings={() => setSettingsOpen(true)}
+        onLeaveLiveGame={isNetworked && status === "playing" ? notifyLeaveGame : undefined}
+      />
       <GameBoard board={board} winLine={winLine} winner={winner} onCellClick={handleCellClick} />
       <WinOverlay
         open={endgame.open}

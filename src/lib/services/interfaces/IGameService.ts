@@ -9,5 +9,7 @@ export interface IGameService {
   subscribeToGame(gameId: string, cb: (game: GameDoc) => void): () => void;
   setDisconnected(gameId: string, uid: string): Promise<void>;
   acceptRematch(gameId: string, uid: string): Promise<string>;
+  /** Called when a player leaves from the end-game overlay without rematching. */
+  declineRematch(gameId: string, uid: string): Promise<void>;
   getGame(gameId: string): Promise<GameDoc | null>;
 }

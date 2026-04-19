@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
+import { OnlineCounter } from "@/components/OnlineCounter";
 import { useAudioStore } from "@/hooks/useAudioStore";
 import { useGameStore } from "@/hooks/useGameStore";
 import { usePlayerStore } from "@/hooks/usePlayerStore";
@@ -12,9 +13,11 @@ function scoreLine(wins: number, losses: number, draws: number): string {
 
 export interface PlayerHUDProps {
   readonly onOpenSettings?: () => void;
+  /** Mid-game leave: persist disconnect before navigating home. */
+  readonly onLeaveLiveGame?: () => Promise<void> | void;
 }
 
-export function PlayerHUD({ onOpenSettings }: PlayerHUDProps) {
+export function PlayerHUD({ onOpenSettings, onLeaveLiveGame }: PlayerHUDProps) {
   const navigate = useNavigate();
   const mode = useGameStore((s) => s.mode);
   const currentTurn = useGameStore((s) => s.currentTurn);
@@ -31,11 +34,16 @@ export function PlayerHUD({ onOpenSettings }: PlayerHUDProps) {
   const goHome = (): void => {
     audioManager.play("click");
     hapticManager.tap();
-    if (mode === "online") {
+    if (mode === "online" || mode === "friend") {
       const ok = window.confirm("Leave the live game and return home?");
       if (!ok) return;
     }
-    void navigate("/");
+    void (async () => {
+      if (onLeaveLiveGame !== undefined) {
+        await onLeaveLiveGame();
+      }
+      void navigate("/");
+    })();
   };
 
   return (
@@ -85,6 +93,9 @@ export function PlayerHUD({ onOpenSettings }: PlayerHUDProps) {
           >
             {"\u2699\ufe0f"}
           </button>
+        ) : null}
+        {mode === "online" || mode === "friend" ? (
+          <OnlineCounter className="scale-90 px-3 py-2 text-xs sm:scale-95" />
         ) : null}
         <button
           type="button"

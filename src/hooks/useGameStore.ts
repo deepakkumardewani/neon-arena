@@ -14,11 +14,21 @@ export interface GameStoreState {
   readonly winLine: readonly number[] | null;
   readonly mode: GameMode;
   readonly difficulty: Difficulty;
+  /** HUD names for networked modes (from Firestore players). */
+  readonly onlineHudNames: { readonly x: string; readonly o: string } | null;
   readonly getIsMyTurn: () => boolean;
   makeMove: (index: number, meta?: { actor?: "human" | "system" }) => void;
   resetGame: () => void;
   setMode: (mode: GameMode) => void;
   setDifficulty: (difficulty: Difficulty) => void;
+  setOnlineHudNames: (names: { x: string; o: string } | null) => void;
+  applyRemoteState: (payload: {
+    readonly board: BoardCell[];
+    readonly currentTurn: "X" | "O";
+    readonly status: GameStatus;
+    readonly winner: "X" | "O" | null;
+    readonly winLine: readonly number[] | null;
+  }) => void;
 }
 
 function soloAiMark(role: "X" | "O" | null): "X" | "O" {
@@ -33,6 +43,7 @@ function computeIsMyTurn(
   role: "X" | "O" | null,
 ): boolean {
   if (status === "win" || status === "draw") return false;
+  if ((mode === "online" || mode === "friend") && status === "idle") return false;
   if (mode === "local") return true;
   if (mode === "solo") {
     if (role !== null) return currentTurn === role;
@@ -50,6 +61,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   winLine: null,
   mode: "local",
   difficulty: "medium",
+  onlineHudNames: null,
 
   getIsMyTurn: () => {
     const { status, currentTurn, mode } = get();
@@ -58,8 +70,9 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   },
 
   makeMove: (index: number, meta) => {
-    if (index < 0 || index > 8) return;
     const state = get();
+    if (state.mode === "online" || state.mode === "friend") return;
+    if (index < 0 || index > 8) return;
     if (state.board[index] !== null) return;
     if (state.status === "win" || state.status === "draw") return;
 
@@ -116,6 +129,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       status: "idle",
       winner: null,
       winLine: null,
+      onlineHudNames: null,
     });
   },
 
@@ -125,5 +139,19 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
 
   setDifficulty: (difficulty) => {
     set({ difficulty });
+  },
+
+  setOnlineHudNames: (names) => {
+    set({ onlineHudNames: names });
+  },
+
+  applyRemoteState: (payload) => {
+    set({
+      board: [...payload.board],
+      currentTurn: payload.currentTurn,
+      status: payload.status,
+      winner: payload.winner,
+      winLine: payload.winLine === null ? null : [...payload.winLine],
+    });
   },
 }));

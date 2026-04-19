@@ -1,14 +1,16 @@
 import { motion } from "framer-motion";
 
-/** Mock count until Phase 7 presence wiring (Task 30). */
-const MOCK_ONLINE_PLAYERS = 428;
+import { usePresence } from "@/hooks/usePresence";
 
 export interface OnlineCounterProps {
+  /** When set, bypasses live presence subscription (e.g. tests). */
   readonly count?: number;
   readonly className?: string;
 }
 
-export function OnlineCounter({ count = MOCK_ONLINE_PLAYERS, className = "" }: OnlineCounterProps) {
+export function OnlineCounter({ count: countProp, className = "" }: OnlineCounterProps) {
+  const { onlineCount } = usePresence();
+  const count = countProp ?? onlineCount;
   return (
     <div
       className={`inline-flex items-center gap-2.5 rounded-full border border-(--na-border) bg-(--na-surface) px-4 py-2.5 text-sm text-(--na-text) ${className}`}

@@ -9,6 +9,10 @@ vi.mock("@/components/ParticleBackground", () => ({
   ParticleBackground: () => null,
 }));
 
+vi.mock("@/hooks/usePresence", () => ({
+  usePresence: () => ({ onlineCount: 428 }),
+}));
+
 describe("HomePage", () => {
   it("renders four game surfaces, navigates on Tic Tac Toe, and keeps coming-soon titles inert", async () => {
     const user = userEvent.setup();

@@ -1,3 +1,118 @@
-export function useOnlineGame(): null {
-  return null;
+import { useCallback, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { gameDocToRemoteSync } from "@/lib/online/gameDocMappers";
+import { gameService } from "@/lib/services";
+import { useGameStore } from "@/hooks/useGameStore";
+import { usePlayerStore } from "@/hooks/usePlayerStore";
+import type { GameMode } from "@/types/game";
+
+const DISCONNECT_WIN_MS = 30_000;
+
+export interface UseOnlineGameOptions {
+  readonly gameId: string | undefined;
+  readonly mode: GameMode;
+}
+
+export function useOnlineGame({ gameId, mode }: UseOnlineGameOptions): {
+  readonly submitOnlineMove: (index: number) => Promise<void>;
+  readonly acceptNetworkRematch: () => Promise<void>;
+  readonly declineNetworkRematch: () => Promise<void>;
+  readonly notifyLeaveGame: () => Promise<void>;
+} {
+  const navigate = useNavigate();
+  const uid = usePlayerStore((s) => s.uid);
+  const role = usePlayerStore((s) => s.role);
+  const setRole = usePlayerStore((s) => s.setRole);
+  const applyRemoteState = useGameStore((s) => s.applyRemoteState);
+  const setOnlineHudNames = useGameStore((s) => s.setOnlineHudNames);
+
+  useEffect(() => {
+    if (gameId === undefined || gameId === "") return;
+    if (mode !== "online" && mode !== "friend") return;
+
+    const unsub = gameService.subscribeToGame(gameId, (doc) => {
+      const next = doc.nextGameId;
+      if (typeof next === "string" && next.length > 0) {
+        void navigate(`/game/${next}?mode=${mode}`);
+        return;
+      }
+      if (doc.rematchDeclined === true) {
+        window.alert("Opponent declined");
+        void navigate("/");
+        return;
+      }
+
+      const myRole: "X" | "O" | null =
+        uid === doc.playerX.uid
+          ? "X"
+          : doc.playerO !== null && uid === doc.playerO.uid
+            ? "O"
+            : null;
+      if (myRole !== null) setRole(myRole);
+
+      setOnlineHudNames({
+        x: doc.playerX.nickname,
+        o: doc.playerO?.nickname ?? "Waiting…",
+      });
+
+      if (
+        doc.disconnectedBy !== null &&
+        doc.disconnectedAt !== null &&
+        uid !== "" &&
+        uid !== doc.disconnectedBy &&
+        doc.status === "active" &&
+        Date.now() - doc.disconnectedAt >= DISCONNECT_WIN_MS
+      ) {
+        const mark: "X" | "O" =
+          uid === doc.playerX.uid
+            ? "X"
+            : doc.playerO !== null && uid === doc.playerO.uid
+              ? "O"
+              : "X";
+        applyRemoteState(gameDocToRemoteSync(doc, { winsAs: mark }));
+        return;
+      }
+
+      applyRemoteState(gameDocToRemoteSync(doc));
+    });
+
+    return () => {
+      unsub();
+    };
+  }, [applyRemoteState, gameId, mode, navigate, setOnlineHudNames, setRole, uid]);
+
+  const submitOnlineMove = useCallback(
+    async (index: number) => {
+      if (gameId === undefined || gameId === "") return;
+      if (role === null) return;
+      await gameService.makeMove(gameId, index, role);
+    },
+    [gameId, role],
+  );
+
+  const acceptNetworkRematch = useCallback(async () => {
+    if (gameId === undefined || gameId === "") return;
+    if (uid === "") return;
+    await gameService.acceptRematch(gameId, uid);
+  }, [gameId, uid]);
+
+  const declineNetworkRematch = useCallback(async () => {
+    if (gameId === undefined || gameId === "") return;
+    if (uid === "") return;
+    await gameService.declineRematch(gameId, uid);
+  }, [gameId, uid]);
+
+  const notifyLeaveGame = useCallback(async () => {
+    if (gameId === undefined || gameId === "") return;
+    if (uid === "") return;
+    await gameService.setDisconnected(gameId, uid);
+  }, [gameId, uid]);
+
+  return {
+    submitOnlineMove,
+    acceptNetworkRematch,
+    declineNetworkRematch,
+    notifyLeaveGame,
+  };
 }

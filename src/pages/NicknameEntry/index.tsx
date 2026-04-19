@@ -4,7 +4,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import { NicknameInput, createGuestNickname, isNicknameValid } from "@/components/NicknameInput";
 import { usePlayerStore } from "@/hooks/usePlayerStore";
-import { authService } from "@/lib/services";
+import { authService, gameService } from "@/lib/services";
 import type { Difficulty, GameMode } from "@/types/game";
 
 function parseModeParam(value: string | null): GameMode | null {
@@ -48,6 +48,7 @@ export function NicknameEntryPage() {
   const setNickname = usePlayerStore((s) => s.setNickname);
   const setLocalGuestNickname = usePlayerStore((s) => s.setLocalGuestNickname);
   const setUid = usePlayerStore((s) => s.setUid);
+  const setRole = usePlayerStore((s) => s.setRole);
 
   const [localStep, setLocalStep] = useState<0 | 1>(0);
   const [p1Value, setP1Value] = useState(() => {
@@ -68,9 +69,14 @@ export function NicknameEntryPage() {
   const setValue = onP1Field ? setP1Value : setP2Value;
   const label = isLocal ? (localStep === 0 ? "Player 1" : "Player 2") : "Your nickname";
 
+  const joinGameId = searchParams.get("joinGameId");
+
   const navigateAfterNames = useCallback(async () => {
     if (mode === null) return;
     await ensurePlayerUid(setUid);
+    const store = usePlayerStore.getState();
+    const playerUid = store.uid;
+    const trimmedNick = store.nickname.trim() === "" ? "Player" : store.nickname.trim();
     if (mode === "online") {
       void navigate("/play/tictactoe/matchmaking");
       return;
@@ -81,11 +87,19 @@ export function NicknameEntryPage() {
       return;
     }
     if (mode === "friend") {
-      void navigate("/play/tictactoe/game?mode=friend");
+      if (joinGameId !== null && joinGameId !== "") {
+        await gameService.joinGame(joinGameId, { uid: playerUid, nickname: trimmedNick });
+        setRole("O");
+        void navigate(`/game/${joinGameId}?mode=friend`);
+        return;
+      }
+      const id = await gameService.createGame({ uid: playerUid, nickname: trimmedNick });
+      setRole("X");
+      void navigate(`/game/${id}?mode=friend`);
       return;
     }
     void navigate("/play/tictactoe/game?mode=local");
-  }, [mode, difficulty, navigate, setUid]);
+  }, [difficulty, joinGameId, mode, navigate, setRole, setUid]);
 
   const handleContinue = useCallback(async () => {
     if (mode === null) return;

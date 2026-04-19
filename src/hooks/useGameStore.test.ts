@@ -71,14 +71,16 @@ describe("useGameStore", () => {
     expect(s.difficulty).toBe("hard");
   });
 
-  it("ignores moves on occupied cells and when not my turn (online O on X turn)", () => {
-    useGameStore.setState({ mode: "online" });
-    usePlayerStore.setState({ role: "O" });
-
-    useGameStore.getState().makeMove(4);
-    expect(useGameStore.getState().board.every((c) => c === null)).toBe(true);
-
+  it("does not apply local makeMove in online mode (Firebase drives board)", () => {
+    useGameStore.setState({ mode: "online", currentTurn: "X", status: "playing" });
     usePlayerStore.setState({ role: "X" });
+
+    useGameStore.getState().makeMove(0);
+    expect(useGameStore.getState().board[0]).toBe(null);
+  });
+
+  it("ignores second tap on occupied cell in local mode", () => {
+    useGameStore.setState({ mode: "local" });
     useGameStore.getState().makeMove(0);
     useGameStore.getState().makeMove(0);
     expect(useGameStore.getState().board[0]).toBe("X");

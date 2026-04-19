@@ -7,6 +7,10 @@ import { queueService } from "@/lib/services";
 
 import { MatchmakingPage } from "@/pages/Matchmaking";
 
+vi.mock("@/hooks/useMatchmaking", () => ({
+  useMatchmaking: () => ({ queueDepth: 5 }),
+}));
+
 describe("MatchmakingPage", () => {
   beforeEach(() => {
     usePlayerStore.setState({ uid: "match-uid", nickname: "QueuePlayer" });

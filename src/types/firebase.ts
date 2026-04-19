@@ -21,7 +21,14 @@ export interface GameDoc {
   readonly createdAt: number;
   readonly expiresAt: number;
   readonly disconnectedAt: number | null;
+  /** Uid of the player who triggered disconnect (leave mid-game or closed tab). */
+  readonly disconnectedBy: string | null;
   readonly rematch: Readonly<Record<string, boolean>>;
+  /** Set when both players accepted rematch; clients navigate to this game id. */
+  readonly nextGameId?: string | null;
+  /** When a player declines leaving after game (e.g. navigates home from overlay). */
+  readonly rematchDeclined?: boolean;
+  readonly rematchDeclinedBy?: string;
 }
 
 export interface PresenceEntry {

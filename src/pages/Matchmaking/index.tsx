@@ -2,11 +2,9 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+import { useMatchmaking } from "@/hooks/useMatchmaking";
 import { usePlayerStore } from "@/hooks/usePlayerStore";
 import { queueService } from "@/lib/services";
-
-/** Visual-only queue depth until Task 31 wires `subscribeToQueue`. */
-const MOCK_PLAYERS_IN_QUEUE = 11;
 
 const AI_FALLBACK_MS = 30_000;
 
@@ -14,6 +12,7 @@ export function MatchmakingPage() {
   const navigate = useNavigate();
   const uid = usePlayerStore((s) => s.uid);
   const nickname = usePlayerStore((s) => s.nickname);
+  const { queueDepth } = useMatchmaking();
 
   const [showAiFallback, setShowAiFallback] = useState(false);
 
@@ -113,7 +112,7 @@ export function MatchmakingPage() {
                 className="mt-3 text-2xl font-semibold tabular-nums text-(--na-cyan) md:text-3xl"
                 style={{ fontFamily: "var(--na-font-display)" }}
               >
-                {MOCK_PLAYERS_IN_QUEUE}
+                {queueDepth}
                 <span className="ml-2 text-sm font-normal tracking-normal text-(--na-text-muted) md:text-base">
                   players waiting
                 </span>
@@ -121,7 +120,7 @@ export function MatchmakingPage() {
             </div>
 
             <p className="text-sm text-(--na-text-muted)">
-              Matching is simulated in this build — you&apos;re seeing live layout and timing only.
+              Queue updates live — two pilots in the pool pair into a fresh match automatically.
             </p>
           </div>
         </motion.div>

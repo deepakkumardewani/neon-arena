@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { createBrowserRouter, Outlet, RouterProvider, useLocation } from "react-router-dom";
 
 import { audioManager, primeAudioGestureUnlock } from "@/lib/audio/audioManager";
+import { usePlayerStore } from "@/hooks/usePlayerStore";
 import { authService } from "@/lib/services";
 import { GamePage } from "@/pages/Game";
 import { HomePage } from "@/pages/Home";
@@ -59,6 +60,7 @@ export function App() {
     void authService
       .signInAnonymously()
       .then((u) => {
+        usePlayerStore.getState().setUid(u.uid);
         console.log("[NeonArena] Firebase anonymous UID:", u.uid);
       })
       .catch((e) => {
