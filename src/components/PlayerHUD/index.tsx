@@ -21,15 +21,28 @@ export function PlayerHUD({ onOpenSettings, onLeaveLiveGame }: PlayerHUDProps) {
   const navigate = useNavigate();
   const mode = useGameStore((s) => s.mode);
   const currentTurn = useGameStore((s) => s.currentTurn);
+  const onlineHudNames = useGameStore((s) => s.onlineHudNames);
   const nickname = usePlayerStore((s) => s.nickname);
   const localGuestNickname = usePlayerStore((s) => s.localGuestNickname);
   const score = usePlayerStore((s) => s.score);
   const masterMuted = useAudioStore((s) => s.masterMuted);
   const setMasterMuted = useAudioStore((s) => s.setMasterMuted);
 
-  const playerXName = nickname.trim() === "" ? "Player X" : nickname;
-  const playerOName =
-    mode === "solo" ? "AI" : localGuestNickname.trim() === "" ? "Player O" : localGuestNickname;
+  const useNetworkHud = mode === "online" || mode === "friend";
+
+  const playerXName = useNetworkHud
+    ? (onlineHudNames?.x ?? "…")
+    : nickname.trim() === ""
+      ? "Player X"
+      : nickname;
+
+  const playerOName = useNetworkHud
+    ? (onlineHudNames?.o ?? "Waiting…")
+    : mode === "solo"
+      ? "AI"
+      : localGuestNickname.trim() === ""
+        ? "Player O"
+        : localGuestNickname;
 
   const goHome = (): void => {
     audioManager.play("click");

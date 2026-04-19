@@ -378,9 +378,6 @@ export function GamePage() {
   return (
     <main className="mx-auto flex min-h-0 w-full max-w-lg flex-col p-4 sm:p-8">
       <h1 className="sr-only">Game</h1>
-      {effectiveGameId !== undefined && effectiveGameId !== "" ? (
-        <p className="mb-2 text-sm text-(--na-text-muted)">Match: {effectiveGameId}</p>
-      ) : null}
       {isFriendHostLobby && effectiveGameId !== undefined ? (
         <FriendLobby gameId={effectiveGameId} />
       ) : null}
