@@ -9,6 +9,8 @@ export interface GameBoardProps {
   readonly winLine: readonly number[] | null;
   readonly winner: "X" | "O" | null;
   readonly onCellClick: (index: number) => void;
+  /** When true, empty cells are not playable (e.g. Firebase offline in online modes). */
+  readonly interactionLocked?: boolean;
 }
 
 function CellGlyph({ mark }: { readonly mark: BoardCell }) {
@@ -43,7 +45,13 @@ function CellGlyph({ mark }: { readonly mark: BoardCell }) {
   return null;
 }
 
-export function GameBoard({ board, winLine, winner, onCellClick }: GameBoardProps) {
+export function GameBoard({
+  board,
+  winLine,
+  winner,
+  onCellClick,
+  interactionLocked = false,
+}: GameBoardProps) {
   const winSet = winLine === null ? null : new Set(winLine);
 
   return (
@@ -70,17 +78,16 @@ export function GameBoard({ board, winLine, winner, onCellClick }: GameBoardProp
 
         const row = Math.floor(index / 3) + 1;
         const col = (index % 3) + 1;
-        const ariaLabel = occupied
-          ? `Square row ${row} column ${col}, ${cell}`
-          : `Square row ${row} column ${col}, empty`;
+        const shapeWord = cell === "X" ? "X cross" : cell === "O" ? "O ring" : "empty";
+        const ariaLabel = `Square row ${row} column ${col}, ${shapeWord}`;
 
         return (
           <button
             key={index}
             type="button"
             aria-label={ariaLabel}
-            disabled={occupied}
-            className="relative flex min-h-0 min-w-0 items-center justify-center border-0 bg-(--na-surface) p-0 disabled:cursor-not-allowed enabled:cursor-pointer enabled:hover:brightness-110"
+            disabled={occupied || interactionLocked}
+            className="relative flex min-h-0 min-w-0 items-center justify-center border-0 bg-(--na-surface) p-0 outline-none focus-visible:ring-2 focus-visible:ring-(--na-cyan) focus-visible:ring-offset-2 focus-visible:ring-offset-(--na-bg) disabled:cursor-not-allowed enabled:cursor-pointer enabled:hover:brightness-110"
             style={winPulse}
             onClick={() => {
               onCellClick(index);

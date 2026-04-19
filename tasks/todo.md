@@ -48,3 +48,37 @@
 - **Test targets:** `FriendLobby.test.tsx`
 - Impl
 - Test
+
+---
+
+# Phase 8: Polish & Hardening
+
+## Task 36: Firestore Security Rules
+
+- **Dependencies:** Task 31 (done)
+- **Test targets:** `firebaseJson.test.ts` (rules path wiring)
+- [x] Impl
+- [x] Test
+
+## Task 37: Edge Cases & Error States
+
+- **Dependencies:** Task 34 (done)
+- **Test targets:** `GameBoard.test.tsx` (interaction lock); `subscribeRtdbConnected.test.ts`
+- [x] Impl
+- [x] Test
+
+## Task 38: Accessibility & Reduced-Motion Audit
+
+- **Dependencies:** Task 12, 13, 15 (done)
+- **Test targets:** extend existing component tests; CSS reduced-motion coverage
+- [x] Impl
+- [x] Test
+
+## Task 39: Performance Audit & Bundle Optimization
+
+- **Dependencies:** Task 28, 34 (done)
+- **Test targets:** build output / lazy route smoke via `App` integration
+- [x] Impl
+- [x] Test
+
+_Note: Deploy rules with `firebase deploy --only firestore:rules` when ready. Lighthouse FCP should be verified manually in DevTools._

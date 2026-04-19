@@ -1,20 +1,53 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect, type ReactElement } from "react";
 import { createBrowserRouter, Outlet, RouterProvider, useLocation } from "react-router-dom";
 
 import { audioManager, primeAudioGestureUnlock } from "@/lib/audio/audioManager";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { usePlayerStore } from "@/hooks/usePlayerStore";
 import { usePresenceSession } from "@/hooks/usePresenceSession";
-import { authService } from "@/lib/services";
-import { GamePage } from "@/pages/Game";
-import { HomePage } from "@/pages/Home";
-import { MatchmakingPage } from "@/pages/Matchmaking";
-import { ModeSelectPage } from "@/pages/ModeSelect";
-import { NicknameEntryPage } from "@/pages/NicknameEntry";
+import { authService } from "@/lib/services/auth";
 import { AppProviders } from "@/providers/AppProviders";
+
+const HomePage = lazy(async () => {
+  const m = await import("@/pages/Home");
+  return { default: m.HomePage };
+});
+const ModeSelectPage = lazy(async () => {
+  const m = await import("@/pages/ModeSelect");
+  return { default: m.ModeSelectPage };
+});
+const NicknameEntryPage = lazy(async () => {
+  const m = await import("@/pages/NicknameEntry");
+  return { default: m.NicknameEntryPage };
+});
+const MatchmakingPage = lazy(async () => {
+  const m = await import("@/pages/Matchmaking");
+  return { default: m.MatchmakingPage };
+});
+const GamePage = lazy(async () => {
+  const m = await import("@/pages/Game");
+  return { default: m.GamePage };
+});
+
+function RouteLoading(): ReactElement {
+  return (
+    <div
+      className="flex min-h-screen items-center justify-center bg-(--na-bg) px-6 text-(--na-text-muted)"
+      style={{ fontFamily: "var(--na-font-display)" }}
+    >
+      Loading…
+    </div>
+  );
+}
+
+function PageShell({ children }: { readonly children: React.ReactNode }): ReactElement {
+  return <Suspense fallback={<RouteLoading />}>{children}</Suspense>;
+}
 
 function PageTransitionLayout() {
   const location = useLocation();
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     const path = location.pathname;
@@ -27,10 +60,10 @@ function PageTransitionLayout() {
       <motion.div
         key={location.pathname}
         className="min-h-screen"
-        initial={{ opacity: 0, x: 20 }}
+        initial={reducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: -16 }}
-        transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+        exit={reducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -16 }}
+        transition={reducedMotion ? { duration: 0 } : { duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
       >
         <Outlet />
       </motion.div>
@@ -42,12 +75,54 @@ const router = createBrowserRouter([
   {
     element: <PageTransitionLayout />,
     children: [
-      { path: "/", element: <HomePage /> },
-      { path: "/play/tictactoe", element: <ModeSelectPage /> },
-      { path: "/play/tictactoe/nickname", element: <NicknameEntryPage /> },
-      { path: "/play/tictactoe/matchmaking", element: <MatchmakingPage /> },
-      { path: "/play/tictactoe/game", element: <GamePage /> },
-      { path: "/game/:gameId", element: <GamePage /> },
+      {
+        path: "/",
+        element: (
+          <PageShell>
+            <HomePage />
+          </PageShell>
+        ),
+      },
+      {
+        path: "/play/tictactoe",
+        element: (
+          <PageShell>
+            <ModeSelectPage />
+          </PageShell>
+        ),
+      },
+      {
+        path: "/play/tictactoe/nickname",
+        element: (
+          <PageShell>
+            <NicknameEntryPage />
+          </PageShell>
+        ),
+      },
+      {
+        path: "/play/tictactoe/matchmaking",
+        element: (
+          <PageShell>
+            <MatchmakingPage />
+          </PageShell>
+        ),
+      },
+      {
+        path: "/play/tictactoe/game",
+        element: (
+          <PageShell>
+            <GamePage />
+          </PageShell>
+        ),
+      },
+      {
+        path: "/game/:gameId",
+        element: (
+          <PageShell>
+            <GamePage />
+          </PageShell>
+        ),
+      },
     ],
   },
 ]);

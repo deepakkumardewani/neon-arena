@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
+import { ConnectionLostBanner } from "@/components/ConnectionLostBanner";
 import { GameBoard } from "@/components/GameBoard";
 import { PlayerHUD } from "@/components/PlayerHUD";
 import { SettingsPanel } from "@/components/SettingsPanel";
 import { WinOverlay, type WinOverlayPalette } from "@/components/WinOverlay";
 import { FriendLobby } from "@/pages/FriendLobby/FriendLobby";
+import { useFirebaseConnected } from "@/hooks/useFirebaseConnected";
 import { useGameStore } from "@/hooks/useGameStore";
 import { useOnlineGame } from "@/hooks/useOnlineGame";
 import { usePlayerStore } from "@/hooks/usePlayerStore";
@@ -152,6 +154,10 @@ export function GamePage() {
     useOnlineGame({ gameId: effectiveGameId, mode });
 
   const isNetworked = mode === "online" || mode === "friend";
+  const firebaseConnected = useFirebaseConnected(
+    isNetworked && effectiveGameId !== undefined && effectiveGameId !== "",
+  );
+  const networkPlayBlocked = isNetworked && firebaseConnected === false;
   const isFriendHostLobby =
     mode === "friend" &&
     status === "idle" &&
@@ -284,6 +290,7 @@ export function GamePage() {
     })();
   }, [status, winner, mode, board, applySoloOutcome, setScore]);
 
+  const onlineMoveBusy = useRef(false);
   const aiBusy = useRef(false);
 
   useEffect(() => {
@@ -319,12 +326,24 @@ export function GamePage() {
     (index: number) => {
       if (isFriendHostLobby) return;
       if (isNetworked && effectiveGameId !== undefined && effectiveGameId !== "") {
-        void submitOnlineMove(index);
+        if (networkPlayBlocked) return;
+        if (onlineMoveBusy.current) return;
+        onlineMoveBusy.current = true;
+        void submitOnlineMove(index).finally(() => {
+          onlineMoveBusy.current = false;
+        });
         return;
       }
       makeMove(index);
     },
-    [effectiveGameId, isFriendHostLobby, isNetworked, makeMove, submitOnlineMove],
+    [
+      effectiveGameId,
+      isFriendHostLobby,
+      isNetworked,
+      makeMove,
+      networkPlayBlocked,
+      submitOnlineMove,
+    ],
   );
 
   const withUiFeedback = useCallback((fn: () => void) => {
@@ -378,6 +397,7 @@ export function GamePage() {
   return (
     <main className="mx-auto flex min-h-0 w-full max-w-lg flex-col p-4 sm:p-8">
       <h1 className="sr-only">Game</h1>
+      {networkPlayBlocked ? <ConnectionLostBanner /> : null}
       {isFriendHostLobby && effectiveGameId !== undefined ? (
         <FriendLobby gameId={effectiveGameId} />
       ) : null}
@@ -385,7 +405,13 @@ export function GamePage() {
         onOpenSettings={() => setSettingsOpen(true)}
         onLeaveLiveGame={isNetworked && status === "playing" ? notifyLeaveGame : undefined}
       />
-      <GameBoard board={board} winLine={winLine} winner={winner} onCellClick={handleCellClick} />
+      <GameBoard
+        board={board}
+        winLine={winLine}
+        winner={winner}
+        onCellClick={handleCellClick}
+        interactionLocked={networkPlayBlocked}
+      />
       <WinOverlay
         open={endgame.open}
         headline={endgame.headline}

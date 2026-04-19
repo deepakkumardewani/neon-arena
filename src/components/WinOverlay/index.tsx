@@ -3,6 +3,7 @@ import { useEffect, useId, useMemo, useState } from "react";
 import Particles from "@tsparticles/react";
 import type { ISourceOptions } from "@tsparticles/engine";
 
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { ensureParticlesEngine } from "@/lib/particles/ensureEngine";
 
 export type WinOverlayPalette = "cyan" | "rose" | "purple";
@@ -88,13 +89,21 @@ export function WinOverlay({
   onHome,
   onAutoDismiss,
 }: WinOverlayProps) {
+  const reducedMotion = useReducedMotion();
   const pid = `na-win-particles-${useId().replace(/:/g, "")}`;
   const [engineReady, setEngineReady] = useState(false);
   const particleColor = paletteToParticleColor(palette);
   const options = useMemo(() => buildParticleOptions(particleColor), [particleColor]);
+  const showParticles = !reducedMotion;
 
   useEffect(() => {
-    if (!open) return;
+    if (!showParticles) {
+      setEngineReady(false);
+    }
+  }, [showParticles]);
+
+  useEffect(() => {
+    if (!open || !showParticles) return;
     let cancelled = false;
     void ensureParticlesEngine().then(() => {
       if (!cancelled) setEngineReady(true);
@@ -102,7 +111,7 @@ export function WinOverlay({
     return () => {
       cancelled = true;
     };
-  }, [open]);
+  }, [open, showParticles]);
 
   useEffect(() => {
     if (!open) return;
@@ -120,22 +129,24 @@ export function WinOverlay({
         <motion.div
           key="win-overlay"
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-6"
-          initial={{ opacity: 0 }}
+          initial={{ opacity: reducedMotion ? 1 : 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.25 }}
+          exit={{ opacity: reducedMotion ? 1 : 0 }}
+          transition={{ duration: reducedMotion ? 0 : 0.25 }}
         >
-          {engineReady ? (
+          {showParticles && engineReady ? (
             <div className="pointer-events-none absolute inset-0">
               <Particles id={pid} className="h-full w-full" options={options} />
             </div>
           ) : null}
           <motion.div
             className="relative z-1 flex max-w-md flex-col items-center gap-6 rounded-2xl border border-(--na-border) bg-(--na-surface) px-8 py-10 text-center shadow-(--na-glow-grid)"
-            initial={{ scale: 0.92, y: 16 }}
-            animate={{ scale: 1, y: 0 }}
-            exit={{ scale: 0.95, y: 12 }}
-            transition={{ type: "spring", stiffness: 320, damping: 28 }}
+            initial={reducedMotion ? { opacity: 1 } : { scale: 0.92, y: 16 }}
+            animate={reducedMotion ? { opacity: 1 } : { scale: 1, y: 0 }}
+            exit={reducedMotion ? { opacity: 1 } : { scale: 0.95, y: 12 }}
+            transition={
+              reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 320, damping: 28 }
+            }
           >
             <h2
               className="text-3xl font-bold tracking-wide sm:text-4xl"
@@ -156,7 +167,7 @@ export function WinOverlay({
             <div className="flex flex-wrap justify-center gap-3">
               <button
                 type="button"
-                className="rounded-full border border-(--na-cyan) px-6 py-2 text-sm text-(--na-cyan)"
+                className="rounded-full border border-(--na-cyan) px-6 py-2 text-sm text-(--na-cyan) outline-none focus-visible:ring-2 focus-visible:ring-(--na-cyan) focus-visible:ring-offset-2 focus-visible:ring-offset-(--na-surface)"
                 style={{ fontFamily: "var(--na-font-display)" }}
                 onClick={onPlayAgain}
               >
@@ -164,7 +175,7 @@ export function WinOverlay({
               </button>
               <button
                 type="button"
-                className="rounded-full border border-(--na-purple) px-6 py-2 text-sm text-(--na-purple)"
+                className="rounded-full border border-(--na-purple) px-6 py-2 text-sm text-(--na-purple) outline-none focus-visible:ring-2 focus-visible:ring-(--na-purple) focus-visible:ring-offset-2 focus-visible:ring-offset-(--na-surface)"
                 style={{ fontFamily: "var(--na-font-display)" }}
                 onClick={onHome}
               >

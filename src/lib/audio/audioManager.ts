@@ -177,7 +177,15 @@ export const audioManager = {
     const howl = sfxBank[id];
     howl.stop();
     howl.volume(sfxVolumeEffective());
-    howl.play();
+    howl.off("playerror");
+    howl.once("playerror", () => {
+      /* Autoplay or decode blocked — ignore */
+    });
+    try {
+      howl.play();
+    } catch {
+      /* Howl may throw if audio context is suspended */
+    }
   },
 
   playMusic(id: MusicId): void {

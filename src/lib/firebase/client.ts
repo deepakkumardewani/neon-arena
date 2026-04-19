@@ -1,7 +1,6 @@
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
 import { getDatabase, type Database } from "firebase/database";
-import { getFirestore, type Firestore } from "firebase/firestore";
 
 const DEMO_DB_URL = "https://demo-not-configured.firebaseio.com";
 
@@ -49,6 +48,5 @@ const firebaseApp = getOrInitApp();
 
 export const app: FirebaseApp = firebaseApp;
 export const auth: Auth = getAuth(firebaseApp);
-export const db: Firestore = getFirestore(firebaseApp);
 /** Pass URL explicitly so regional instances (non–us-central1) resolve correctly. */
 export const rtdb: Database = getDatabase(firebaseApp, databaseURL);

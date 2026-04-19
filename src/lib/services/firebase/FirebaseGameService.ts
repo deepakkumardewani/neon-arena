@@ -8,7 +8,8 @@ import {
   updateDoc,
 } from "firebase/firestore";
 
-import { auth, db } from "@/lib/firebase/client";
+import { auth } from "@/lib/firebase/client";
+import { db } from "@/lib/firebase/firestoreDb";
 import { firestoreDataToGameDoc } from "@/lib/online/gameDocMappers";
 import { checkWinner, isDraw } from "@/lib/game/logic";
 import type { IGameService } from "@/lib/services/interfaces/IGameService";

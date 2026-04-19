@@ -1,6 +1,6 @@
 import { doc, getDoc, increment, setDoc, type DocumentData } from "firebase/firestore";
 
-import { db } from "@/lib/firebase/client";
+import { db } from "@/lib/firebase/firestoreDb";
 import type { IScoreService } from "@/lib/services/interfaces/IScoreService";
 import type { ScoreDoc } from "@/types/player";
 

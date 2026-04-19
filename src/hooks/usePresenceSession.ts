@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 import { usePlayerStore } from "@/hooks/usePlayerStore";
-import { presenceService } from "@/lib/services";
+import { presenceService } from "@/lib/services/presence";
 
 /**
  * One presence session per browser tab for the whole app (not tied to Home / OnlineCounter mount).

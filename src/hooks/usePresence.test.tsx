@@ -5,7 +5,7 @@ import { usePresenceCount } from "@/hooks/usePresenceCount";
 
 const subscribeToCount = vi.fn<(cb: (count: number) => void) => () => void>();
 
-vi.mock("@/lib/services", () => ({
+vi.mock("@/lib/services/presence", () => ({
   presenceService: {
     subscribeToCount: (cb: (count: number) => void) => subscribeToCount(cb),
   },

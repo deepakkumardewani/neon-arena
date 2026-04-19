@@ -9,7 +9,7 @@ import {
   type Timestamp,
 } from "firebase/firestore";
 
-import { db } from "@/lib/firebase/client";
+import { db } from "@/lib/firebase/firestoreDb";
 import type {
   IQueueService,
   MyQueueDocState,

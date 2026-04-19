@@ -97,7 +97,7 @@ export function PlayerHUD({ onOpenSettings, onLeaveLiveGame }: PlayerHUDProps) {
           <button
             type="button"
             aria-label="Open settings"
-            className="flex h-11 w-11 items-center justify-center rounded-full border border-(--na-border) bg-(--na-surface) text-lg text-(--na-text) shadow-(--na-glow-grid)"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-(--na-border) bg-(--na-surface) text-lg text-(--na-text) shadow-(--na-glow-grid) outline-none focus-visible:ring-2 focus-visible:ring-(--na-cyan) focus-visible:ring-offset-2 focus-visible:ring-offset-(--na-bg)"
             onClick={() => {
               audioManager.play("click");
               hapticManager.tap();
@@ -113,7 +113,7 @@ export function PlayerHUD({ onOpenSettings, onLeaveLiveGame }: PlayerHUDProps) {
         <button
           type="button"
           aria-label={masterMuted ? "Unmute sound" : "Mute sound"}
-          className="flex h-11 w-11 items-center justify-center rounded-full border border-(--na-border) bg-(--na-surface) text-lg text-(--na-text) shadow-(--na-glow-grid)"
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-(--na-border) bg-(--na-surface) text-lg text-(--na-text) shadow-(--na-glow-grid) outline-none focus-visible:ring-2 focus-visible:ring-(--na-cyan) focus-visible:ring-offset-2 focus-visible:ring-offset-(--na-bg)"
           onClick={() => {
             audioManager.play("click");
             hapticManager.tap();
@@ -124,7 +124,7 @@ export function PlayerHUD({ onOpenSettings, onLeaveLiveGame }: PlayerHUDProps) {
         </button>
         <button
           type="button"
-          className="rounded-full border border-(--na-border) bg-(--na-surface) px-4 py-2 text-sm text-(--na-cyan)"
+          className="rounded-full border border-(--na-border) bg-(--na-surface) px-4 py-2 text-sm text-(--na-cyan) outline-none focus-visible:ring-2 focus-visible:ring-(--na-cyan) focus-visible:ring-offset-2 focus-visible:ring-offset-(--na-bg)"
           style={{ fontFamily: "var(--na-font-display)" }}
           onClick={goHome}
         >
