@@ -4,6 +4,7 @@ import { createBrowserRouter, Outlet, RouterProvider, useLocation } from "react-
 
 import { audioManager, primeAudioGestureUnlock } from "@/lib/audio/audioManager";
 import { usePlayerStore } from "@/hooks/usePlayerStore";
+import { usePresenceSession } from "@/hooks/usePresenceSession";
 import { authService } from "@/lib/services";
 import { GamePage } from "@/pages/Game";
 import { HomePage } from "@/pages/Home";
@@ -51,6 +52,11 @@ const router = createBrowserRouter([
   },
 ]);
 
+function PresenceSessionRoot(): null {
+  usePresenceSession();
+  return null;
+}
+
 export function App() {
   useEffect(() => {
     primeAudioGestureUnlock();
@@ -70,6 +76,7 @@ export function App() {
 
   return (
     <AppProviders>
+      <PresenceSessionRoot />
       <RouterProvider router={router} />
     </AppProviders>
   );

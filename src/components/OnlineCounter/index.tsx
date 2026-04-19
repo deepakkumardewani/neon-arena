@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-import { usePresence } from "@/hooks/usePresence";
+import { usePresenceCount } from "@/hooks/usePresenceCount";
 
 export interface OnlineCounterProps {
   /** When set, bypasses live presence subscription (e.g. tests). */
@@ -9,7 +9,7 @@ export interface OnlineCounterProps {
 }
 
 export function OnlineCounter({ count: countProp, className = "" }: OnlineCounterProps) {
-  const { onlineCount } = usePresence();
+  const { onlineCount } = usePresenceCount();
   const count = countProp ?? onlineCount;
   return (
     <div

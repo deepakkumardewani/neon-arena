@@ -9,8 +9,8 @@ vi.mock("@/components/ParticleBackground", () => ({
   ParticleBackground: () => null,
 }));
 
-vi.mock("@/hooks/usePresence", () => ({
-  usePresence: () => ({ onlineCount: 428 }),
+vi.mock("@/hooks/usePresenceCount", () => ({
+  usePresenceCount: () => ({ onlineCount: 428 }),
 }));
 
 describe("HomePage", () => {
