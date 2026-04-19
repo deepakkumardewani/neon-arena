@@ -1,13 +1,24 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { gameDocToRemoteSync } from "@/lib/online/gameDocMappers";
+import { getMatchmakingQueueEntryId } from "@/lib/matchmaking/queueEntryId";
 import { gameService } from "@/lib/services";
 import { useGameStore } from "@/hooks/useGameStore";
 import { usePlayerStore } from "@/hooks/usePlayerStore";
 import type { GameMode } from "@/types/game";
 
 const DISCONNECT_WIN_MS = 30_000;
+
+function playerMatchesSeat(
+  p: { readonly uid: string; readonly queueEntryId?: string },
+  auth: string,
+  tabEntryId: string,
+): boolean {
+  if (auth === "" || p.uid !== auth) return false;
+  if (p.queueEntryId === undefined) return true;
+  return p.queueEntryId === tabEntryId;
+}
 
 export interface UseOnlineGameOptions {
   readonly gameId: string | undefined;
@@ -22,6 +33,7 @@ export function useOnlineGame({ gameId, mode }: UseOnlineGameOptions): {
 } {
   const navigate = useNavigate();
   const uid = usePlayerStore((s) => s.uid);
+  const tabEntryId = useMemo(() => (uid === "" ? "" : getMatchmakingQueueEntryId(uid)), [uid]);
   const role = usePlayerStore((s) => s.role);
   const setRole = usePlayerStore((s) => s.setRole);
   const applyRemoteState = useGameStore((s) => s.applyRemoteState);
@@ -43,12 +55,11 @@ export function useOnlineGame({ gameId, mode }: UseOnlineGameOptions): {
         return;
       }
 
-      const myRole: "X" | "O" | null =
-        uid === doc.playerX.uid
-          ? "X"
-          : doc.playerO !== null && uid === doc.playerO.uid
-            ? "O"
-            : null;
+      const myRole: "X" | "O" | null = playerMatchesSeat(doc.playerX, uid, tabEntryId)
+        ? "X"
+        : doc.playerO !== null && playerMatchesSeat(doc.playerO, uid, tabEntryId)
+          ? "O"
+          : null;
       if (myRole !== null) setRole(myRole);
 
       setOnlineHudNames({
@@ -64,12 +75,11 @@ export function useOnlineGame({ gameId, mode }: UseOnlineGameOptions): {
         doc.status === "active" &&
         Date.now() - doc.disconnectedAt >= DISCONNECT_WIN_MS
       ) {
-        const mark: "X" | "O" =
-          uid === doc.playerX.uid
-            ? "X"
-            : doc.playerO !== null && uid === doc.playerO.uid
-              ? "O"
-              : "X";
+        const mark: "X" | "O" = playerMatchesSeat(doc.playerX, uid, tabEntryId)
+          ? "X"
+          : doc.playerO !== null && playerMatchesSeat(doc.playerO, uid, tabEntryId)
+            ? "O"
+            : "X";
         applyRemoteState(gameDocToRemoteSync(doc, { winsAs: mark }));
         return;
       }
@@ -80,22 +90,22 @@ export function useOnlineGame({ gameId, mode }: UseOnlineGameOptions): {
     return () => {
       unsub();
     };
-  }, [applyRemoteState, gameId, mode, navigate, setOnlineHudNames, setRole, uid]);
+  }, [applyRemoteState, gameId, mode, navigate, setOnlineHudNames, setRole, tabEntryId, uid]);
 
   const submitOnlineMove = useCallback(
     async (index: number) => {
       if (gameId === undefined || gameId === "") return;
       if (role === null) return;
-      await gameService.makeMove(gameId, index, role);
+      await gameService.makeMove(gameId, index, role, tabEntryId === "" ? undefined : tabEntryId);
     },
-    [gameId, role],
+    [gameId, role, tabEntryId],
   );
 
   const acceptNetworkRematch = useCallback(async () => {
     if (gameId === undefined || gameId === "") return;
     if (uid === "") return;
-    await gameService.acceptRematch(gameId, uid);
-  }, [gameId, uid]);
+    await gameService.acceptRematch(gameId, uid, tabEntryId === "" ? undefined : tabEntryId);
+  }, [gameId, tabEntryId, uid]);
 
   const declineNetworkRematch = useCallback(async () => {
     if (gameId === undefined || gameId === "") return;

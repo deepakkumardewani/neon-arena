@@ -12,7 +12,7 @@ import { auth, db } from "@/lib/firebase/client";
 import { firestoreDataToGameDoc } from "@/lib/online/gameDocMappers";
 import { checkWinner, isDraw } from "@/lib/game/logic";
 import type { IGameService } from "@/lib/services/interfaces/IGameService";
-import type { GameDoc } from "@/types/firebase";
+import type { GameDoc, GameDocPlayer } from "@/types/firebase";
 import type { BoardCell } from "@/types/game";
 
 const GAMES = "games";
@@ -21,10 +21,8 @@ function emptyBoard(): BoardCell[] {
   return [null, null, null, null, null, null, null, null, null];
 }
 
-function roleForUid(g: GameDoc, uid: string): "X" | "O" {
-  if (uid === g.playerX.uid) return "X";
-  if (g.playerO !== null && uid === g.playerO.uid) return "O";
-  throw new Error("Player not in game");
+function identityOf(p: GameDocPlayer): string {
+  return p.queueEntryId ?? p.uid;
 }
 
 export class FirebaseGameService implements IGameService {
@@ -68,7 +66,12 @@ export class FirebaseGameService implements IGameService {
     });
   }
 
-  async makeMove(gameId: string, cellIndex: number, player: "X" | "O"): Promise<void> {
+  async makeMove(
+    gameId: string,
+    cellIndex: number,
+    player: "X" | "O",
+    clientQueueEntryId?: string,
+  ): Promise<void> {
     const uid = auth.currentUser?.uid;
     if (uid === undefined || uid === "") throw new Error("Not authenticated");
 
@@ -79,9 +82,15 @@ export class FirebaseGameService implements IGameService {
       const g = firestoreDataToGameDoc(gameId, snap.data());
       if (g.status !== "active") return;
       if (g.playerO === null) return;
-      if (g.currentTurn !== uid) return;
-      const expected = roleForUid(g, uid);
-      if (expected !== player) return;
+
+      const mover: GameDocPlayer = player === "X" ? g.playerX : g.playerO;
+      if (mover.uid !== uid) return;
+      if (mover.queueEntryId !== undefined) {
+        if (clientQueueEntryId !== mover.queueEntryId) return;
+      }
+
+      const moverIdentity = identityOf(mover);
+      if (g.currentTurn !== moverIdentity) return;
       if (cellIndex < 0 || cellIndex > 8) return;
 
       const board = [...g.board] as BoardCell[];
@@ -92,12 +101,12 @@ export class FirebaseGameService implements IGameService {
 
       const win = checkWinner(board);
       if (win !== null) {
-        const winUid = win.winner === "X" ? g.playerX.uid : g.playerO.uid;
+        const winPl = win.winner === "X" ? g.playerX : g.playerO!;
         tx.update(ref, {
           board,
           status: "finished",
-          winner: winUid,
-          currentTurn: uid,
+          winner: identityOf(winPl),
+          currentTurn: moverIdentity,
         });
         return;
       }
@@ -107,15 +116,15 @@ export class FirebaseGameService implements IGameService {
           board,
           status: "finished",
           winner: "draw",
-          currentTurn: uid,
+          currentTurn: moverIdentity,
         });
         return;
       }
 
-      const nextUid = uid === g.playerX.uid ? g.playerO.uid : g.playerX.uid;
+      const other: GameDocPlayer = player === "X" ? g.playerO! : g.playerX;
       tx.update(ref, {
         board,
-        currentTurn: nextUid,
+        currentTurn: identityOf(other),
       });
     });
   }
@@ -144,7 +153,7 @@ export class FirebaseGameService implements IGameService {
     });
   }
 
-  async acceptRematch(gameId: string, uid: string): Promise<string> {
+  async acceptRematch(gameId: string, uid: string, clientQueueEntryId?: string): Promise<string> {
     return runTransaction(db, async (tx) => {
       const ref = doc(db, GAMES, gameId);
       const snap = await tx.get(ref);
@@ -152,10 +161,22 @@ export class FirebaseGameService implements IGameService {
       const d = firestoreDataToGameDoc(gameId, snap.data());
       if (d.status !== "finished") return "";
       if (d.playerO === null) return "";
-      const xUid = d.playerX.uid;
-      const oUid = d.playerO.uid;
-      const rematch = { ...d.rematch, [uid]: true };
-      const both = Boolean(rematch[xUid] && rematch[oUid]);
+
+      let acceptKey: string | null = null;
+      if (d.playerX.uid === uid) {
+        if (d.playerX.queueEntryId === undefined) acceptKey = identityOf(d.playerX);
+        else if (clientQueueEntryId === d.playerX.queueEntryId) acceptKey = identityOf(d.playerX);
+      }
+      if (acceptKey === null && d.playerO.uid === uid) {
+        if (d.playerO.queueEntryId === undefined) acceptKey = identityOf(d.playerO);
+        else if (clientQueueEntryId === d.playerO.queueEntryId) acceptKey = identityOf(d.playerO);
+      }
+      if (acceptKey === null) return "";
+
+      const xKey = identityOf(d.playerX);
+      const oKey = identityOf(d.playerO);
+      const rematch = { ...d.rematch, [acceptKey]: true };
+      const both = Boolean(rematch[xKey] && rematch[oKey]);
       if (!both) {
         tx.update(ref, { rematch });
         return "";
@@ -168,7 +189,7 @@ export class FirebaseGameService implements IGameService {
         playerX: d.playerX,
         playerO: d.playerO,
         board: emptyBoard(),
-        currentTurn: d.playerX.uid,
+        currentTurn: identityOf(d.playerX),
         status: "active",
         winner: null,
         createdAt: now,

@@ -15,10 +15,18 @@ import type {
   MyQueueDocState,
   QueueWaiterSnapshot,
 } from "@/lib/services/interfaces/IQueueService";
+import { QUEUE_ENTRY_SEP } from "@/lib/matchmaking/queueEntryId";
 import type { BoardCell } from "@/types/game";
 
 const QUEUE = "queue";
 const GAMES = "games";
+
+function authUidFromQueueDoc(docId: string, rawAuthUid: unknown): string {
+  if (typeof rawAuthUid === "string" && rawAuthUid.length > 0) return rawAuthUid;
+  const i = docId.indexOf(QUEUE_ENTRY_SEP);
+  if (i === -1) return docId;
+  return docId.slice(0, i);
+}
 
 function emptyBoard(): BoardCell[] {
   return [null, null, null, null, null, null, null, null, null];
@@ -31,10 +39,11 @@ function readJoinedAtMs(value: Timestamp | null | undefined): number {
 }
 
 export class FirebaseQueueService implements IQueueService {
-  async enqueue(uid: string, nickname: string): Promise<void> {
+  async enqueue(queueEntryId: string, authUid: string, nickname: string): Promise<void> {
     await setDoc(
-      doc(db, QUEUE, uid),
+      doc(db, QUEUE, queueEntryId),
       {
+        authUid,
         nickname,
         joinedAt: serverTimestamp(),
         status: "waiting",
@@ -43,8 +52,8 @@ export class FirebaseQueueService implements IQueueService {
     );
   }
 
-  async dequeue(uid: string): Promise<void> {
-    await deleteDoc(doc(db, QUEUE, uid));
+  async dequeue(queueEntryId: string): Promise<void> {
+    await deleteDoc(doc(db, QUEUE, queueEntryId));
   }
 
   subscribeToQueue(cb: (queue: readonly QueueWaiterSnapshot[]) => void): () => void {
@@ -56,14 +65,19 @@ export class FirebaseQueueService implements IQueueService {
         if (status !== "waiting") continue;
         const nickname = typeof raw.nickname === "string" ? raw.nickname : "Player";
         const joinedAtMs = readJoinedAtMs(raw.joinedAt as Timestamp | undefined);
-        out.push({ uid: d.id, nickname, joinedAtMs });
+        out.push({
+          queueEntryId: d.id,
+          authUid: authUidFromQueueDoc(d.id, raw.authUid),
+          nickname,
+          joinedAtMs,
+        });
       }
       cb(out);
     });
   }
 
-  subscribeMyQueue(uid: string, cb: (state: MyQueueDocState | null) => void): () => void {
-    return onSnapshot(doc(db, QUEUE, uid), (snap) => {
+  subscribeMyQueue(queueEntryId: string, cb: (state: MyQueueDocState | null) => void): () => void {
+    return onSnapshot(doc(db, QUEUE, queueEntryId), (snap) => {
       if (!snap.exists()) {
         cb(null);
         return;
@@ -76,13 +90,13 @@ export class FirebaseQueueService implements IQueueService {
   }
 
   async attemptPair(
-    first: { uid: string; nickname: string },
-    second: { uid: string; nickname: string },
+    first: { queueEntryId: string; authUid: string; nickname: string },
+    second: { queueEntryId: string; authUid: string; nickname: string },
   ): Promise<string | null> {
     const gameRef = doc(collection(db, GAMES));
     const gid = gameRef.id;
-    const q0 = doc(db, QUEUE, first.uid);
-    const q1 = doc(db, QUEUE, second.uid);
+    const q0 = doc(db, QUEUE, first.queueEntryId);
+    const q1 = doc(db, QUEUE, second.queueEntryId);
     const now = Date.now();
     const out = await runTransaction(db, async (tx) => {
       const s0 = await tx.get(q0);
@@ -93,10 +107,18 @@ export class FirebaseQueueService implements IQueueService {
       if (d0.status !== "waiting" || d1.status !== "waiting") return null;
       tx.set(gameRef, {
         gameId: gid,
-        playerX: { uid: first.uid, nickname: first.nickname },
-        playerO: { uid: second.uid, nickname: second.nickname },
+        playerX: {
+          uid: first.authUid,
+          nickname: first.nickname,
+          queueEntryId: first.queueEntryId,
+        },
+        playerO: {
+          uid: second.authUid,
+          nickname: second.nickname,
+          queueEntryId: second.queueEntryId,
+        },
         board: emptyBoard(),
-        currentTurn: first.uid,
+        currentTurn: first.queueEntryId,
         status: "active",
         winner: null,
         createdAt: now,

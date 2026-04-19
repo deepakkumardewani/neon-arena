@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { useMatchmaking } from "@/hooks/useMatchmaking";
 import { usePlayerStore } from "@/hooks/usePlayerStore";
+import { getMatchmakingQueueEntryId } from "@/lib/matchmaking/queueEntryId";
 import { queueService } from "@/lib/services";
 
 const AI_FALLBACK_MS = 30_000;
@@ -12,21 +13,22 @@ export function MatchmakingPage() {
   const navigate = useNavigate();
   const uid = usePlayerStore((s) => s.uid);
   const nickname = usePlayerStore((s) => s.nickname);
+  const queueEntryId = useMemo(() => getMatchmakingQueueEntryId(uid), [uid]);
   const { queueDepth } = useMatchmaking();
 
   const [showAiFallback, setShowAiFallback] = useState(false);
 
   useEffect(() => {
     const trimmed = nickname.trim();
-    if (uid.length > 0 && trimmed.length > 0) {
-      void queueService.enqueue(uid, trimmed);
+    if (uid.length > 0 && trimmed.length > 0 && queueEntryId.length > 0) {
+      void queueService.enqueue(queueEntryId, uid, trimmed);
     }
     return () => {
-      if (uid.length > 0) {
-        void queueService.dequeue(uid);
+      if (queueEntryId.length > 0) {
+        void queueService.dequeue(queueEntryId);
       }
     };
-  }, [uid, nickname]);
+  }, [uid, nickname, queueEntryId]);
 
   useEffect(() => {
     const t = window.setTimeout(() => {

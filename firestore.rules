@@ -10,15 +10,24 @@ service cloud.firestore {
       return authed() && request.auth.uid == uid;
     }
 
+    /** Queue doc id is either auth uid (legacy) or uid + "_na_mm_" + 32 hex (per-tab). */
+    function ownQueueDoc(docId) {
+      return authed()
+        && (
+          docId == request.auth.uid
+          || docId.matches("^" + request.auth.uid + "_na_mm_[a-f0-9]{32}$")
+        );
+    }
+
     match /scores/{uid} {
       allow read: if authed();
       allow create, update: if isSelf(uid);
       allow delete: if false;
     }
 
-    match /queue/{uid} {
+    match /queue/{queueDocId} {
       allow read: if authed();
-      allow create, update, delete: if isSelf(uid);
+      allow create, update, delete: if ownQueueDoc(queueDocId);
     }
 
     match /games/{gameId} {

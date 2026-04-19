@@ -9,10 +9,17 @@ export interface QueueEntry {
   readonly status: "waiting" | "matched";
 }
 
+/** Optional per-tab queue doc id so two clients with the same Firebase uid (same browser) stay distinct. */
+export interface GameDocPlayer {
+  readonly uid: string;
+  readonly nickname: string;
+  readonly queueEntryId?: string;
+}
+
 export interface GameDoc {
   readonly gameId: string;
-  readonly playerX: { readonly uid: string; readonly nickname: string };
-  readonly playerO: { readonly uid: string; readonly nickname: string } | null;
+  readonly playerX: GameDocPlayer;
+  readonly playerO: GameDocPlayer | null;
   readonly board: readonly BoardCell[];
   readonly currentTurn: string;
   readonly status: "waiting" | "active" | "finished" | "abandoned" | "expired";

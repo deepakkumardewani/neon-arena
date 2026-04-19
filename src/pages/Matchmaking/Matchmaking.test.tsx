@@ -2,6 +2,10 @@ import { act, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
+vi.mock("@/lib/matchmaking/queueEntryId", () => ({
+  getMatchmakingQueueEntryId: (id: string) => id,
+}));
+
 import { usePlayerStore } from "@/hooks/usePlayerStore";
 import { queueService } from "@/lib/services";
 

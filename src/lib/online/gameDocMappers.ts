@@ -1,7 +1,7 @@
 import type { DocumentData } from "firebase/firestore";
 
 import { checkWinner } from "@/lib/game/logic";
-import type { GameDoc } from "@/types/firebase";
+import type { GameDoc, GameDocPlayer } from "@/types/firebase";
 import type { BoardCell, GameStatus } from "@/types/game";
 
 export interface RemoteSyncPayload {
@@ -25,17 +25,16 @@ function readBoard(raw: DocumentData["board"]): BoardCell[] {
   return out;
 }
 
-function readPlayer(
-  raw: DocumentData,
-  key: "playerX" | "playerO",
-): { uid: string; nickname: string } | null {
+function readPlayer(raw: DocumentData, key: "playerX" | "playerO"): GameDocPlayer | null {
   const p = raw[key];
   if (p === null || p === undefined || typeof p !== "object") return null;
   const o = p as Record<string, string>;
   const uid = typeof o.uid === "string" ? o.uid : "";
   const nickname = typeof o.nickname === "string" ? o.nickname : "Player";
   if (uid === "") return null;
-  return { uid, nickname };
+  const queueEntryId =
+    typeof o.queueEntryId === "string" && o.queueEntryId !== "" ? o.queueEntryId : undefined;
+  return queueEntryId !== undefined ? { uid, nickname, queueEntryId } : { uid, nickname };
 }
 
 export function firestoreDataToGameDoc(id: string, data: DocumentData): GameDoc {
@@ -95,15 +94,19 @@ export function firestoreDataToGameDoc(id: string, data: DocumentData): GameDoc 
   };
 }
 
-function turnUidToMark(uid: string, doc: GameDoc): "X" | "O" | null {
-  if (uid === doc.playerX.uid) return "X";
-  if (doc.playerO !== null && uid === doc.playerO.uid) return "O";
+function playerIdentity(p: GameDocPlayer): string {
+  return p.queueEntryId ?? p.uid;
+}
+
+function turnIdentityToMark(turn: string, doc: GameDoc): "X" | "O" | null {
+  if (turn === playerIdentity(doc.playerX)) return "X";
+  if (doc.playerO !== null && turn === playerIdentity(doc.playerO)) return "O";
   return null;
 }
 
-function winnerUidToMark(w: string | null, doc: GameDoc): "X" | "O" | null {
+function winnerIdentityToMark(w: string | null, doc: GameDoc): "X" | "O" | null {
   if (w === null || w === "draw") return null;
-  return turnUidToMark(w, doc);
+  return turnIdentityToMark(w, doc);
 }
 
 export function gameDocToRemoteSync(
@@ -147,11 +150,11 @@ export function gameDocToRemoteSync(
     };
   }
 
-  const turnMark = turnUidToMark(docSnap.currentTurn, docSnap);
+  const turnMark = turnIdentityToMark(docSnap.currentTurn, docSnap);
   const currentTurn = turnMark ?? "X";
 
   if (docSnap.status === "finished") {
-    const w = winnerUidToMark(docSnap.winner, docSnap);
+    const w = winnerIdentityToMark(docSnap.winner, docSnap);
     if (docSnap.winner === "draw" || w === null) {
       return {
         board,
