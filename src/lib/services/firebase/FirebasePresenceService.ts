@@ -27,13 +27,22 @@ export class FirebasePresenceService implements IPresenceService {
     if (key === null) {
       throw new Error("presence session key missing");
     }
-    await set(sessionRef, {
-      uid,
-      nickname,
-      connectedAt: serverTimestamp(),
-    });
-    await onDisconnect(sessionRef).remove();
-    this.sessions.set(key, { uid });
+    try {
+      await set(sessionRef, {
+        uid,
+        nickname,
+        connectedAt: serverTimestamp(),
+      });
+      await onDisconnect(sessionRef).remove();
+      this.sessions.set(key, { uid });
+    } catch (e) {
+      if (import.meta.env.DEV) {
+        console.warn(
+          "[NeonArena] RTDB presence write failed (check DATABASE_URL, rules, Anonymous Auth):",
+          e,
+        );
+      }
+    }
   }
 
   async disconnect(uid: string): Promise<void> {

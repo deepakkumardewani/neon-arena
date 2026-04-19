@@ -15,7 +15,9 @@ export function usePresence(): { readonly onlineCount: number } {
   useEffect(() => {
     if (uid === "") return;
     const label = nickname.trim() === "" ? "Player" : nickname.trim();
-    void presenceService.connect(uid, label);
+    void presenceService.connect(uid, label).catch(() => {
+      /* Errors logged in FirebasePresenceService (dev) */
+    });
     return () => {
       void presenceService.disconnect(uid);
     };
