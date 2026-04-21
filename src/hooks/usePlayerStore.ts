@@ -59,6 +59,8 @@ export const usePlayerStore = create<PlayerStoreState>()(
         nickname: state.nickname,
         localGuestNickname: state.localGuestNickname,
         uid: state.uid,
+        /** Persist X/O so friend host lobby survives persist rehydration (role is set before navigate). */
+        role: state.role,
       }),
     },
   ),

@@ -5,6 +5,7 @@ import { ConnectionLostBanner } from "@/components/ConnectionLostBanner";
 import { GameBoard } from "@/components/GameBoard";
 import { PlayerHUD } from "@/components/PlayerHUD";
 import { SettingsPanel } from "@/components/SettingsPanel";
+import { useConfirm } from "@/components/ui/confirm";
 import { WinOverlay, type WinOverlayPalette } from "@/components/WinOverlay";
 import { FriendLobby } from "@/pages/FriendLobby/FriendLobby";
 import { useFirebaseConnected } from "@/hooks/useFirebaseConnected";
@@ -141,6 +142,9 @@ export function GamePage() {
   const makeMove = useGameStore((s) => s.makeMove);
   const resetGame = useGameStore((s) => s.resetGame);
   const onlineHudNames = useGameStore((s) => s.onlineHudNames);
+  const friendFirestoreSynced = useGameStore((s) => s.friendFirestoreSynced);
+  const friendHostWaiting = useGameStore((s) => s.friendHostWaiting);
+  const friendJoinRequired = useGameStore((s) => s.friendJoinRequired);
 
   const score = usePlayerStore((s) => s.score);
   const role = usePlayerStore((s) => s.role);
@@ -150,20 +154,43 @@ export function GamePage() {
 
   useScore(uid === "" ? undefined : uid);
 
+  const { alert: alertDialog, confirm: confirmDialog } = useConfirm();
+
+  const onRematchDeclined = useCallback(() => {
+    return alertDialog({ message: "Opponent declined" });
+  }, [alertDialog]);
+
   const { submitOnlineMove, acceptNetworkRematch, declineNetworkRematch, notifyLeaveGame } =
-    useOnlineGame({ gameId: effectiveGameId, mode });
+    useOnlineGame({ gameId: effectiveGameId, mode, onRematchDeclined });
 
   const isNetworked = mode === "online" || mode === "friend";
   const firebaseConnected = useFirebaseConnected(
     isNetworked && effectiveGameId !== undefined && effectiveGameId !== "",
   );
   const networkPlayBlocked = isNetworked && firebaseConnected === false;
+  /** Host waiting for guest: Firestore confirms, or optimistic while role is X (persisted) before first snapshot. */
   const isFriendHostLobby =
     mode === "friend" &&
     status === "idle" &&
-    role === "X" &&
-    onlineHudNames !== null &&
-    onlineHudNames.o === "Waiting…";
+    (friendHostWaiting ||
+      (role === "X" && (onlineHudNames === null || onlineHudNames.o === "Waiting…")));
+
+  /** Hide grid until we know friend-room state, or while host is sharing, or guest must join elsewhere. */
+  const hideFriendBoard =
+    mode === "friend" &&
+    status === "idle" &&
+    (!friendFirestoreSynced || isFriendHostLobby || friendJoinRequired);
+
+  const friendPrematchHeadline =
+    mode === "friend" && status === "idle"
+      ? isFriendHostLobby
+        ? "Invite your friend with the link below. The board opens once they join."
+        : !friendFirestoreSynced
+          ? "Connecting to room…"
+          : friendJoinRequired
+            ? "Opening join screen…"
+            : null
+      : null;
 
   const endgame = useEndgamePresentation();
 
@@ -324,7 +351,7 @@ export function GamePage() {
 
   const handleCellClick = useCallback(
     (index: number) => {
-      if (isFriendHostLobby) return;
+      if (hideFriendBoard) return;
       if (isNetworked && effectiveGameId !== undefined && effectiveGameId !== "") {
         if (networkPlayBlocked) return;
         if (onlineMoveBusy.current) return;
@@ -336,14 +363,7 @@ export function GamePage() {
       }
       makeMove(index);
     },
-    [
-      effectiveGameId,
-      isFriendHostLobby,
-      isNetworked,
-      makeMove,
-      networkPlayBlocked,
-      submitOnlineMove,
-    ],
+    [effectiveGameId, hideFriendBoard, isNetworked, makeMove, networkPlayBlocked, submitOnlineMove],
   );
 
   const withUiFeedback = useCallback((fn: () => void) => {
@@ -379,6 +399,23 @@ export function GamePage() {
     void navigate("/");
   }, [declineNetworkRematch, effectiveGameId, isNetworked, navigate, resetGame, status]);
 
+  const onLeaveLiveGame = isNetworked && status === "playing" ? notifyLeaveGame : undefined;
+
+  const handleFriendLobbyHome = useCallback((): void => {
+    audioManager.play("click");
+    hapticManager.tap();
+    void (async () => {
+      if (mode === "online" || mode === "friend") {
+        const ok = await confirmDialog({ message: "Leave the live game and return home?" });
+        if (!ok) return;
+      }
+      if (onLeaveLiveGame !== undefined) {
+        await onLeaveLiveGame();
+      }
+      void navigate("/");
+    })();
+  }, [confirmDialog, mode, navigate, onLeaveLiveGame]);
+
   const handleAutoDismiss = useCallback(() => {
     if (
       isNetworked &&
@@ -399,19 +436,25 @@ export function GamePage() {
       <h1 className="sr-only">Game</h1>
       {networkPlayBlocked ? <ConnectionLostBanner /> : null}
       {isFriendHostLobby && effectiveGameId !== undefined ? (
-        <FriendLobby gameId={effectiveGameId} />
-      ) : null}
-      <PlayerHUD
-        onOpenSettings={() => setSettingsOpen(true)}
-        onLeaveLiveGame={isNetworked && status === "playing" ? notifyLeaveGame : undefined}
-      />
-      <GameBoard
-        board={board}
-        winLine={winLine}
-        winner={winner}
-        onCellClick={handleCellClick}
-        interactionLocked={networkPlayBlocked}
-      />
+        <section className="mb-6 rounded-tl-xl rounded-br-xl border border-(--na-purple) bg-(--na-surface) p-5 shadow-(--na-glow-grid)">
+          <FriendLobby gameId={effectiveGameId} onHome={handleFriendLobbyHome} />
+        </section>
+      ) : (
+        <PlayerHUD
+          prematchHeadline={friendPrematchHeadline}
+          onOpenSettings={() => setSettingsOpen(true)}
+          onLeaveLiveGame={onLeaveLiveGame}
+        />
+      )}
+      {hideFriendBoard ? null : (
+        <GameBoard
+          board={board}
+          winLine={winLine}
+          winner={winner}
+          onCellClick={handleCellClick}
+          interactionLocked={networkPlayBlocked}
+        />
+      )}
       <WinOverlay
         open={endgame.open}
         headline={endgame.headline}

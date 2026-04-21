@@ -16,12 +16,23 @@ export interface GameStoreState {
   readonly difficulty: Difficulty;
   /** HUD names for networked modes (from Firestore players). */
   readonly onlineHudNames: { readonly x: string; readonly o: string } | null;
+  /** Friend mode: first Firestore snapshot received for this page session. */
+  readonly friendFirestoreSynced: boolean;
+  /** Friend mode: we are player X and the room is still waiting for player O. */
+  readonly friendHostWaiting: boolean;
+  /** Friend mode: we are not in this game yet and must join (or redirect to nickname). */
+  readonly friendJoinRequired: boolean;
   readonly getIsMyTurn: () => boolean;
   makeMove: (index: number, meta?: { actor?: "human" | "system" }) => void;
   resetGame: () => void;
   setMode: (mode: GameMode) => void;
   setDifficulty: (difficulty: Difficulty) => void;
   setOnlineHudNames: (names: { x: string; o: string } | null) => void;
+  setFriendRoomFromFirestore: (payload: {
+    readonly synced: boolean;
+    readonly hostWaiting: boolean;
+    readonly joinRequired: boolean;
+  }) => void;
   applyRemoteState: (payload: {
     readonly board: BoardCell[];
     readonly currentTurn: "X" | "O";
@@ -62,6 +73,9 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   mode: "local",
   difficulty: "medium",
   onlineHudNames: null,
+  friendFirestoreSynced: false,
+  friendHostWaiting: false,
+  friendJoinRequired: false,
 
   getIsMyTurn: () => {
     const { status, currentTurn, mode } = get();
@@ -130,6 +144,9 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       winner: null,
       winLine: null,
       onlineHudNames: null,
+      friendFirestoreSynced: false,
+      friendHostWaiting: false,
+      friendJoinRequired: false,
     });
   },
 
@@ -143,6 +160,14 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
 
   setOnlineHudNames: (names) => {
     set({ onlineHudNames: names });
+  },
+
+  setFriendRoomFromFirestore: (payload) => {
+    set({
+      friendFirestoreSynced: payload.synced,
+      friendHostWaiting: payload.hostWaiting,
+      friendJoinRequired: payload.joinRequired,
+    });
   },
 
   applyRemoteState: (payload) => {

@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
+import { ConfirmProvider } from "@/components/ui/confirm";
 import { useGameStore } from "@/hooks/useGameStore";
 import { usePlayerStore } from "@/hooks/usePlayerStore";
 import type { ScoreDoc } from "@/types/player";
@@ -38,9 +39,11 @@ const emptyScore = (): ScoreDoc => ({
 function renderGame(initial = "/play/tictactoe/game?mode=solo&difficulty=easy") {
   return render(
     <MemoryRouter initialEntries={[initial]}>
-      <Routes>
-        <Route path="/play/tictactoe/game" element={<GamePage />} />
-      </Routes>
+      <ConfirmProvider>
+        <Routes>
+          <Route path="/play/tictactoe/game" element={<GamePage />} />
+        </Routes>
+      </ConfirmProvider>
     </MemoryRouter>,
   );
 }

@@ -23,9 +23,11 @@ function playerMatchesSeat(
 export interface UseOnlineGameOptions {
   readonly gameId: string | undefined;
   readonly mode: GameMode;
+  /** Shown when the opponent declines rematch; awaited before navigating home. */
+  readonly onRematchDeclined?: () => void | Promise<void>;
 }
 
-export function useOnlineGame({ gameId, mode }: UseOnlineGameOptions): {
+export function useOnlineGame({ gameId, mode, onRematchDeclined }: UseOnlineGameOptions): {
   readonly submitOnlineMove: (index: number) => Promise<void>;
   readonly acceptNetworkRematch: () => Promise<void>;
   readonly declineNetworkRematch: () => Promise<void>;
@@ -38,6 +40,7 @@ export function useOnlineGame({ gameId, mode }: UseOnlineGameOptions): {
   const setRole = usePlayerStore((s) => s.setRole);
   const applyRemoteState = useGameStore((s) => s.applyRemoteState);
   const setOnlineHudNames = useGameStore((s) => s.setOnlineHudNames);
+  const setFriendRoomFromFirestore = useGameStore((s) => s.setFriendRoomFromFirestore);
 
   useEffect(() => {
     if (gameId === undefined || gameId === "") return;
@@ -50,9 +53,26 @@ export function useOnlineGame({ gameId, mode }: UseOnlineGameOptions): {
         return;
       }
       if (doc.rematchDeclined === true) {
-        window.alert("Opponent declined");
-        void navigate("/");
+        void (async () => {
+          if (onRematchDeclined !== undefined) {
+            await onRematchDeclined();
+          }
+          void navigate("/");
+        })();
         return;
+      }
+
+      if (mode === "friend") {
+        const imPlayerO = doc.playerO !== null && doc.playerO.uid === uid;
+        const friendHostWaiting =
+          uid !== "" && doc.status === "waiting" && doc.playerX.uid === uid && doc.playerO === null;
+        const friendJoinRequired =
+          uid !== "" && doc.status === "waiting" && doc.playerX.uid !== uid && !imPlayerO;
+        setFriendRoomFromFirestore({
+          synced: true,
+          hostWaiting: friendHostWaiting,
+          joinRequired: friendJoinRequired,
+        });
       }
 
       const myRole: "X" | "O" | null = playerMatchesSeat(doc.playerX, uid, tabEntryId)
@@ -90,7 +110,18 @@ export function useOnlineGame({ gameId, mode }: UseOnlineGameOptions): {
     return () => {
       unsub();
     };
-  }, [applyRemoteState, gameId, mode, navigate, setOnlineHudNames, setRole, tabEntryId, uid]);
+  }, [
+    applyRemoteState,
+    gameId,
+    mode,
+    navigate,
+    onRematchDeclined,
+    setFriendRoomFromFirestore,
+    setOnlineHudNames,
+    setRole,
+    tabEntryId,
+    uid,
+  ]);
 
   const submitOnlineMove = useCallback(
     async (index: number) => {
