@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { ModeCard } from "@/components/ModeCard";
+import { Button } from "@/components/ui/Button";
 import { useGameStore } from "@/hooks/useGameStore";
 import type { Difficulty, GameMode } from "@/types/game";
 
@@ -172,9 +173,10 @@ export function ModeSelectPage() {
                     const label = d.charAt(0).toUpperCase() + d.slice(1);
                     const active = soloDifficulty === d;
                     return (
-                      <button
+                      <Button
                         key={d}
                         type="button"
+                        unstyled
                         onClick={() => {
                           setSoloDifficulty(d);
                           goNickname("solo", d);
@@ -187,7 +189,7 @@ export function ModeSelectPage() {
                         style={{ fontFamily: "var(--na-font-display)" }}
                       >
                         {label}
-                      </button>
+                      </Button>
                     );
                   })}
                 </div>

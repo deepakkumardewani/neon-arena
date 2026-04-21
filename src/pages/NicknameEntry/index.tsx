@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import { NicknameInput, createGuestNickname, isNicknameValid } from "@/components/NicknameInput";
+import { Button } from "@/components/ui/Button";
 import { usePlayerStore } from "@/hooks/usePlayerStore";
 import { authService, gameService } from "@/lib/services";
 import type { Difficulty, GameMode } from "@/types/game";
@@ -201,17 +202,18 @@ export function NicknameEntryPage() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.12, duration: 0.35 }}
         >
-          <button
+          <Button
             type="button"
+            unstyled
             disabled={!canContinue}
-            className="rounded-tl-full rounded-br-full rounded-tr-full rounded-bl-full border-2 border-(--na-cyan) bg-(--na-surface) px-8 py-3 text-sm font-semibold text-(--na-cyan) shadow-(--na-glow-grid) transition-opacity disabled:cursor-not-allowed disabled:border-(--na-border) disabled:text-(--na-text-muted) disabled:shadow-none"
+            className="rounded-tl-full rounded-br-full rounded-tr-full rounded-bl-full border-2 border-(--na-cyan) bg-(--na-surface) px-8 py-3 text-sm font-semibold text-(--na-cyan) shadow-(--na-glow-grid) transition-opacity disabled:border-(--na-border) disabled:text-(--na-text-muted) disabled:shadow-none"
             style={{ fontFamily: "var(--na-font-display)" }}
             onClick={() => {
               void handleContinue();
             }}
           >
             Continue
-          </button>
+          </Button>
           <Link
             to="/play/tictactoe"
             className="inline-flex items-center rounded-tl-full rounded-br-full rounded-tr-full rounded-bl-full border-2 border-(--na-border) px-7 py-3 text-sm text-(--na-text-muted) transition-colors hover:border-(--na-purple) hover:text-(--na-text)"

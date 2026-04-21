@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import { GameCard } from "@/components/GameCard";
 import { OnlineCounter } from "@/components/OnlineCounter";
+import { Button } from "@/components/ui/Button";
 import { ParticleBackground } from "@/components/ParticleBackground";
 import { SettingsPanel } from "@/components/SettingsPanel";
 import { audioManager } from "@/lib/audio/audioManager";
@@ -112,10 +113,10 @@ export function HomePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.48, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             >
-              <button
+              <Button
                 type="button"
+                appearance="icon"
                 aria-label="Open settings"
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-(--na-border) bg-(--na-surface) text-lg text-(--na-text) shadow-(--na-glow-grid)"
                 onClick={() => {
                   audioManager.play("click");
                   hapticManager.tap();
@@ -123,7 +124,7 @@ export function HomePage() {
                 }}
               >
                 {"\u2699\ufe0f"}
-              </button>
+              </Button>
               <OnlineCounter />
             </motion.div>
           </div>

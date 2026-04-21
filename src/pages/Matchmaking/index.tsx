@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+import { Button } from "@/components/ui/Button";
 import { useMatchmaking } from "@/hooks/useMatchmaking";
 import { usePlayerStore } from "@/hooks/usePlayerStore";
 import { getMatchmakingQueueEntryId } from "@/lib/matchmaking/queueEntryId";
@@ -143,8 +144,9 @@ export function MatchmakingPage() {
             <p className="mt-2 text-sm text-(--na-text-muted)">
               Drop into a solo cabinet on Medium difficulty. You can always queue again later.
             </p>
-            <button
+            <Button
               type="button"
+              unstyled
               className="mt-5 rounded-tl-full rounded-br-full rounded-tr-full rounded-bl-full border-2 border-(--na-rose) bg-(--na-bg) px-6 py-2.5 text-sm font-semibold text-(--na-rose) transition-colors hover:bg-(--na-surface)"
               style={{ fontFamily: "var(--na-font-display)" }}
               onClick={() => {
@@ -152,7 +154,7 @@ export function MatchmakingPage() {
               }}
             >
               Play vs AI
-            </button>
+            </Button>
           </motion.div>
         ) : null}
 
