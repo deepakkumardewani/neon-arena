@@ -3,6 +3,7 @@ import { useEffect, useId, useMemo, useState } from "react";
 import Particles from "@tsparticles/react";
 import type { ISourceOptions } from "@tsparticles/engine";
 
+import { Button } from "@/components/ui/Button";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { ensureParticlesEngine } from "@/lib/particles/ensureEngine";
 
@@ -165,22 +166,25 @@ export function WinOverlay({
               W: {scoreWins} | L: {scoreLosses} | D: {scoreDraws}
             </p>
             <div className="flex flex-wrap justify-center gap-3">
-              <button
+              <Button
                 type="button"
-                className="rounded-full border border-(--na-cyan) px-6 py-2 text-sm text-(--na-cyan) outline-none focus-visible:ring-2 focus-visible:ring-(--na-cyan) focus-visible:ring-offset-2 focus-visible:ring-offset-(--na-surface)"
+                ringOffset="surface"
+                className="px-6"
                 style={{ fontFamily: "var(--na-font-display)" }}
                 onClick={onPlayAgain}
               >
                 Play Again
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
-                className="rounded-full border border-(--na-purple) px-6 py-2 text-sm text-(--na-purple) outline-none focus-visible:ring-2 focus-visible:ring-(--na-purple) focus-visible:ring-offset-2 focus-visible:ring-offset-(--na-surface)"
+                tone="purple"
+                ringOffset="surface"
+                className="px-6"
                 style={{ fontFamily: "var(--na-font-display)" }}
                 onClick={onHome}
               >
                 Home
-              </button>
+              </Button>
             </div>
           </motion.div>
         </motion.div>

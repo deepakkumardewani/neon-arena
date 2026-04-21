@@ -14,7 +14,7 @@ export function ModeCard({ icon, title, description, selected = false, onClick }
     <motion.button
       type="button"
       onClick={onClick}
-      className={`flex w-full gap-4 rounded-tl-2xl rounded-br-xl rounded-tr-md rounded-bl-md border px-4 py-4 text-left transition-colors md:gap-5 md:px-6 md:py-5 ${
+      className={`flex w-full cursor-pointer gap-4 rounded-tl-2xl rounded-br-xl rounded-tr-md rounded-bl-md border px-4 py-4 text-left transition-colors md:gap-5 md:px-6 md:py-5 ${
         selected
           ? "border-(--na-cyan) bg-(--na-surface) shadow-(--na-glow-x)"
           : "border-(--na-border) bg-(--na-surface) hover:border-(--na-purple)"

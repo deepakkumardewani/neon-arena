@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
 
+import { Button } from "@/components/ui/Button";
 import { useAudioStore } from "@/hooks/useAudioStore";
 import { audioManager } from "@/lib/audio/audioManager";
 import { hapticManager } from "@/lib/haptics/hapticManager";
@@ -36,7 +37,7 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
           <motion.button
             type="button"
             aria-label="Close settings"
-            className="fixed inset-0 z-[60] bg-black/55"
+            className="fixed inset-0 z-[60] cursor-pointer bg-black/55"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -65,8 +66,9 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
               >
                 Settings
               </h2>
-              <button
+              <Button
                 type="button"
+                unstyled
                 className="rounded-lg border border-(--na-border) px-3 py-1.5 text-sm text-(--na-cyan)"
                 style={{ fontFamily: "var(--na-font-display)" }}
                 onClick={() => {
@@ -76,7 +78,7 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                 }}
               >
                 Done
-              </button>
+              </Button>
             </div>
             <div className="flex flex-col gap-8 overflow-y-auto px-5 py-6">
               <label className="flex cursor-pointer items-center justify-between gap-4">
