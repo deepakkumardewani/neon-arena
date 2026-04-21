@@ -34,12 +34,27 @@ service cloud.firestore {
       allow read: if authed();
       allow create: if authed();
 
+      /**
+       * - Host (X) or seated O can update (moves, rematch, disconnect flags).
+       * - Guest may perform exactly one join: waiting + empty O seat, only playerO + status → active,
+       *   and new playerO.uid must match the caller (cross-browser / second tab).
+       */
       allow update: if authed()
         && (
           resource.data.playerX.uid == request.auth.uid
-          || ('playerO' in resource.data
-            && resource.data.playerO != null
-            && resource.data.playerO.uid == request.auth.uid)
+          || (
+            resource.data.playerO != null
+            && resource.data.playerO.uid == request.auth.uid
+          )
+          || (
+            resource.data.status == 'waiting'
+            && resource.data.playerO == null
+            && resource.data.playerX.uid != request.auth.uid
+            && request.resource.data.playerO != null
+            && request.resource.data.playerO.uid == request.auth.uid
+            && request.resource.data.status == 'active'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['playerO', 'status'])
+          )
         );
 
       allow delete: if false;
