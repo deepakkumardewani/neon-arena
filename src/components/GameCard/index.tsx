@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+
 export interface GameCardProps {
   readonly title: string;
   readonly thumbnail: ReactNode;
@@ -9,6 +11,7 @@ export interface GameCardProps {
 }
 
 export function GameCard({ title, thumbnail, comingSoon = false, onSelect }: GameCardProps) {
+  const reducedMotion = useReducedMotion();
   const interactive = !comingSoon && onSelect !== undefined;
 
   const shellClass =
@@ -56,10 +59,18 @@ export function GameCard({ title, thumbnail, comingSoon = false, onSelect }: Gam
       className={`${shellClass} cursor-pointer`}
       onClick={onSelect}
       aria-label={`${title}, play now`}
-      whileHover={{
-        boxShadow: "var(--na-glow-x)",
-        borderColor: "var(--na-cyan)",
-      }}
+      whileHover={
+        reducedMotion
+          ? {
+              boxShadow: "var(--na-glow-x)",
+              borderColor: "var(--na-cyan)",
+            }
+          : {
+              y: -3,
+              boxShadow: "var(--na-glow-x)",
+              borderColor: "var(--na-cyan)",
+            }
+      }
       whileTap={{ scale: 0.992 }}
       transition={{ type: "spring", stiffness: 440, damping: 30 }}
     >

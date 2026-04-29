@@ -102,9 +102,9 @@ A three-phase visual design pass across four pages and their shared components. 
 
 ---
 
-### Phase 2 — /animate (Motion & Transitions)
+### Phase 2 — /animate (Motion & Transitions) ✅ **Done**
 
-- **Task 5: Homepage entrance animations & card hover**
+- [x] **Task 5: Homepage entrance animations & card hover**
   **Description:** The homepage already has Framer Motion entrance animations on the hero (`opacity 0→1, x -18→0`) and card grid (stagger 0.08s, `y 22→0`). These are functional but flat — the hero animates as one block rather than staggering label → h1 → subtitle. `GameCard` `whileHover` only changes `boxShadow` and `borderColor` — no scale or thumbnail movement.
   **Acceptance criteria:**
   - Hero text staggers: `"Insert coin"` label first, then h1, then subtitle, with distinct delays (~60ms apart)
@@ -124,7 +124,7 @@ A three-phase visual design pass across four pages and their shared components. 
 
 ---
 
-- **Task 6: ModeSelect entrance & selection animations**
+- [x] **Task 6: ModeSelect entrance & selection animations**
   **Description:** Mode cards enter with `staggerChildren: 0.07` and `y: 14→0` — subtle but acceptable. The `selected` state on `ModeCard` transitions via CSS `transition-colors` only — no spring or motion feedback. The difficulty panel reveal uses `height: 0 → "auto"` with `duration: 0.32` but `overflow` is not clipped during the expand, causing a flash.
   **Acceptance criteria:**
   - Mode card selection triggers a Framer Motion spring that reinforces the `aria-pressed` state change (brief scale or border glow transition)
@@ -143,7 +143,7 @@ A three-phase visual design pass across four pages and their shared components. 
 
 ---
 
-- **Task 7: NicknameEntry step transition & input focus**
+- [x] **Task 7: NicknameEntry step transition & input focus**
   **Description:** The step 1 → step 2 transition in `NicknameEntry` is currently handled by changing `value`/`setValue`/`label` state — the UI re-renders in place with no positional animation. The `NicknameInput` focus glow is a CSS `transition-[border-color,box-shadow]` (instant on tab-in). The Continue button has no press animation.
   **Acceptance criteria:**
   - Step transition (0 → 1) animates the form content: current step slides out left, next step slides in from the right, using `AnimatePresence` keyed on `localStep`
@@ -162,7 +162,7 @@ A three-phase visual design pass across four pages and their shared components. 
 
 ---
 
-- **Task 8: GamePage — turn indicator, mark placement, score counter**
+- [x] **Task 8: GamePage — turn indicator, mark placement, score counter**
   **Description:** The turn indicator in `PlayerHUD` is currently just a colour change: active player is cyan/rose, inactive is `--na-text-muted`. There is no transition between turns. The `CellGlyph` draw animation (SVG stroke-dashoffset) is already in place via `GlyphX`/`GlyphO` — but the cell button itself has no entrance. Score W/L/D values are static text — they don't animate on increment.
   **Acceptance criteria:**
   - Active player name has a `layoutId`-based or `AnimatePresence` crossfade so the `(turn)` indicator transitions smoothly on turn change
@@ -181,7 +181,7 @@ A three-phase visual design pass across four pages and their shared components. 
 
 ---
 
-### Checkpoint 2 — After Phase 2
+### Checkpoint 2 — After Phase 2 ✅
 
 - All 4 pages have meaningfully enhanced motion
 - `prefers-reduced-motion` verified in browser accessibility settings — no animations fire

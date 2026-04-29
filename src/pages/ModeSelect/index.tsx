@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ModeCard } from "@/components/ModeCard";
 import { Button } from "@/components/ui/Button";
 import { useGameStore } from "@/hooks/useGameStore";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import type { Difficulty, GameMode } from "@/types/game";
 
 function IconVsAi() {
@@ -63,10 +64,14 @@ function IconFriend() {
 
 const DIFFICULTIES: readonly Difficulty[] = ["easy", "medium", "hard"];
 
+const STAGGER_SEC = 0.05;
+const MODE_CARD_EASE = [0.22, 1, 0.36, 1] as const;
+
 export function ModeSelectPage() {
   const navigate = useNavigate();
   const setMode = useGameStore((s) => s.setMode);
   const setDifficulty = useGameStore((s) => s.setDifficulty);
+  const reducedMotion = useReducedMotion();
 
   const [soloOpen, setSoloOpen] = useState(false);
   const [soloDifficulty, setSoloDifficulty] = useState<Difficulty>("medium");
@@ -143,15 +148,18 @@ export function ModeSelectPage() {
           animate="show"
           variants={{
             hidden: {},
-            show: { transition: { staggerChildren: 0.07 } },
+            show: { transition: { staggerChildren: reducedMotion ? 0 : STAGGER_SEC } },
           }}
         >
           <motion.div
             variants={{
-              hidden: { opacity: 0, y: 14 },
+              hidden: reducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 },
               show: { opacity: 1, y: 0 },
             }}
-            transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+            transition={{
+              duration: reducedMotion ? 0 : 0.36,
+              ease: MODE_CARD_EASE,
+            }}
           >
             <ModeCard
               icon={<IconVsAi />}
@@ -162,13 +170,21 @@ export function ModeSelectPage() {
                 onPickMode("solo");
               }}
             />
-            {soloOpen ? (
-              <motion.div
-                className="ml-3 mt-2 rounded-lg border border-(--na-border) border-l-[3px] border-l-(--na-purple) bg-(--na-surface) px-4 py-4 md:ml-6 md:mt-3 md:px-5 md:py-5"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-              >
+            <motion.div
+              className="overflow-hidden"
+              initial={false}
+              animate={{
+                height: soloOpen ? "auto" : 0,
+                opacity: soloOpen ? 1 : 0,
+              }}
+              transition={
+                reducedMotion
+                  ? { duration: 0 }
+                  : { duration: 0.28, ease: MODE_CARD_EASE }
+              }
+              aria-hidden={!soloOpen}
+            >
+              <div className="ml-3 mt-2 rounded-lg border border-(--na-border) border-l-[3px] border-l-(--na-purple) bg-(--na-surface) px-4 py-4 md:ml-6 md:mt-3 md:px-5 md:py-5">
                 <p
                   className="text-[11px] tracking-[0.28em] text-(--na-text-muted) uppercase"
                   style={{ fontFamily: "var(--na-font-display)" }}
@@ -200,16 +216,19 @@ export function ModeSelectPage() {
                     );
                   })}
                 </div>
-              </motion.div>
-            ) : null}
+              </div>
+            </motion.div>
           </motion.div>
 
           <motion.div
             variants={{
-              hidden: { opacity: 0, y: 14 },
+              hidden: reducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 },
               show: { opacity: 1, y: 0 },
             }}
-            transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+            transition={{
+              duration: reducedMotion ? 0 : 0.36,
+              ease: MODE_CARD_EASE,
+            }}
           >
             <ModeCard
               icon={<IconLocal />}
@@ -224,10 +243,13 @@ export function ModeSelectPage() {
 
           <motion.div
             variants={{
-              hidden: { opacity: 0, y: 14 },
+              hidden: reducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 },
               show: { opacity: 1, y: 0 },
             }}
-            transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+            transition={{
+              duration: reducedMotion ? 0 : 0.36,
+              ease: MODE_CARD_EASE,
+            }}
           >
             <ModeCard
               icon={<IconOnline />}
@@ -242,10 +264,13 @@ export function ModeSelectPage() {
 
           <motion.div
             variants={{
-              hidden: { opacity: 0, y: 14 },
+              hidden: reducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 },
               show: { opacity: 1, y: 0 },
             }}
-            transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+            transition={{
+              duration: reducedMotion ? 0 : 0.36,
+              ease: MODE_CARD_EASE,
+            }}
           >
             <ModeCard
               icon={<IconFriend />}

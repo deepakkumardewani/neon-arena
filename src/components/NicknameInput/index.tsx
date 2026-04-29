@@ -44,7 +44,7 @@ export function NicknameInput({ value, onValueChange, id, label }: NicknameInput
         onBlur={() => {
           setFocused(false);
         }}
-        className={`rounded-lg border-2 bg-(--na-surface) px-4 py-3.5 text-(--na-text) outline-none transition-[border-color,box-shadow] ${
+        className={`rounded-lg border-2 bg-(--na-surface) px-4 py-3.5 text-(--na-text) outline-none transition-[border-color,box-shadow] duration-150 ease-out ${
           error !== null
             ? "border-(--na-rose) shadow-[0_0_0_1px_color-mix(in_oklch,var(--na-rose)_45%,transparent),0_0_22px_color-mix(in_oklch,var(--na-rose)_22%,transparent)]"
             : "border-(--na-border) focus:border-(--na-cyan) focus:shadow-[0_0_0_1px_var(--na-cyan),0_0_26px_color-mix(in_oklch,var(--na-cyan)_32%,transparent)]"

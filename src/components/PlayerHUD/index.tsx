@@ -1,3 +1,4 @@
+import { LayoutGroup, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 import { OnlineCounter } from "@/components/OnlineCounter";
@@ -6,6 +7,7 @@ import { useConfirm } from "@/components/ui/confirm";
 import { useAudioStore } from "@/hooks/useAudioStore";
 import { useGameStore } from "@/hooks/useGameStore";
 import { usePlayerStore } from "@/hooks/usePlayerStore";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { audioManager } from "@/lib/audio/audioManager";
 import { hapticManager } from "@/lib/haptics/hapticManager";
 
@@ -32,6 +34,7 @@ export function PlayerHUD({
   const masterMuted = useAudioStore((s) => s.masterMuted);
   const setMasterMuted = useAudioStore((s) => s.setMasterMuted);
   const { confirm } = useConfirm();
+  const reducedMotion = useReducedMotion();
 
   const useNetworkHud = mode === "online" || mode === "friend";
 
@@ -83,33 +86,59 @@ export function PlayerHUD({
             </p>
           ) : (
             <>
-              <div className="flex flex-wrap items-baseline gap-x-5 gap-y-2">
-                <span
-                  className="min-w-0 max-w-[min(100%,14rem)] truncate text-base font-bold md:text-lg"
-                  style={{
-                    color: currentTurn === "X" ? "var(--na-cyan)" : "var(--na-text-muted)",
-                    fontFamily: "var(--na-font-display)",
-                  }}
-                >
-                  {playerXName}
-                  {currentTurn === "X" ? (
-                    <span className="text-xs font-semibold text-(--na-text-muted)"> (turn)</span>
-                  ) : null}
-                </span>
-                <span className="text-sm font-semibold text-(--na-text-muted)">vs</span>
-                <span
-                  className="min-w-0 max-w-[min(100%,14rem)] truncate text-base font-bold md:text-lg"
-                  style={{
-                    color: currentTurn === "O" ? "var(--na-rose)" : "var(--na-text-muted)",
-                    fontFamily: "var(--na-font-display)",
-                  }}
-                >
-                  {playerOName}
-                  {currentTurn === "O" ? (
-                    <span className="text-xs font-semibold text-(--na-text-muted)"> (turn)</span>
-                  ) : null}
-                </span>
-              </div>
+              <LayoutGroup id="na-player-hud-turn">
+                <div className="flex flex-wrap items-baseline gap-x-5 gap-y-2">
+                  <span className="flex min-w-0 max-w-[min(100%,14rem)] items-baseline gap-1.5 truncate">
+                    <span
+                      className="min-w-0 truncate text-base font-bold md:text-lg"
+                      style={{
+                        color: currentTurn === "X" ? "var(--na-cyan)" : "var(--na-text-muted)",
+                        fontFamily: "var(--na-font-display)",
+                      }}
+                    >
+                      {playerXName}
+                    </span>
+                    {currentTurn === "X" ? (
+                      <motion.span
+                        layoutId="na-turn-tag"
+                        className="shrink-0 text-xs font-semibold text-(--na-text-muted)"
+                        transition={
+                          reducedMotion
+                            ? { duration: 0 }
+                            : { type: "spring", stiffness: 400, damping: 32 }
+                        }
+                      >
+                        (turn)
+                      </motion.span>
+                    ) : null}
+                  </span>
+                  <span className="text-sm font-semibold text-(--na-text-muted)">vs</span>
+                  <span className="flex min-w-0 max-w-[min(100%,14rem)] items-baseline gap-1.5 truncate">
+                    <span
+                      className="min-w-0 truncate text-base font-bold md:text-lg"
+                      style={{
+                        color: currentTurn === "O" ? "var(--na-rose)" : "var(--na-text-muted)",
+                        fontFamily: "var(--na-font-display)",
+                      }}
+                    >
+                      {playerOName}
+                    </span>
+                    {currentTurn === "O" ? (
+                      <motion.span
+                        layoutId="na-turn-tag"
+                        className="shrink-0 text-xs font-semibold text-(--na-text-muted)"
+                        transition={
+                          reducedMotion
+                            ? { duration: 0 }
+                            : { type: "spring", stiffness: 400, damping: 32 }
+                        }
+                      >
+                        (turn)
+                      </motion.span>
+                    ) : null}
+                  </span>
+                </div>
+              </LayoutGroup>
               <div
                 className="flex flex-wrap items-center border-t border-(--na-border) pt-3"
                 style={{ gap: "var(--na-space-7)" }}
@@ -129,10 +158,24 @@ export function PlayerHUD({
                       W{" "}
                     </span>
                     <strong
-                      className="font-bold text-(--na-text)"
+                      className="inline-flex overflow-hidden font-bold text-(--na-text)"
                       style={{ fontFamily: "var(--na-font-display)" }}
                     >
-                      {score.wins}
+                      <motion.span
+                        key={score.wins}
+                        className="inline-block"
+                        initial={
+                          reducedMotion ? { y: 0, opacity: 1 } : { y: 10, opacity: 0 }
+                        }
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={
+                          reducedMotion
+                            ? { duration: 0 }
+                            : { duration: 0.2, ease: [0.22, 1, 0.36, 1] }
+                        }
+                      >
+                        {score.wins}
+                      </motion.span>
                     </strong>
                   </span>
                   <span className="text-sm md:text-base">
@@ -143,10 +186,24 @@ export function PlayerHUD({
                       L{" "}
                     </span>
                     <strong
-                      className="font-bold text-(--na-text)"
+                      className="inline-flex overflow-hidden font-bold text-(--na-text)"
                       style={{ fontFamily: "var(--na-font-display)" }}
                     >
-                      {score.losses}
+                      <motion.span
+                        key={score.losses}
+                        className="inline-block"
+                        initial={
+                          reducedMotion ? { y: 0, opacity: 1 } : { y: 10, opacity: 0 }
+                        }
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={
+                          reducedMotion
+                            ? { duration: 0 }
+                            : { duration: 0.2, ease: [0.22, 1, 0.36, 1] }
+                        }
+                      >
+                        {score.losses}
+                      </motion.span>
                     </strong>
                   </span>
                   <span className="text-sm md:text-base">
@@ -157,10 +214,24 @@ export function PlayerHUD({
                       D{" "}
                     </span>
                     <strong
-                      className="font-bold text-(--na-text)"
+                      className="inline-flex overflow-hidden font-bold text-(--na-text)"
                       style={{ fontFamily: "var(--na-font-display)" }}
                     >
-                      {score.draws}
+                      <motion.span
+                        key={score.draws}
+                        className="inline-block"
+                        initial={
+                          reducedMotion ? { y: 0, opacity: 1 } : { y: 10, opacity: 0 }
+                        }
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={
+                          reducedMotion
+                            ? { duration: 0 }
+                            : { duration: 0.2, ease: [0.22, 1, 0.36, 1] }
+                        }
+                      >
+                        {score.draws}
+                      </motion.span>
                     </strong>
                   </span>
                 </div>

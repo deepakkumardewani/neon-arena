@@ -7,6 +7,7 @@ import { OnlineCounter } from "@/components/OnlineCounter";
 import { Button } from "@/components/ui/Button";
 import { ParticleBackground } from "@/components/ParticleBackground";
 import { SettingsPanel } from "@/components/SettingsPanel";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { audioManager } from "@/lib/audio/audioManager";
 import { hapticManager } from "@/lib/haptics/hapticManager";
 
@@ -69,9 +70,17 @@ function PlaceholderThumb({ label }: { readonly label: string }) {
   );
 }
 
+const HERO_EASE = [0.22, 1, 0.36, 1] as const;
+
 export function HomePage() {
   const navigate = useNavigate();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const reducedMotion = useReducedMotion();
+
+  const heroChild = (delaySec: number) =>
+    reducedMotion
+      ? { duration: 0, delay: 0 }
+      : { duration: 0.45, delay: delaySec, ease: HERO_EASE };
 
   return (
     <div className="na-pregame-scene relative min-h-screen">
@@ -82,45 +91,53 @@ export function HomePage() {
           style={{ paddingLeft: "var(--na-space-page-x)", paddingRight: "var(--na-space-page-x)" }}
         >
           <div className="mx-auto flex max-w-6xl flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-            <motion.div
-              className="max-w-xl lg:max-w-[28rem] lg:flex-[1.15] lg:min-w-0"
-              initial={{ opacity: 0, x: -18 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            >
+            <div className="max-w-xl lg:max-w-[28rem] lg:flex-[1.15] lg:min-w-0">
               <div className="border-l-2 border-(--na-cyan) pl-5 md:pl-6">
-                <p
+                <motion.p
                   className="text-[10px] font-medium tracking-[0.42em] text-(--na-purple) uppercase"
                   style={{
                     fontFamily: "var(--na-font-display)",
                     marginBottom: 0,
                   }}
+                  initial={reducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -14 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={heroChild(0)}
                 >
-                  Insert coin
-                </p>
-                <h1
+                  <span className="na-insert-coin-blink inline-block">Insert coin</span>
+                </motion.p>
+                <motion.h1
                   className="text-3xl font-bold tracking-[0.04em] text-(--na-text) sm:text-4xl md:text-5xl lg:text-[3.25rem]"
                   style={{
                     fontFamily: "var(--na-font-display)",
                     marginTop: "var(--na-space-hero-kicker)",
                   }}
+                  initial={reducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -14 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={heroChild(0.06)}
                 >
                   NEON ARENA
-                </h1>
-                <p
+                </motion.h1>
+                <motion.p
                   className="max-w-md text-sm font-normal leading-relaxed text-(--na-text-muted) md:text-base"
                   style={{ marginTop: "var(--na-space-hero-title)" }}
+                  initial={reducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -14 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={heroChild(0.12)}
                 >
                   Pick a cabinet. Battle fast. No account — jump straight into Tic Tac Toe or line
                   up what&apos;s next.
-                </p>
+                </motion.p>
               </div>
-            </motion.div>
+            </div>
             <motion.div
               className="flex w-full shrink-0 flex-col gap-4 rounded-xl border border-(--na-border) bg-(--na-surface) p-4 shadow-(--na-glow-grid) sm:flex-row sm:flex-wrap sm:items-center sm:justify-end lg:max-w-[min(100%,22rem)] lg:flex-col lg:items-stretch"
-              initial={{ opacity: 0, y: 10 }}
+              initial={reducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.48, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              transition={
+                reducedMotion
+                  ? { duration: 0 }
+                  : { duration: 0.48, delay: 0.1, ease: HERO_EASE }
+              }
             >
               <p
                 className="text-[10px] font-semibold tracking-[0.28em] text-(--na-text-muted) uppercase sm:mr-auto lg:mr-0"
@@ -157,9 +174,11 @@ export function HomePage() {
           <motion.div
             className="mb-10 flex flex-col md:mb-12 lg:max-w-lg"
             style={{ gap: "var(--na-space-4)" }}
-            initial={{ opacity: 0 }}
+            initial={reducedMotion ? { opacity: 1 } : { opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.14, duration: 0.45 }}
+            transition={
+              reducedMotion ? { duration: 0 } : { delay: 0.14, duration: 0.45 }
+            }
           >
             <p
               className="text-[10px] font-medium tracking-[0.38em] text-(--na-rose) uppercase"
@@ -182,17 +201,17 @@ export function HomePage() {
             variants={{
               hidden: {},
               show: {
-                transition: { staggerChildren: 0.08 },
+                transition: { staggerChildren: reducedMotion ? 0 : 0.08 },
               },
             }}
           >
             <motion.div
               className="md:col-span-2 xl:col-span-5 xl:row-span-2"
               variants={{
-                hidden: { opacity: 0, y: 22 },
+                hidden: reducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 },
                 show: { opacity: 1, y: 0 },
               }}
-              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: reducedMotion ? 0 : 0.45, ease: HERO_EASE }}
             >
               <GameCard
                 title="Tic Tac Toe"
@@ -207,30 +226,30 @@ export function HomePage() {
             <motion.div
               className="xl:col-span-4"
               variants={{
-                hidden: { opacity: 0, y: 22 },
+                hidden: reducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 },
                 show: { opacity: 1, y: 0 },
               }}
-              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: reducedMotion ? 0 : 0.45, ease: HERO_EASE }}
             >
               <GameCard title="Chess" thumbnail={<PlaceholderThumb label="C" />} comingSoon />
             </motion.div>
             <motion.div
               className="xl:col-span-3"
               variants={{
-                hidden: { opacity: 0, y: 22 },
+                hidden: reducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 },
                 show: { opacity: 1, y: 0 },
               }}
-              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: reducedMotion ? 0 : 0.45, ease: HERO_EASE }}
             >
               <GameCard title="Checkers" thumbnail={<PlaceholderThumb label="K" />} comingSoon />
             </motion.div>
             <motion.div
               className="md:col-span-2 xl:col-span-7 xl:col-start-6"
               variants={{
-                hidden: { opacity: 0, y: 22 },
+                hidden: reducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 },
                 show: { opacity: 1, y: 0 },
               }}
-              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: reducedMotion ? 0 : 0.45, ease: HERO_EASE }}
             >
               <GameCard title="Battleship" thumbnail={<PlaceholderThumb label="B" />} comingSoon />
             </motion.div>

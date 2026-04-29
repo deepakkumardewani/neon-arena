@@ -50,9 +50,27 @@
   }
 }
 
+@keyframes insert-coin-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.42;
+  }
+}
+
+.na-insert-coin-blink {
+  animation: insert-coin-blink 2.75s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  .na-insert-coin-blink {
+    animation: none;
   }
 
   *,

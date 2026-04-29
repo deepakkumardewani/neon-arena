@@ -76,7 +76,9 @@ describe("NicknameEntryPage", () => {
     await user.type(p1, "FirstName");
     await user.click(screen.getByRole("button", { name: /^continue$/i }));
 
-    expect(screen.getByText(/player 2/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByLabelText(/player 2/i)).toBeInTheDocument();
+    });
 
     const p2 = screen.getByRole("textbox");
     await user.clear(p2);

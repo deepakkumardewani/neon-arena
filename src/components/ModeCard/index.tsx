@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+
 export interface ModeCardProps {
   readonly icon: ReactNode;
   readonly title: string;
@@ -10,6 +12,8 @@ export interface ModeCardProps {
 }
 
 export function ModeCard({ icon, title, description, selected = false, onClick }: ModeCardProps) {
+  const reducedMotion = useReducedMotion();
+
   return (
     <motion.button
       type="button"
@@ -19,9 +23,20 @@ export function ModeCard({ icon, title, description, selected = false, onClick }
           ? "border-(--na-cyan) bg-(--na-surface) shadow-(--na-glow-x)"
           : "border-(--na-border) bg-(--na-surface) hover:border-(--na-purple)"
       }`}
-      whileHover={{ y: -2 }}
+      animate={
+        reducedMotion
+          ? { scale: 1 }
+          : {
+              scale: selected ? 1.014 : 1,
+            }
+      }
+      whileHover={reducedMotion ? undefined : { y: -2 }}
       whileTap={{ scale: 0.992 }}
-      transition={{ type: "spring", stiffness: 420, damping: 28 }}
+      transition={
+        reducedMotion
+          ? { duration: 0 }
+          : { type: "spring", stiffness: 420, damping: 28 }
+      }
       aria-pressed={selected}
     >
       <span

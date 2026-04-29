@@ -1,10 +1,11 @@
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import { NicknameInput, createGuestNickname, isNicknameValid } from "@/components/NicknameInput";
 import { Button } from "@/components/ui/Button";
 import { usePlayerStore } from "@/hooks/usePlayerStore";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { authService, gameService } from "@/lib/services";
 import type { Difficulty, GameMode } from "@/types/game";
 
@@ -40,11 +41,14 @@ async function ensurePlayerUid(setUid: (uid: string) => void): Promise<void> {
   setUid(created.uid);
 }
 
+const STEP_EASE = [0.22, 1, 0.36, 1] as const;
+
 export function NicknameEntryPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const mode = parseModeParam(searchParams.get("mode"));
   const difficulty = parseDifficultyParam(searchParams.get("difficulty"));
+  const reducedMotion = useReducedMotion();
 
   const setNickname = usePlayerStore((s) => s.setNickname);
   const setLocalGuestNickname = usePlayerStore((s) => s.setLocalGuestNickname);
@@ -155,9 +159,9 @@ export function NicknameEntryPage() {
         style={{ gap: "var(--na-space-10)" }}
       >
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
+          initial={reducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: reducedMotion ? 0 : 0.42, ease: STEP_EASE }}
         >
           <div className="border-l-2 border-(--na-rose) pl-5 md:pl-6">
             <p
@@ -199,38 +203,57 @@ export function NicknameEntryPage() {
           ) : null}
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <NicknameInput
-            id={isLocal ? `nick-${localStep}` : "nick-solo"}
-            label={label}
-            value={value}
-            onValueChange={setValue}
-          />
-        </motion.div>
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={isLocal ? `step-${localStep}` : "solo-flow"}
+            initial={
+              reducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: 36 }
+            }
+            animate={{ opacity: 1, x: 0 }}
+            exit={reducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -36 }}
+            transition={
+              reducedMotion
+                ? { duration: 0 }
+                : { duration: 0.26, ease: STEP_EASE }
+            }
+          >
+            <NicknameInput
+              id={isLocal ? `nick-${localStep}` : "nick-solo"}
+              label={label}
+              value={value}
+              onValueChange={setValue}
+            />
+          </motion.div>
+        </AnimatePresence>
 
         <motion.div
           className="mt-auto flex flex-wrap items-center pt-2"
           style={{ gap: "var(--na-space-7)" }}
-          initial={{ opacity: 0 }}
+          initial={reducedMotion ? { opacity: 1 } : { opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.12, duration: 0.35 }}
+          transition={
+            reducedMotion ? { duration: 0 } : { delay: 0.12, duration: 0.35 }
+          }
         >
-          <Button
-            type="button"
-            unstyled
-            disabled={!canContinue}
-            className="rounded-tl-full rounded-br-full rounded-tr-full rounded-bl-full border-2 border-(--na-cyan) bg-(--na-surface) px-10 py-3.5 text-base font-bold text-(--na-cyan) shadow-(--na-glow-grid) transition-opacity disabled:border-(--na-border) disabled:text-(--na-text-muted) disabled:shadow-none"
-            style={{ fontFamily: "var(--na-font-display)" }}
-            onClick={() => {
-              void handleContinue();
-            }}
+          <motion.span
+            className="inline-block"
+            tabIndex={-1}
+            whileTap={reducedMotion ? undefined : { scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 520, damping: 28 }}
           >
-            Continue
-          </Button>
+            <Button
+              type="button"
+              unstyled
+              disabled={!canContinue}
+              className="rounded-tl-full rounded-br-full rounded-tr-full rounded-bl-full border-2 border-(--na-cyan) bg-(--na-surface) px-10 py-3.5 text-base font-bold text-(--na-cyan) shadow-(--na-glow-grid) transition-opacity disabled:border-(--na-border) disabled:text-(--na-text-muted) disabled:shadow-none"
+              style={{ fontFamily: "var(--na-font-display)" }}
+              onClick={() => {
+                void handleContinue();
+              }}
+            >
+              Continue
+            </Button>
+          </motion.span>
           <Link
             to="/play/tictactoe"
             className="inline-flex items-center rounded-tl-full rounded-br-full rounded-tr-full rounded-bl-full border-2 border-(--na-border) px-6 py-3 text-sm font-medium text-(--na-text) transition-colors hover:border-(--na-purple) hover:text-(--na-text)"
