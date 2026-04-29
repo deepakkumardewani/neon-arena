@@ -33,14 +33,15 @@ function headlineColor(palette: WinOverlayPalette): string {
   return "var(--na-cyan)";
 }
 
-function buildParticleOptions(color: string): ISourceOptions {
+function buildParticleOptions(brandHex: string, accentPurpleHex: string): ISourceOptions {
+  const trio = [brandHex, "#ffffff", accentPurpleHex];
   return {
     fullScreen: { enable: false },
     background: { color: { value: "transparent" } },
     detectRetina: true,
     particles: {
       number: { value: 0 },
-      color: { value: color },
+      color: { value: brandHex },
       shape: { type: "square" },
       opacity: { value: 1 },
       size: { value: { min: 2, max: 6 } },
@@ -65,11 +66,25 @@ function buildParticleOptions(color: string): ISourceOptions {
         autoPlay: true,
         fill: true,
         life: { count: 1, duration: 0.35, wait: false },
-        rate: { delay: 0.02, quantity: 55 },
-        position: { x: 50, y: 32 },
+        rate: { delay: 0.02, quantity: 28 },
+        position: { x: 25, y: 32 },
         startCount: 0,
         particles: {
-          color: { value: [color, "#ffffff"] },
+          color: { value: trio },
+          move: {
+            speed: { min: 14, max: 28 },
+          },
+        },
+      },
+      {
+        autoPlay: true,
+        fill: true,
+        life: { count: 1, duration: 0.35, wait: false },
+        rate: { delay: 0.02, quantity: 27 },
+        position: { x: 75, y: 32 },
+        startCount: 0,
+        particles: {
+          color: { value: trio },
           move: {
             speed: { min: 14, max: 28 },
           },
@@ -94,7 +109,10 @@ export function WinOverlay({
   const pid = `na-win-particles-${useId().replace(/:/g, "")}`;
   const [engineReady, setEngineReady] = useState(false);
   const particleColor = paletteToParticleColor(palette);
-  const options = useMemo(() => buildParticleOptions(particleColor), [particleColor]);
+  const options = useMemo(
+    () => buildParticleOptions(particleColor, paletteToParticleColor("purple")),
+    [particleColor],
+  );
   const showParticles = !reducedMotion;
 
   useEffect(() => {

@@ -15,7 +15,7 @@ export function GameCard({ title, thumbnail, comingSoon = false, onSelect }: Gam
   const interactive = !comingSoon && onSelect !== undefined;
 
   const shellClass =
-    "relative flex w-full flex-col overflow-hidden rounded-tl-2xl rounded-br-2xl rounded-tr-lg rounded-bl-lg border border-(--na-border) bg-(--na-surface) text-left transition-[border-color,box-shadow] duration-200";
+    "group relative flex w-full flex-col overflow-hidden rounded-tl-2xl rounded-br-2xl rounded-tr-lg rounded-bl-lg border border-(--na-border) bg-(--na-surface) text-left transition-[border-color,box-shadow] duration-200";
 
   const body = (
     <>

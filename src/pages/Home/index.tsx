@@ -26,13 +26,20 @@ function TicTacToeThumb() {
             />
           </filter>
         </defs>
-        <g stroke="var(--na-purple)" strokeWidth="2" filter="url(#home-ttt-glow)" opacity="0.85">
+        <g
+          stroke="var(--na-purple)"
+          strokeWidth="2"
+          filter="url(#home-ttt-glow)"
+          opacity="0.85"
+          className="na-ttt-thumb-grid"
+        >
           <line x1="35" y1="10" x2="35" y2="90" />
           <line x1="65" y1="10" x2="65" y2="90" />
           <line x1="10" y1="35" x2="90" y2="35" />
           <line x1="10" y1="65" x2="90" y2="65" />
         </g>
         <line
+          className="na-ttt-thumb-x-arm"
           x1="18"
           y1="18"
           x2="30"
@@ -42,6 +49,7 @@ function TicTacToeThumb() {
           strokeLinecap="round"
         />
         <line
+          className="na-ttt-thumb-x-arm"
           x1="30"
           y1="18"
           x2="18"
@@ -50,7 +58,15 @@ function TicTacToeThumb() {
           strokeWidth="2.5"
           strokeLinecap="round"
         />
-        <circle cx="78" cy="24" r="9" fill="none" stroke="var(--na-rose)" strokeWidth="2.5" />
+        <circle
+          className="na-ttt-thumb-o-ring"
+          cx="78"
+          cy="24"
+          r="9"
+          fill="none"
+          stroke="var(--na-rose)"
+          strokeWidth="2.5"
+        />
       </svg>
     </div>
   );
@@ -84,13 +100,17 @@ export function HomePage() {
 
   return (
     <div className="na-pregame-scene relative min-h-screen">
-      <ParticleBackground />
+      <ParticleBackground densityBoost />
       <div className="relative z-10 overflow-x-hidden">
         <header
-          className="border-b border-(--na-border) bg-(--na-bg) px-5 py-7 md:px-8 md:py-9 lg:pl-14 lg:pr-10"
+          className="relative border-b border-(--na-border) bg-(--na-bg) px-5 py-7 md:px-8 md:py-9 lg:pl-14 lg:pr-10"
           style={{ paddingLeft: "var(--na-space-page-x)", paddingRight: "var(--na-space-page-x)" }}
         >
-          <div className="mx-auto flex max-w-6xl flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+          <div
+            className="na-hero-scanline-overlay pointer-events-none absolute inset-0 overflow-hidden opacity-[0.085]"
+            aria-hidden
+          />
+          <div className="relative z-10 mx-auto flex max-w-6xl flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-xl lg:max-w-[28rem] lg:flex-[1.15] lg:min-w-0">
               <div className="border-l-2 border-(--na-cyan) pl-5 md:pl-6">
                 <motion.p
@@ -103,7 +123,10 @@ export function HomePage() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={heroChild(0)}
                 >
-                  <span className="na-insert-coin-blink inline-block">Insert coin</span>
+                  <span className="na-insert-coin-blink inline-flex items-center">
+                    <span>Insert coin</span>
+                    <span className="na-insert-coin-cursor font-mono leading-none">▍</span>
+                  </span>
                 </motion.p>
                 <motion.h1
                   className="text-3xl font-bold tracking-[0.04em] text-(--na-text) sm:text-4xl md:text-5xl lg:text-[3.25rem]"

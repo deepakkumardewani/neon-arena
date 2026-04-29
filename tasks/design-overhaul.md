@@ -189,9 +189,9 @@ A three-phase visual design pass across four pages and their shared components. 
 
 ---
 
-### Phase 3 — /delight (Personality & Joy)
+### Phase 3 — /delight (Personality & Joy) ✅ **Done**
 
-- **Task 9: Homepage — "Insert coin" arcade prompt & card personality**
+- [x] **Task 9: Homepage — "Insert coin" arcade prompt & card personality**
   **Description:** `"Insert coin"` at `Home/index.tsx:96` is static decorative copy. It should feel like a real arcade CRT prompt. The `TicTacToeThumb` SVG in the hero card is static — on hover it could preview the game glyphs.
   **Acceptance criteria:**
   - `"Insert coin"` has a looping blink — the text or a trailing cursor blinks on/off at ~1.1s intervals (CSS `@keyframes insert-coin-blink` in `animations.css`)
@@ -211,7 +211,7 @@ A three-phase visual design pass across four pages and their shared components. 
 
 ---
 
-- **Task 10: ModeSelect — mode card icon personality**
+- [x] **Task 10: ModeSelect — mode card icon personality**
   **Description:** The 4 mode card icons (`IconVsAi`, `IconLocal`, `IconOnline`, `IconFriend`) are static SVGs. On hover they could express their personality. Selected state currently just changes border/text colour — it could feel more celebratory.
   **Acceptance criteria:**
   - At least 2 of the 4 icons animate on `ModeCard` hover (e.g. VS AI brain eyes blink, Local icon pair bounces apart, Online globe rotates a degree, Friend card plus-icon pulses)
@@ -229,7 +229,7 @@ A three-phase visual design pass across four pages and their shared components. 
 
 ---
 
-- **Task 11: NicknameEntry — validation reward & character limit indicator**
+- [x] **Task 11: NicknameEntry — validation reward & character limit indicator**
   **Description:** When a valid nickname is entered, there is no positive feedback — the Continue button simply becomes enabled. The 24-char `maxLength` is enforced by the input but never shown. The character limit indicator added in Task 3 needs a delight touch.
   **Acceptance criteria:**
   - When `isNicknameValid(value)` first becomes true, a checkmark icon or glow reward appears next to the input with a brief draw/scale animation
@@ -248,7 +248,7 @@ A three-phase visual design pass across four pages and their shared components. 
 
 ---
 
-- **Task 12: GamePage — mark glow burst, cascading win shimmer, WinOverlay polish**
+- [x] **Task 12: GamePage — mark glow burst, cascading win shimmer, WinOverlay polish**
   **Description:** Mark placement: `CellGlyph` has an `animate` state (450ms) but the cell background has no burst effect. Win cells: `glow-pulse-win` applies `animation: glow-pulse-win 1.2s ease-in-out infinite` to all 3 winning cells simultaneously — they all pulse together. WinOverlay: the confetti fires from a single emitter at `position: { x: 50, y: 32 }` and is one colour + white.
   **Acceptance criteria:**
   - When a mark is placed, the cell background briefly flashes with a `var(--na-glow-x)` or `var(--na-glow-o)` burst (CSS keyframe `@keyframes cell-place-burst`) that fades in 300ms
@@ -268,7 +268,7 @@ A three-phase visual design pass across four pages and their shared components. 
 
 ---
 
-### Checkpoint 3 — Final Verification
+### Checkpoint 3 — Final Verification ✅
 
 - All 4 pages feel distinctly better than before the overhaul
 - No console errors on any page

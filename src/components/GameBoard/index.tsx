@@ -53,6 +53,7 @@ function BoardCellButton({
   isWinning,
   winner,
   interactionLocked,
+  winCascadeDelayMs,
   onCellClick,
 }: {
   readonly index: number;
@@ -60,6 +61,7 @@ function BoardCellButton({
   readonly isWinning: boolean;
   readonly winner: "X" | "O" | null;
   readonly interactionLocked: boolean;
+  readonly winCascadeDelayMs: number;
   readonly onCellClick: (index: number) => void;
 }) {
   const reducedMotion = useReducedMotion();
@@ -81,10 +83,13 @@ function BoardCellButton({
     prevMark.current = cell;
   }, [cell, reducedMotion]);
 
+  const cascadeDelayMs = reducedMotion ? 0 : winCascadeDelayMs;
+
   const winPulse =
     isWinning && winner !== null
       ? {
           animation: "glow-pulse-win 1.2s ease-in-out infinite",
+          animationDelay: `${cascadeDelayMs}ms`,
           ["--na-win-pulse" as string]: winner === "O" ? "var(--na-rose)" : "var(--na-cyan)",
         }
       : undefined;
@@ -100,7 +105,7 @@ function BoardCellButton({
       type="button"
       aria-label={ariaLabel}
       disabled={occupied || interactionLocked}
-      className="relative flex min-h-0 min-w-0 items-center justify-center border-0 bg-(--na-surface) p-0 outline-none focus-visible:ring-2 focus-visible:ring-(--na-cyan) focus-visible:ring-offset-2 focus-visible:ring-offset-(--na-bg) disabled:cursor-not-allowed enabled:cursor-pointer enabled:hover:brightness-110"
+      className="relative flex min-h-0 min-w-0 items-center justify-center overflow-hidden border-0 bg-(--na-surface) p-0 outline-none focus-visible:ring-2 focus-visible:ring-(--na-cyan) focus-visible:ring-offset-2 focus-visible:ring-offset-(--na-bg) disabled:cursor-not-allowed enabled:cursor-pointer enabled:hover:brightness-110"
       style={winPulse}
       onClick={() => {
         onCellClick(index);
@@ -118,7 +123,17 @@ function BoardCellButton({
         setPlacePop(false);
       }}
     >
-      <CellGlyph mark={cell} />
+      {placePop && cell !== null && !reducedMotion ? (
+        <span
+          aria-hidden
+          className={`pointer-events-none absolute inset-0 z-0 na-cell-place-burst ${
+            cell === "X" ? "na-cell-place-burst-x" : "na-cell-place-burst-o"
+          }`}
+        />
+      ) : null}
+      <span className="relative z-[1] flex h-full w-full items-center justify-center">
+        <CellGlyph mark={cell} />
+      </span>
     </motion.button>
   );
 }
@@ -145,6 +160,8 @@ export function GameBoard({
     >
       {board.map((cell, index) => {
         const isWinning = winSet?.has(index) ?? false;
+        const cascadeDelayMs =
+          winLine === null || !isWinning ? 0 : Math.max(0, winLine.indexOf(index)) * 80;
 
         return (
           <BoardCellButton
@@ -154,6 +171,7 @@ export function GameBoard({
             isWinning={isWinning}
             winner={winner}
             interactionLocked={interactionLocked}
+            winCascadeDelayMs={cascadeDelayMs}
             onCellClick={onCellClick}
           />
         );

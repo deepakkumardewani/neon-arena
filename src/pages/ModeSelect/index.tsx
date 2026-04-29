@@ -12,8 +12,8 @@ function IconVsAi() {
   return (
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden>
       <rect x="4" y="6" width="16" height="12" rx="2" stroke="currentColor" strokeWidth="1.5" />
-      <circle cx="9" cy="12" r="1.25" fill="currentColor" />
-      <circle cx="15" cy="12" r="1.25" fill="currentColor" />
+      <circle className="na-mode-ai-eye" cx="9" cy="12" r="1.25" fill="currentColor" />
+      <circle className="na-mode-ai-eye" cx="15" cy="12" r="1.25" fill="currentColor" />
       <path d="M9 16h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
     </svg>
   );
@@ -22,8 +22,8 @@ function IconVsAi() {
 function IconLocal() {
   return (
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="9" cy="9" r="3" stroke="currentColor" strokeWidth="1.5" />
-      <circle cx="16" cy="9" r="3" stroke="currentColor" strokeWidth="1.5" />
+      <circle className="na-mode-local-left" cx="9" cy="9" r="3" stroke="currentColor" strokeWidth="1.5" />
+      <circle className="na-mode-local-right" cx="16" cy="9" r="3" stroke="currentColor" strokeWidth="1.5" />
       <path
         d="M4 20c0-3 3.5-5 8-5s8 2 8 5"
         stroke="currentColor"
@@ -37,13 +37,15 @@ function IconLocal() {
 function IconOnline() {
   return (
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
-      <path
-        d="M3 12h18M12 3a15 15 0 010 18M12 3a15 15 0 000 18"
-        stroke="currentColor"
-        strokeWidth="1.2"
-        opacity="0.6"
-      />
+      <g className="na-mode-online-globe">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
+        <path
+          d="M3 12h18M12 3a15 15 0 010 18M12 3a15 15 0 000 18"
+          stroke="currentColor"
+          strokeWidth="1.2"
+          opacity="0.6"
+        />
+      </g>
     </svg>
   );
 }
@@ -57,7 +59,13 @@ function IconFriend() {
         strokeWidth="1.5"
         strokeLinejoin="round"
       />
-      <path d="M18 6h3M19.5 4.5v3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path
+        className="na-mode-friend-plus"
+        d="M18 6h3M19.5 4.5v3"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }

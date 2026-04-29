@@ -6,7 +6,10 @@ import { cssVarRgbForParticles } from "@/lib/particles/cssVarRgbForParticles";
 import { ensureParticlesEngine } from "@/lib/particles/ensureEngine";
 import { TsparticlesDivHost } from "@/lib/particles/TsparticlesDivHost";
 
-function buildAmbientOptions(purple: string, cyan: string): ISourceOptions {
+const AMBIENT_PARTICLE_COUNT = 72;
+const AMBIENT_PARTICLE_COUNT_HERO_BOOST = 104;
+
+function buildAmbientOptions(purple: string, cyan: string, particleCount: number): ISourceOptions {
   return {
     fullScreen: { enable: false },
     background: { color: { value: "transparent" } },
@@ -14,7 +17,7 @@ function buildAmbientOptions(purple: string, cyan: string): ISourceOptions {
     fpsLimit: 60,
     particles: {
       /* Fixed count: density +0×0 canvas at first layout can yield zero particles */
-      number: { value: 72, density: { enable: false } },
+      number: { value: particleCount, density: { enable: false } },
       color: { value: [purple, cyan] },
       shape: { type: "circle" },
       opacity: { value: { min: 0.22, max: 0.55 } },
@@ -53,7 +56,12 @@ function logParticlesLoaded(container: Container): void {
   });
 }
 
-export function ParticleBackground() {
+export interface ParticleBackgroundProps {
+  /** Denser ambient field near the homepage hero (still capped for perf). */
+  readonly densityBoost?: boolean;
+}
+
+export function ParticleBackground({ densityBoost = false }: ParticleBackgroundProps) {
   const reduced = useReducedMotion();
   const pid = `na-ambient-${useId().replace(/:/g, "")}`;
   const [engineReady, setEngineReady] = useState(false);
@@ -63,9 +71,11 @@ export function ParticleBackground() {
     setColors(cssVarRgbForParticles());
   }, []);
 
+  const particleCount = densityBoost ? AMBIENT_PARTICLE_COUNT_HERO_BOOST : AMBIENT_PARTICLE_COUNT;
+
   const options = useMemo(
-    () => buildAmbientOptions(colors.purple, colors.cyan),
-    [colors.purple, colors.cyan],
+    () => buildAmbientOptions(colors.purple, colors.cyan, particleCount),
+    [colors.purple, colors.cyan, particleCount],
   );
 
   useEffect(() => {

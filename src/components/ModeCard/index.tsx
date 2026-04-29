@@ -18,7 +18,7 @@ export function ModeCard({ icon, title, description, selected = false, onClick }
     <motion.button
       type="button"
       onClick={onClick}
-      className={`flex w-full cursor-pointer gap-4 rounded-tl-2xl rounded-br-xl rounded-tr-md rounded-bl-md border px-4 py-4 text-left transition-colors md:gap-5 md:px-6 md:py-5 ${
+      className={`group flex w-full cursor-pointer gap-4 rounded-tl-2xl rounded-br-xl rounded-tr-md rounded-bl-md border px-4 py-4 text-left transition-colors md:gap-5 md:px-6 md:py-5 ${
         selected
           ? "border-(--na-cyan) bg-(--na-surface) shadow-(--na-glow-x)"
           : "border-(--na-border) bg-(--na-surface) hover:border-(--na-purple)"
@@ -39,16 +39,31 @@ export function ModeCard({ icon, title, description, selected = false, onClick }
       }
       aria-pressed={selected}
     >
-      <span
+      <motion.span
         className={`flex size-12 shrink-0 items-center justify-center rounded-tl-lg rounded-br-lg rounded-tr-sm rounded-bl-sm border md:size-14 ${
           selected
             ? "border-(--na-cyan) text-(--na-cyan)"
             : "border-(--na-border) text-(--na-purple)"
         }`}
         aria-hidden
+        initial={false}
+        animate={
+          reducedMotion || !selected
+            ? { boxShadow: "0 0 0 transparent" }
+            : {
+                boxShadow: [
+                  "0 0 0px transparent",
+                  "0 0 26px color-mix(in oklch, var(--na-cyan) 58%, transparent)",
+                  "0 0 4px transparent",
+                ],
+              }
+        }
+        transition={
+          reducedMotion ? { duration: 0 } : { duration: 0.52, times: [0, 0.24, 1], ease: [0.22, 1, 0.36, 1] }
+        }
       >
         {icon}
-      </span>
+      </motion.span>
       <span className="min-w-0 flex-1">
         <span
           className="block text-base font-semibold tracking-[0.08em] text-(--na-text) uppercase md:text-lg"
