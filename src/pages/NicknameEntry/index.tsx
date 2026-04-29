@@ -150,7 +150,10 @@ export function NicknameEntryPage() {
         paddingBottom: "var(--na-space-section)",
       }}
     >
-      <main className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-10 lg:ml-8 lg:mr-auto lg:max-w-lg xl:ml-12">
+      <main
+        className="mx-auto flex w-full max-w-xl flex-1 flex-col lg:ml-8 lg:mr-auto lg:max-w-lg xl:ml-12"
+        style={{ gap: "var(--na-space-10)" }}
+      >
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -174,12 +177,25 @@ export function NicknameEntryPage() {
             </p>
           </div>
           {isLocal ? (
-            <p
-              className="mt-6 text-xs tracking-[0.25em] text-(--na-purple) uppercase"
-              style={{ fontFamily: "var(--na-font-display)" }}
+            <div
+              className="inline-flex w-fit max-w-full flex-wrap items-center gap-2 rounded-md border border-(--na-border) bg-(--na-bg) px-3 py-2"
+              style={{ marginTop: "var(--na-space-8)" }}
+              aria-label={`Step ${localStep + 1} of 2`}
             >
-              Step {localStep + 1} of 2
-            </p>
+              <span
+                className="text-[10px] font-semibold tracking-[0.32em] text-(--na-purple) uppercase"
+                style={{ fontFamily: "var(--na-font-display)" }}
+              >
+                Progress
+              </span>
+              <span className="hidden h-4 w-px shrink-0 bg-(--na-border) sm:inline" aria-hidden />
+              <p
+                className="text-xs font-bold tracking-[0.2em] text-(--na-text) uppercase"
+                style={{ fontFamily: "var(--na-font-display)" }}
+              >
+                Step {localStep + 1} of 2
+              </p>
+            </div>
           ) : null}
         </motion.div>
 
@@ -197,7 +213,8 @@ export function NicknameEntryPage() {
         </motion.div>
 
         <motion.div
-          className="mt-auto flex flex-wrap items-center gap-3 pt-4"
+          className="mt-auto flex flex-wrap items-center pt-2"
+          style={{ gap: "var(--na-space-7)" }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.12, duration: 0.35 }}
@@ -206,7 +223,7 @@ export function NicknameEntryPage() {
             type="button"
             unstyled
             disabled={!canContinue}
-            className="rounded-tl-full rounded-br-full rounded-tr-full rounded-bl-full border-2 border-(--na-cyan) bg-(--na-surface) px-8 py-3 text-sm font-semibold text-(--na-cyan) shadow-(--na-glow-grid) transition-opacity disabled:border-(--na-border) disabled:text-(--na-text-muted) disabled:shadow-none"
+            className="rounded-tl-full rounded-br-full rounded-tr-full rounded-bl-full border-2 border-(--na-cyan) bg-(--na-surface) px-10 py-3.5 text-base font-bold text-(--na-cyan) shadow-(--na-glow-grid) transition-opacity disabled:border-(--na-border) disabled:text-(--na-text-muted) disabled:shadow-none"
             style={{ fontFamily: "var(--na-font-display)" }}
             onClick={() => {
               void handleContinue();
@@ -216,7 +233,7 @@ export function NicknameEntryPage() {
           </Button>
           <Link
             to="/play/tictactoe"
-            className="inline-flex items-center rounded-tl-full rounded-br-full rounded-tr-full rounded-bl-full border-2 border-(--na-border) px-7 py-3 text-sm text-(--na-text-muted) transition-colors hover:border-(--na-purple) hover:text-(--na-text)"
+            className="inline-flex items-center rounded-tl-full rounded-br-full rounded-tr-full rounded-bl-full border-2 border-(--na-border) px-6 py-3 text-sm font-medium text-(--na-text) transition-colors hover:border-(--na-purple) hover:text-(--na-text)"
             style={{ fontFamily: "var(--na-font-display)" }}
           >
             Back

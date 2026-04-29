@@ -34,6 +34,22 @@
   --na-space-page-y: clamp(2.25rem, 6vw, 4rem);
   --na-space-section: clamp(2rem, 5vw, 3.25rem);
 
+  /* Scale steps — use via mt-[length:var(--na-space-N)] / gap / padding */
+  --na-space-2: 0.375rem;
+  --na-space-3: 0.5rem;
+  --na-space-4: 0.625rem;
+  --na-space-5: 0.875rem;
+  --na-space-6: 1rem;
+  --na-space-7: 1.25rem;
+  --na-space-8: 1.5rem;
+  --na-space-9: 1.875rem;
+  --na-space-10: 2.25rem;
+
+  /* Hero / section stack (distinct from raw Tailwind mt-3/mt-4) */
+  --na-space-hero-kicker: var(--na-space-5);
+  --na-space-hero-title: var(--na-space-7);
+  --na-space-hero-subtitle: var(--na-space-9);
+
   /* Breakpoints (reference for Tailwind @theme / media) */
   --na-bp-sm: 375px;
   --na-bp-md: 768px;

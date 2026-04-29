@@ -1,6 +1,6 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
-import { validateNickname } from "@/components/NicknameInput/nicknameRules";
+import { NICKNAME_MAX_LEN, validateNickname } from "@/components/NicknameInput/nicknameRules";
 
 export interface NicknameInputProps {
   readonly value: string;
@@ -9,10 +9,15 @@ export interface NicknameInputProps {
   readonly label: string;
 }
 
+const NEAR_LIMIT_CHARS = 6;
+
 export function NicknameInput({ value, onValueChange, id, label }: NicknameInputProps) {
   const error = useMemo(() => validateNickname(value), [value]);
+  const [focused, setFocused] = useState(false);
 
   const inputId = id ?? "nickname-input";
+
+  const showCounter = focused || value.length >= NICKNAME_MAX_LEN - NEAR_LIMIT_CHARS;
 
   return (
     <div className="flex flex-col gap-2">
@@ -28,10 +33,16 @@ export function NicknameInput({ value, onValueChange, id, label }: NicknameInput
         type="text"
         autoComplete="off"
         spellCheck={false}
-        maxLength={24}
+        maxLength={NICKNAME_MAX_LEN}
         value={value}
         onChange={(e) => {
           onValueChange(e.target.value);
+        }}
+        onFocus={() => {
+          setFocused(true);
+        }}
+        onBlur={() => {
+          setFocused(false);
         }}
         className={`rounded-lg border-2 bg-(--na-surface) px-4 py-3.5 text-(--na-text) outline-none transition-[border-color,box-shadow] ${
           error !== null
@@ -40,8 +51,21 @@ export function NicknameInput({ value, onValueChange, id, label }: NicknameInput
         }`}
         style={{ fontFamily: "var(--na-font-body, sans-serif)" }}
         aria-invalid={error !== null}
-        aria-describedby={error ? `${inputId}-error` : undefined}
+        aria-describedby={
+          [error !== null ? `${inputId}-error` : null, showCounter ? `${inputId}-counter` : null]
+            .filter((x): x is string => x !== null)
+            .join(" ") || undefined
+        }
       />
+      {showCounter ? (
+        <p
+          id={`${inputId}-counter`}
+          className="text-right text-[11px] tabular-nums text-(--na-text-muted)"
+          aria-live="polite"
+        >
+          {value.length} / {NICKNAME_MAX_LEN}
+        </p>
+      ) : null}
       {error ? (
         <p
           id={`${inputId}-error`}

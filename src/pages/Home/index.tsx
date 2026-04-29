@@ -83,49 +83,66 @@ export function HomePage() {
         >
           <div className="mx-auto flex max-w-6xl flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <motion.div
-              className="max-w-xl lg:max-w-[28rem]"
+              className="max-w-xl lg:max-w-[28rem] lg:flex-[1.15] lg:min-w-0"
               initial={{ opacity: 0, x: -18 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             >
               <div className="border-l-2 border-(--na-cyan) pl-5 md:pl-6">
                 <p
-                  className="text-[11px] tracking-[0.42em] text-(--na-purple) uppercase"
-                  style={{ fontFamily: "var(--na-font-display)" }}
+                  className="text-[10px] font-medium tracking-[0.42em] text-(--na-purple) uppercase"
+                  style={{
+                    fontFamily: "var(--na-font-display)",
+                    marginBottom: 0,
+                  }}
                 >
                   Insert coin
                 </p>
                 <h1
-                  className="mt-3 text-3xl font-bold tracking-[0.04em] text-(--na-text) sm:text-4xl md:text-5xl lg:text-[3.25rem]"
-                  style={{ fontFamily: "var(--na-font-display)" }}
+                  className="text-3xl font-bold tracking-[0.04em] text-(--na-text) sm:text-4xl md:text-5xl lg:text-[3.25rem]"
+                  style={{
+                    fontFamily: "var(--na-font-display)",
+                    marginTop: "var(--na-space-hero-kicker)",
+                  }}
                 >
                   NEON ARENA
                 </h1>
-                <p className="mt-4 max-w-md text-sm leading-relaxed text-(--na-text-muted) md:text-base">
+                <p
+                  className="max-w-md text-sm font-normal leading-relaxed text-(--na-text-muted) md:text-base"
+                  style={{ marginTop: "var(--na-space-hero-title)" }}
+                >
                   Pick a cabinet. Battle fast. No account — jump straight into Tic Tac Toe or line
                   up what&apos;s next.
                 </p>
               </div>
             </motion.div>
             <motion.div
-              className="flex shrink-0 flex-wrap items-center gap-3 lg:-translate-y-1 lg:translate-x-2"
+              className="flex w-full shrink-0 flex-col gap-4 rounded-xl border border-(--na-border) bg-(--na-surface) p-4 shadow-(--na-glow-grid) sm:flex-row sm:flex-wrap sm:items-center sm:justify-end lg:max-w-[min(100%,22rem)] lg:flex-col lg:items-stretch"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.48, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             >
-              <Button
-                type="button"
-                appearance="icon"
-                aria-label="Open settings"
-                onClick={() => {
-                  audioManager.play("click");
-                  hapticManager.tap();
-                  setSettingsOpen(true);
-                }}
+              <p
+                className="text-[10px] font-semibold tracking-[0.28em] text-(--na-text-muted) uppercase sm:mr-auto lg:mr-0"
+                style={{ fontFamily: "var(--na-font-display)" }}
               >
-                {"\u2699\ufe0f"}
-              </Button>
-              <OnlineCounter />
+                Arena lobby
+              </p>
+              <div className="flex flex-wrap items-center gap-3">
+                <Button
+                  type="button"
+                  appearance="icon"
+                  aria-label="Open settings"
+                  onClick={() => {
+                    audioManager.play("click");
+                    hapticManager.tap();
+                    setSettingsOpen(true);
+                  }}
+                >
+                  {"\u2699\ufe0f"}
+                </Button>
+                <OnlineCounter className="min-w-0 flex-1 sm:flex-initial" />
+              </div>
             </motion.div>
           </div>
         </header>
@@ -138,26 +155,28 @@ export function HomePage() {
           }}
         >
           <motion.div
-            className="mb-10 flex flex-col gap-2 md:mb-12 lg:max-w-lg"
+            className="mb-10 flex flex-col md:mb-12 lg:max-w-lg"
+            style={{ gap: "var(--na-space-4)" }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.14, duration: 0.45 }}
           >
             <p
-              className="text-[11px] tracking-[0.35em] text-(--na-rose) uppercase"
+              className="text-[10px] font-medium tracking-[0.38em] text-(--na-rose) uppercase"
               style={{ fontFamily: "var(--na-font-display)" }}
             >
               Live floor
             </p>
             <motion.h2
-              className="text-sm font-semibold tracking-[0.22em] text-(--na-text-muted) uppercase"
+              className="text-xl font-bold tracking-[0.06em] text-(--na-text) md:text-2xl"
               style={{ fontFamily: "var(--na-font-display)" }}
             >
               Games
             </motion.h2>
           </motion.div>
           <motion.div
-            className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-7 xl:grid-cols-12 xl:gap-6"
+            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12"
+            style={{ gap: "var(--na-space-8)" }}
             initial="hidden"
             animate="show"
             variants={{

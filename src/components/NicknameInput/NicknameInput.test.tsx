@@ -16,9 +16,9 @@ describe("nicknameRules", () => {
     expect(isNicknameValid("a")).toBe(false);
   });
 
-  it("rejects more than 16 characters", () => {
-    expect(validateNickname("abcdefghijklmnopq")).not.toBeNull();
-    expect(isNicknameValid("abcdefghijklmnopq")).toBe(false);
+  it("rejects more than 24 characters", () => {
+    expect(validateNickname("abcdefghijklmnopqrstuvwxy")).not.toBeNull();
+    expect(isNicknameValid("abcdefghijklmnopqrstuvwxy")).toBe(false);
   });
 
   it("rejects spaces", () => {
@@ -66,5 +66,14 @@ describe("NicknameInput", () => {
     expect(screen.getByRole("alert")).toBeInTheDocument();
     await user.type(input, "y");
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
+  it("shows character counter when focused", async () => {
+    const user = userEvent.setup();
+    render(<ControlledHarness initial="ab" />);
+    const input = screen.getByRole("textbox");
+    expect(screen.queryByText(/\d+\s*\/\s*24/)).not.toBeInTheDocument();
+    await user.click(input);
+    expect(screen.getByText(/^2\s*\/\s*24$/)).toBeInTheDocument();
   });
 });

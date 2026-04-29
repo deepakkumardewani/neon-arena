@@ -113,25 +113,32 @@ export function ModeSelectPage() {
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
         >
           <p
-            className="text-[11px] tracking-[0.38em] text-(--na-purple) uppercase"
+            className="text-[10px] font-medium tracking-[0.38em] text-(--na-purple) uppercase"
             style={{ fontFamily: "var(--na-font-display)" }}
           >
             Tic Tac Toe
           </p>
           <h1
-            className="mt-3 text-3xl font-bold tracking-[0.06em] text-(--na-text) md:text-4xl lg:text-[2.75rem]"
-            style={{ fontFamily: "var(--na-font-display)" }}
+            className="text-3xl font-bold tracking-[0.06em] text-(--na-text) md:text-4xl lg:text-[2.75rem]"
+            style={{
+              fontFamily: "var(--na-font-display)",
+              marginTop: "var(--na-space-6)",
+            }}
           >
             Choose mode
           </h1>
-          <p className="mt-4 max-w-xl text-sm leading-relaxed text-(--na-text-muted) md:text-base">
+          <p
+            className="max-w-xl text-sm leading-relaxed text-(--na-text-muted) md:text-base"
+            style={{ marginTop: "var(--na-space-10)" }}
+          >
             Solo training, couch co-op, random matchmaking, or a private duel — pick how you want to
             play.
           </p>
         </motion.div>
 
         <motion.div
-          className="mt-12 flex max-w-3xl flex-col gap-4 lg:mt-14"
+          className="mt-12 flex max-w-3xl flex-col lg:mt-14"
+          style={{ gap: "var(--na-space-8)" }}
           initial="hidden"
           animate="show"
           variants={{
@@ -157,7 +164,7 @@ export function ModeSelectPage() {
             />
             {soloOpen ? (
               <motion.div
-                className="mt-4 rounded-tl-xl rounded-br-xl rounded-tr-md rounded-bl-md border border-(--na-border) bg-(--na-surface) px-5 py-5 md:px-6 md:py-6"
+                className="ml-3 mt-2 rounded-lg border border-(--na-border) border-l-[3px] border-l-(--na-purple) bg-(--na-surface) px-4 py-4 md:ml-6 md:mt-3 md:px-5 md:py-5"
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
@@ -252,10 +259,10 @@ export function ModeSelectPage() {
           </motion.div>
         </motion.div>
 
-        <div className="mt-12 lg:mt-14">
+        <div className="mt-14 lg:mt-16">
           <Link
             to="/"
-            className="group inline-flex items-center gap-2 text-sm font-medium text-(--na-cyan) transition-colors hover:text-(--na-text)"
+            className="group inline-flex items-center gap-2 text-sm font-semibold text-(--na-text) transition-colors hover:text-(--na-cyan)"
             style={{ fontFamily: "var(--na-font-display)" }}
           >
             <span aria-hidden className="transition-transform group-hover:-translate-x-0.5">

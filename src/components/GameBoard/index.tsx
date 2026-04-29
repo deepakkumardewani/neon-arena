@@ -56,7 +56,7 @@ export function GameBoard({
 
   return (
     <div
-      className="mx-auto w-full max-w-[480px] rounded-sm p-[2px] shadow-(--na-glow-grid)"
+      className="mx-auto w-full max-w-full rounded-sm p-[2px] shadow-(--na-glow-grid)"
       style={{
         aspectRatio: "1",
         display: "grid",

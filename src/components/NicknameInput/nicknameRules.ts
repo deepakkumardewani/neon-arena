@@ -1,5 +1,5 @@
 export const NICKNAME_MIN_LEN = 2;
-export const NICKNAME_MAX_LEN = 16;
+export const NICKNAME_MAX_LEN = 24;
 
 const NICKNAME_PATTERN = /^[a-zA-Z0-9_]+$/;
 

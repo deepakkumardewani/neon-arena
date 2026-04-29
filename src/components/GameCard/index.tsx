@@ -19,7 +19,7 @@ export function GameCard({ title, thumbnail, comingSoon = false, onSelect }: Gam
       <div className="aspect-video w-full border-b border-(--na-border) bg-(--na-bg)">
         {thumbnail}
       </div>
-      <div className="flex flex-col gap-1.5 px-5 py-4 md:px-6 md:py-5">
+      <div className="flex flex-col px-5 py-4 md:px-6 md:py-5" style={{ gap: "var(--na-space-3)" }}>
         <h2
           className="text-base font-semibold tracking-[0.12em] text-(--na-text) uppercase"
           style={{ fontFamily: "var(--na-font-display)" }}
