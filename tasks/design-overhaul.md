@@ -105,8 +105,8 @@ A three-phase visual design pass across four pages and their shared components. 
 ### Phase 2 — /animate (Motion & Transitions) ✅ **Done**
 
 - [x] **Task 5: Homepage entrance animations & card hover**
-  **Description:** The homepage already has Framer Motion entrance animations on the hero (`opacity 0→1, x -18→0`) and card grid (stagger 0.08s, `y 22→0`). These are functional but flat — the hero animates as one block rather than staggering label → h1 → subtitle. `GameCard` `whileHover` only changes `boxShadow` and `borderColor` — no scale or thumbnail movement.
-  **Acceptance criteria:**
+      **Description:** The homepage already has Framer Motion entrance animations on the hero (`opacity 0→1, x -18→0`) and card grid (stagger 0.08s, `y 22→0`). These are functional but flat — the hero animates as one block rather than staggering label → h1 → subtitle. `GameCard` `whileHover` only changes `boxShadow` and `borderColor` — no scale or thumbnail movement.
+      **Acceptance criteria:**
   - Hero text staggers: `"Insert coin"` label first, then h1, then subtitle, with distinct delays (~60ms apart)
   - `GameCard` hover adds a subtle upward lift (`y: -3`) alongside the existing glow
   - `"Insert coin"` has a subtle looping animation (slow blink or scanline shimmer — CSS keyframe in `animations.css`)
@@ -125,8 +125,8 @@ A three-phase visual design pass across four pages and their shared components. 
 ---
 
 - [x] **Task 6: ModeSelect entrance & selection animations**
-  **Description:** Mode cards enter with `staggerChildren: 0.07` and `y: 14→0` — subtle but acceptable. The `selected` state on `ModeCard` transitions via CSS `transition-colors` only — no spring or motion feedback. The difficulty panel reveal uses `height: 0 → "auto"` with `duration: 0.32` but `overflow` is not clipped during the expand, causing a flash.
-  **Acceptance criteria:**
+      **Description:** Mode cards enter with `staggerChildren: 0.07` and `y: 14→0` — subtle but acceptable. The `selected` state on `ModeCard` transitions via CSS `transition-colors` only — no spring or motion feedback. The difficulty panel reveal uses `height: 0 → "auto"` with `duration: 0.32` but `overflow` is not clipped during the expand, causing a flash.
+      **Acceptance criteria:**
   - Mode card selection triggers a Framer Motion spring that reinforces the `aria-pressed` state change (brief scale or border glow transition)
   - Difficulty panel height expand clips overflow correctly — no content flash before the panel fully opens
   - Page entrance stagger delay is tuned to feel snappy, not sluggish (current 0.07s × 4 = 280ms total — verify or tighten)
@@ -144,8 +144,8 @@ A three-phase visual design pass across four pages and their shared components. 
 ---
 
 - [x] **Task 7: NicknameEntry step transition & input focus**
-  **Description:** The step 1 → step 2 transition in `NicknameEntry` is currently handled by changing `value`/`setValue`/`label` state — the UI re-renders in place with no positional animation. The `NicknameInput` focus glow is a CSS `transition-[border-color,box-shadow]` (instant on tab-in). The Continue button has no press animation.
-  **Acceptance criteria:**
+      **Description:** The step 1 → step 2 transition in `NicknameEntry` is currently handled by changing `value`/`setValue`/`label` state — the UI re-renders in place with no positional animation. The `NicknameInput` focus glow is a CSS `transition-[border-color,box-shadow]` (instant on tab-in). The Continue button has no press animation.
+      **Acceptance criteria:**
   - Step transition (0 → 1) animates the form content: current step slides out left, next step slides in from the right, using `AnimatePresence` keyed on `localStep`
   - Input focus glow uses a short Framer Motion variant (or CSS transition with longer duration) so the cyan ring fades in over ~150ms, not snapping
   - Continue button has a `whileTap` spring scale down and back
@@ -163,8 +163,8 @@ A three-phase visual design pass across four pages and their shared components. 
 ---
 
 - [x] **Task 8: GamePage — turn indicator, mark placement, score counter**
-  **Description:** The turn indicator in `PlayerHUD` is currently just a colour change: active player is cyan/rose, inactive is `--na-text-muted`. There is no transition between turns. The `CellGlyph` draw animation (SVG stroke-dashoffset) is already in place via `GlyphX`/`GlyphO` — but the cell button itself has no entrance. Score W/L/D values are static text — they don't animate on increment.
-  **Acceptance criteria:**
+      **Description:** The turn indicator in `PlayerHUD` is currently just a colour change: active player is cyan/rose, inactive is `--na-text-muted`. There is no transition between turns. The `CellGlyph` draw animation (SVG stroke-dashoffset) is already in place via `GlyphX`/`GlyphO` — but the cell button itself has no entrance. Score W/L/D values are static text — they don't animate on increment.
+      **Acceptance criteria:**
   - Active player name has a `layoutId`-based or `AnimatePresence` crossfade so the `(turn)` indicator transitions smoothly on turn change
   - Cell button wrapper gets a Framer Motion `scale: 0.85 → 1` spring on mark placement (wraps the existing `CellGlyph`)
   - Score numbers animate up on increment using a simple `motion.span` with `key={value}` so each new number slides up in
@@ -192,8 +192,8 @@ A three-phase visual design pass across four pages and their shared components. 
 ### Phase 3 — /delight (Personality & Joy) ✅ **Done**
 
 - [x] **Task 9: Homepage — "Insert coin" arcade prompt & card personality**
-  **Description:** `"Insert coin"` at `Home/index.tsx:96` is static decorative copy. It should feel like a real arcade CRT prompt. The `TicTacToeThumb` SVG in the hero card is static — on hover it could preview the game glyphs.
-  **Acceptance criteria:**
+      **Description:** `"Insert coin"` at `Home/index.tsx:96` is static decorative copy. It should feel like a real arcade CRT prompt. The `TicTacToeThumb` SVG in the hero card is static — on hover it could preview the game glyphs.
+      **Acceptance criteria:**
   - `"Insert coin"` has a looping blink — the text or a trailing cursor blinks on/off at ~1.1s intervals (CSS `@keyframes insert-coin-blink` in `animations.css`)
   - The blink honours `prefers-reduced-motion` (static when reduced)
   - `TicTacToeThumb` animates its X/O glyphs on `GameCard` hover — the existing SVG lines draw or glow on `whileHover`
@@ -212,8 +212,8 @@ A three-phase visual design pass across four pages and their shared components. 
 ---
 
 - [x] **Task 10: ModeSelect — mode card icon personality**
-  **Description:** The 4 mode card icons (`IconVsAi`, `IconLocal`, `IconOnline`, `IconFriend`) are static SVGs. On hover they could express their personality. Selected state currently just changes border/text colour — it could feel more celebratory.
-  **Acceptance criteria:**
+      **Description:** The 4 mode card icons (`IconVsAi`, `IconLocal`, `IconOnline`, `IconFriend`) are static SVGs. On hover they could express their personality. Selected state currently just changes border/text colour — it could feel more celebratory.
+      **Acceptance criteria:**
   - At least 2 of the 4 icons animate on `ModeCard` hover (e.g. VS AI brain eyes blink, Local icon pair bounces apart, Online globe rotates a degree, Friend card plus-icon pulses)
   - Selected `ModeCard` adds a brief glow burst on the icon container when transitioning to selected state (using `AnimatePresence` or `motion` key change)
   - Animations are scoped to the icon — no layout shift on the card itself
@@ -230,8 +230,8 @@ A three-phase visual design pass across four pages and their shared components. 
 ---
 
 - [x] **Task 11: NicknameEntry — validation reward & character limit indicator**
-  **Description:** When a valid nickname is entered, there is no positive feedback — the Continue button simply becomes enabled. The 24-char `maxLength` is enforced by the input but never shown. The character limit indicator added in Task 3 needs a delight touch.
-  **Acceptance criteria:**
+      **Description:** When a valid nickname is entered, there is no positive feedback — the Continue button simply becomes enabled. The 24-char `maxLength` is enforced by the input but never shown. The character limit indicator added in Task 3 needs a delight touch.
+      **Acceptance criteria:**
   - When `isNicknameValid(value)` first becomes true, a checkmark icon or glow reward appears next to the input with a brief draw/scale animation
   - Character counter (added in Task 3) changes colour as the user approaches the limit: muted → warning (rose) at ≥ 20 chars
   - At exactly 24 chars (maxLength hit), the counter pulses rose once to signal the cap
@@ -249,8 +249,8 @@ A three-phase visual design pass across four pages and their shared components. 
 ---
 
 - [x] **Task 12: GamePage — mark glow burst, cascading win shimmer, WinOverlay polish**
-  **Description:** Mark placement: `CellGlyph` has an `animate` state (450ms) but the cell background has no burst effect. Win cells: `glow-pulse-win` applies `animation: glow-pulse-win 1.2s ease-in-out infinite` to all 3 winning cells simultaneously — they all pulse together. WinOverlay: the confetti fires from a single emitter at `position: { x: 50, y: 32 }` and is one colour + white.
-  **Acceptance criteria:**
+      **Description:** Mark placement: `CellGlyph` has an `animate` state (450ms) but the cell background has no burst effect. Win cells: `glow-pulse-win` applies `animation: glow-pulse-win 1.2s ease-in-out infinite` to all 3 winning cells simultaneously — they all pulse together. WinOverlay: the confetti fires from a single emitter at `position: { x: 50, y: 32 }` and is one colour + white.
+      **Acceptance criteria:**
   - When a mark is placed, the cell background briefly flashes with a `var(--na-glow-x)` or `var(--na-glow-o)` burst (CSS keyframe `@keyframes cell-place-burst`) that fades in 300ms
   - Winning cells cascade their pulse: cell 0 starts at `animation-delay: 0ms`, cell 1 at `80ms`, cell 2 at `160ms` — `winLine` index order drives the delay
   - WinOverlay confetti fires from two emitters (left 25% + right 75%) and uses a 3-colour palette (brand colour + white + `--na-purple` hex)
