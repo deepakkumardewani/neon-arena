@@ -26,7 +26,11 @@ vi.mock("@tsparticles/plugin-emitters", () => ({
 }));
 
 import { pickAiMove } from "@/lib/ai/pick-move";
+import { SOLO_AI_MOVE_DELAY_MS_JITTER, SOLO_AI_MOVE_DELAY_MS_MIN } from "@/lib/game/solo-ai-timing";
 import { GamePage } from "@/pages/Game";
+
+/** Advances fake timers past the longest possible solo-AI pacing delay (+ slack). */
+const ADVANCE_PAST_AI_MS = SOLO_AI_MOVE_DELAY_MS_MIN + SOLO_AI_MOVE_DELAY_MS_JITTER + 50;
 
 const emptyScore = (): ScoreDoc => ({
   uid: "",
@@ -80,12 +84,12 @@ describe("GamePage", () => {
 
     await act(async () => {
       fireEvent.click(screen.getByRole("button", { name: /row 1 column 1, empty/i }));
-      await vi.advanceTimersByTimeAsync(700);
+      await vi.advanceTimersByTimeAsync(ADVANCE_PAST_AI_MS);
     });
 
     await act(async () => {
       fireEvent.click(screen.getByRole("button", { name: /row 1 column 2, empty/i }));
-      await vi.advanceTimersByTimeAsync(700);
+      await vi.advanceTimersByTimeAsync(ADVANCE_PAST_AI_MS);
     });
 
     await act(async () => {
