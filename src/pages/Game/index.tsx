@@ -15,6 +15,7 @@ import { usePlayerStore } from "@/hooks/usePlayerStore";
 import { useScore } from "@/hooks/useScore";
 import { pickAiMove } from "@/lib/ai/pick-move";
 import { audioManager } from "@/lib/audio/audioManager";
+import { soloAiMoveDelayMs } from "@/lib/game/solo-ai-timing";
 import { hapticManager } from "@/lib/haptics/hapticManager";
 import { gameService, scoreService } from "@/lib/services";
 import type { Difficulty, GameMode } from "@/types/game";
@@ -60,6 +61,8 @@ function useEndgamePresentation(): {
   open: boolean;
   headline: string;
   palette: WinOverlayPalette;
+  /** Confetti burst — off for defeats and draws so only real wins celebrate. */
+  celebrate: boolean;
 } {
   const mode = useGameStore((s) => s.mode);
   const status = useGameStore((s) => s.status);
@@ -70,56 +73,72 @@ function useEndgamePresentation(): {
 
   return useMemo(() => {
     const open = status === "win" || status === "draw";
+    const human = role ?? "X";
     if (!open) {
-      return { open: false, headline: "", palette: "purple" as const };
+      return { open: false, headline: "", palette: "purple" as const, celebrate: false };
     }
 
     if (status === "draw") {
-      return { open: true, headline: "DRAW", palette: "purple" as const };
+      return { open: true, headline: "DRAW", palette: "purple" as const, celebrate: false };
     }
 
     if (mode === "local") {
       const nickX = nickname.trim() === "" ? "Player X" : nickname;
       const nickO = localGuestNickname.trim() === "" ? "Player O" : localGuestNickname;
-      if (winner === "X")
-        return { open: true, headline: `${nickX} wins!`, palette: "cyan" as const };
-      return { open: true, headline: `${nickO} wins!`, palette: "rose" as const };
+      if (winner === "X") {
+        return {
+          open: true,
+          headline: `${nickX} wins!`,
+          palette: "cyan" as const,
+          celebrate: true,
+        };
+      }
+      return {
+        open: true,
+        headline: `${nickO} wins!`,
+        palette: "rose" as const,
+        celebrate: true,
+      };
     }
 
     if (mode === "solo") {
-      const human = role ?? "X";
       if (winner === human) {
         return {
           open: true,
           headline: "YOU WIN",
           palette: (human === "X" ? "cyan" : "rose") as WinOverlayPalette,
+          celebrate: true,
         };
       }
       return {
         open: true,
         headline: "YOU LOSE",
         palette: (winner === "X" ? "cyan" : "rose") as WinOverlayPalette,
+        celebrate: false,
       };
     }
 
     if (mode === "online" || mode === "friend") {
-      const human = role ?? "X";
       if (winner === human) {
         return {
           open: true,
           headline: "YOU WIN",
           palette: (human === "X" ? "cyan" : "rose") as WinOverlayPalette,
+          celebrate: true,
         };
       }
       return {
         open: true,
         headline: "YOU LOSE",
         palette: (winner === "X" ? "cyan" : "rose") as WinOverlayPalette,
+        celebrate: false,
       };
     }
 
-    if (winner === "X") return { open: true, headline: "X WINS", palette: "cyan" as const };
-    return { open: true, headline: "O WINS", palette: "rose" as const };
+    if (winner === "X") {
+      return { open: true, headline: "X WINS", palette: "cyan" as const, celebrate: true };
+    }
+    return { open: true, headline: "O WINS", palette: "rose" as const, celebrate: true };
   }, [status, winner, mode, nickname, localGuestNickname, role]);
 }
 
@@ -146,7 +165,6 @@ export function GamePage() {
   const friendHostWaiting = useGameStore((s) => s.friendHostWaiting);
   const friendJoinRequired = useGameStore((s) => s.friendJoinRequired);
 
-  const score = usePlayerStore((s) => s.score);
   const role = usePlayerStore((s) => s.role);
   const applySoloOutcome = usePlayerStore((s) => s.applySoloOutcome);
   const setScore = usePlayerStore((s) => s.setScore);
@@ -333,7 +351,7 @@ export function GamePage() {
     if (aiBusy.current) return;
     aiBusy.current = true;
 
-    const delay = 300 + Math.random() * 300;
+    const delay = soloAiMoveDelayMs();
     const timer = window.setTimeout(() => {
       const s = useGameStore.getState();
       const cell = pickAiMove(s.board, s.difficulty, s.currentTurn);
@@ -416,21 +434,6 @@ export function GamePage() {
     })();
   }, [confirmDialog, mode, navigate, onLeaveLiveGame]);
 
-  const handleAutoDismiss = useCallback(() => {
-    if (
-      isNetworked &&
-      effectiveGameId !== undefined &&
-      effectiveGameId !== "" &&
-      (status === "win" || status === "draw")
-    ) {
-      void declineNetworkRematch();
-    }
-    resetSoloOutcomeLock();
-    resetNetworkOutcomeLock();
-    resetGame();
-    void navigate("/");
-  }, [declineNetworkRematch, effectiveGameId, isNetworked, navigate, resetGame, status]);
-
   return (
     <main className="mx-auto flex min-h-0 w-full max-w-lg flex-col p-4 sm:p-8">
       <h1 className="sr-only">Game</h1>
@@ -459,12 +462,9 @@ export function GamePage() {
         open={endgame.open}
         headline={endgame.headline}
         palette={endgame.palette}
-        scoreWins={score.wins}
-        scoreLosses={score.losses}
-        scoreDraws={score.draws}
+        celebrate={endgame.celebrate}
         onPlayAgain={withUiFeedback(handlePlayAgain)}
         onHome={withUiFeedback(handleOverlayHome)}
-        onAutoDismiss={handleAutoDismiss}
       />
       <SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </main>

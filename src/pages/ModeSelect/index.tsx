@@ -22,8 +22,22 @@ function IconVsAi() {
 function IconLocal() {
   return (
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle className="na-mode-local-left" cx="9" cy="9" r="3" stroke="currentColor" strokeWidth="1.5" />
-      <circle className="na-mode-local-right" cx="16" cy="9" r="3" stroke="currentColor" strokeWidth="1.5" />
+      <circle
+        className="na-mode-local-left"
+        cx="9"
+        cy="9"
+        r="3"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      <circle
+        className="na-mode-local-right"
+        cx="16"
+        cy="9"
+        r="3"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
       <path
         d="M4 20c0-3 3.5-5 8-5s8 2 8 5"
         stroke="currentColor"
@@ -186,9 +200,7 @@ export function ModeSelectPage() {
                 opacity: soloOpen ? 1 : 0,
               }}
               transition={
-                reducedMotion
-                  ? { duration: 0 }
-                  : { duration: 0.28, ease: MODE_CARD_EASE }
+                reducedMotion ? { duration: 0 } : { duration: 0.28, ease: MODE_CARD_EASE }
               }
               aria-hidden={!soloOpen}
             >

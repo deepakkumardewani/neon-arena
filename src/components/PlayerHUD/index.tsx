@@ -69,14 +69,11 @@ export function PlayerHUD({
 
   return (
     <header
-      className="mb-6 rounded-xl border border-(--na-border) bg-(--na-surface) px-3 py-4 sm:px-5 sm:py-5"
+      className="mb-6 rounded-xl border border-(--na-border) bg-(--na-surface) px-4 py-4 sm:px-6 sm:py-5"
       style={{ boxShadow: "var(--na-glow-grid)" }}
     >
-      <div
-        className="flex flex-wrap items-start justify-between gap-y-4"
-        style={{ gap: "var(--na-space-8)" }}
-      >
-        <div className="flex min-w-0 flex-1 flex-col" style={{ gap: "var(--na-space-6)" }}>
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6 lg:gap-8">
+        <div className="flex min-w-0 flex-1 flex-col gap-4">
           {prematchHeadline !== null && prematchHeadline !== "" ? (
             <p
               className="text-base text-(--na-text-muted) md:text-lg"
@@ -87,7 +84,7 @@ export function PlayerHUD({
           ) : (
             <>
               <LayoutGroup id="na-player-hud-turn">
-                <div className="flex flex-wrap items-baseline gap-x-5 gap-y-2">
+                <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1.5 sm:gap-x-5 sm:gap-y-2">
                   <span className="flex min-w-0 max-w-[min(100%,14rem)] items-baseline gap-1.5 truncate">
                     <span
                       className="min-w-0 truncate text-base font-bold md:text-lg"
@@ -139,17 +136,14 @@ export function PlayerHUD({
                   </span>
                 </div>
               </LayoutGroup>
-              <div
-                className="flex flex-wrap items-center border-t border-(--na-border) pt-3"
-                style={{ gap: "var(--na-space-7)" }}
-              >
+              <div className="flex flex-col gap-2 border-t border-(--na-border) pt-3 sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-6 sm:gap-y-1 md:gap-x-8">
                 <span
-                  className="text-[10px] font-semibold tracking-[0.22em] text-(--na-text-muted) uppercase"
+                  className="shrink-0 text-[10px] font-semibold tracking-[0.22em] text-(--na-text-muted) uppercase"
                   style={{ fontFamily: "var(--na-font-display)" }}
                 >
                   Session record
                 </span>
-                <div className="flex flex-wrap tabular-nums" style={{ gap: "var(--na-space-7)" }}>
+                <div className="flex flex-wrap tabular-nums gap-x-5 gap-y-1 sm:gap-x-6 md:gap-x-7">
                   <span className="text-sm md:text-base">
                     <span
                       className="text-(--na-text-muted)"
@@ -164,9 +158,7 @@ export function PlayerHUD({
                       <motion.span
                         key={score.wins}
                         className="inline-block"
-                        initial={
-                          reducedMotion ? { y: 0, opacity: 1 } : { y: 10, opacity: 0 }
-                        }
+                        initial={reducedMotion ? { y: 0, opacity: 1 } : { y: 10, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={
                           reducedMotion
@@ -192,9 +184,7 @@ export function PlayerHUD({
                       <motion.span
                         key={score.losses}
                         className="inline-block"
-                        initial={
-                          reducedMotion ? { y: 0, opacity: 1 } : { y: 10, opacity: 0 }
-                        }
+                        initial={reducedMotion ? { y: 0, opacity: 1 } : { y: 10, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={
                           reducedMotion
@@ -220,9 +210,7 @@ export function PlayerHUD({
                       <motion.span
                         key={score.draws}
                         className="inline-block"
-                        initial={
-                          reducedMotion ? { y: 0, opacity: 1 } : { y: 10, opacity: 0 }
-                        }
+                        initial={reducedMotion ? { y: 0, opacity: 1 } : { y: 10, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={
                           reducedMotion
@@ -239,10 +227,7 @@ export function PlayerHUD({
             </>
           )}
         </div>
-        <div
-          className="flex shrink-0 flex-wrap items-center rounded-lg border border-(--na-border) bg-(--na-bg) p-1.5"
-          style={{ gap: "var(--na-space-3)" }}
-        >
+        <div className="flex w-full shrink-0 flex-wrap items-center justify-end gap-x-2 gap-y-2 border-t border-(--na-border) pt-4 sm:w-auto sm:flex-nowrap sm:gap-x-2.5 sm:border-t-0 sm:border-l sm:border-(--na-border) sm:pt-0 sm:pl-4 md:gap-x-3 md:pl-5">
           {onOpenSettings ? (
             <Button
               type="button"

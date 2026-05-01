@@ -24,7 +24,15 @@ export function GlyphX({ animate = false, className }: GlyphXProps) {
       aria-hidden
     >
       <defs>
-        <filter id={`na-glyph-x-glow-${gid}`} colorInterpolationFilters="sRGB">
+        <filter
+          id={`na-glyph-x-glow-${gid}`}
+          colorInterpolationFilters="sRGB"
+          filterUnits="objectBoundingBox"
+          x="-0.45"
+          y="-0.45"
+          width="1.9"
+          height="1.9"
+        >
           <feDropShadow
             dx="0"
             dy="0"

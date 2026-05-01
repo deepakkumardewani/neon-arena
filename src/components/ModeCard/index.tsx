@@ -32,11 +32,7 @@ export function ModeCard({ icon, title, description, selected = false, onClick }
       }
       whileHover={reducedMotion ? undefined : { y: -2 }}
       whileTap={{ scale: 0.992 }}
-      transition={
-        reducedMotion
-          ? { duration: 0 }
-          : { type: "spring", stiffness: 420, damping: 28 }
-      }
+      transition={reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 420, damping: 28 }}
       aria-pressed={selected}
     >
       <motion.span
@@ -59,7 +55,9 @@ export function ModeCard({ icon, title, description, selected = false, onClick }
               }
         }
         transition={
-          reducedMotion ? { duration: 0 } : { duration: 0.52, times: [0, 0.24, 1], ease: [0.22, 1, 0.36, 1] }
+          reducedMotion
+            ? { duration: 0 }
+            : { duration: 0.52, times: [0, 0.24, 1], ease: [0.22, 1, 0.36, 1] }
         }
       >
         {icon}

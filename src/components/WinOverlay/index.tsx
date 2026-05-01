@@ -13,12 +13,10 @@ export interface WinOverlayProps {
   readonly open: boolean;
   readonly headline: string;
   readonly palette: WinOverlayPalette;
-  readonly scoreWins: number;
-  readonly scoreLosses: number;
-  readonly scoreDraws: number;
+  /** When false, no confetti (e.g. loss overlay). Defaults to true. */
+  readonly celebrate?: boolean;
   readonly onPlayAgain: () => void;
   readonly onHome: () => void;
-  readonly onAutoDismiss: () => void;
 }
 
 function paletteToParticleColor(palette: WinOverlayPalette): string {
@@ -33,28 +31,34 @@ function headlineColor(palette: WinOverlayPalette): string {
   return "var(--na-cyan)";
 }
 
+/** Short, dense burst + stronger gravity so wins feel punchy, not floaty. */
+const CONFETTI_EMITTER_BURST_S = 0.22;
+const CONFETTI_RATE_DELAY_S = 0.006;
+
 function buildParticleOptions(brandHex: string, accentPurpleHex: string): ISourceOptions {
   const trio = [brandHex, "#ffffff", accentPurpleHex];
+  const perSide = 34;
   return {
     fullScreen: { enable: false },
     background: { color: { value: "transparent" } },
     detectRetina: true,
+    fpsLimit: 120,
     particles: {
       number: { value: 0 },
       color: { value: brandHex },
-      shape: { type: "square" },
+      shape: { type: ["circle", "square"] },
       opacity: { value: 1 },
-      size: { value: { min: 2, max: 6 } },
+      size: { value: { min: 3, max: 9 } },
       rotate: {
         value: { min: 0, max: 360 },
         direction: "random",
-        animation: { enable: true, speed: { min: 10, max: 40 } },
+        animation: { enable: true, speed: { min: 24, max: 72 } },
       },
       move: {
         enable: true,
-        gravity: { enable: true, acceleration: 12 },
-        speed: { min: 8, max: 22 },
-        decay: 0.05,
+        gravity: { enable: true, acceleration: 28 },
+        speed: { min: 18, max: 38 },
+        decay: 0.02,
         direction: "none",
         random: true,
         straight: false,
@@ -65,28 +69,30 @@ function buildParticleOptions(brandHex: string, accentPurpleHex: string): ISourc
       {
         autoPlay: true,
         fill: true,
-        life: { count: 1, duration: 0.35, wait: false },
-        rate: { delay: 0.02, quantity: 28 },
-        position: { x: 25, y: 32 },
+        life: { count: 1, duration: CONFETTI_EMITTER_BURST_S, wait: false },
+        rate: { delay: CONFETTI_RATE_DELAY_S, quantity: perSide },
+        position: { x: 25, y: 28 },
         startCount: 0,
         particles: {
           color: { value: trio },
+          shape: { type: ["circle", "square"] },
           move: {
-            speed: { min: 14, max: 28 },
+            speed: { min: 26, max: 52 },
           },
         },
       },
       {
         autoPlay: true,
         fill: true,
-        life: { count: 1, duration: 0.35, wait: false },
-        rate: { delay: 0.02, quantity: 27 },
-        position: { x: 75, y: 32 },
+        life: { count: 1, duration: CONFETTI_EMITTER_BURST_S, wait: false },
+        rate: { delay: CONFETTI_RATE_DELAY_S, quantity: perSide },
+        position: { x: 75, y: 28 },
         startCount: 0,
         particles: {
           color: { value: trio },
+          shape: { type: ["circle", "square"] },
           move: {
-            speed: { min: 14, max: 28 },
+            speed: { min: 26, max: 52 },
           },
         },
       },
@@ -98,12 +104,9 @@ export function WinOverlay({
   open,
   headline,
   palette,
-  scoreWins,
-  scoreLosses,
-  scoreDraws,
+  celebrate = true,
   onPlayAgain,
   onHome,
-  onAutoDismiss,
 }: WinOverlayProps) {
   const reducedMotion = useReducedMotion();
   const pid = `na-win-particles-${useId().replace(/:/g, "")}`;
@@ -113,16 +116,16 @@ export function WinOverlay({
     () => buildParticleOptions(particleColor, paletteToParticleColor("purple")),
     [particleColor],
   );
-  const showParticles = !reducedMotion;
+  const showConfettiBurst = celebrate && !reducedMotion;
 
   useEffect(() => {
-    if (!showParticles) {
+    if (!showConfettiBurst) {
       setEngineReady(false);
     }
-  }, [showParticles]);
+  }, [showConfettiBurst]);
 
   useEffect(() => {
-    if (!open || !showParticles) return;
+    if (!open || !showConfettiBurst) return;
     let cancelled = false;
     void ensureParticlesEngine().then(() => {
       if (!cancelled) setEngineReady(true);
@@ -130,17 +133,7 @@ export function WinOverlay({
     return () => {
       cancelled = true;
     };
-  }, [open, showParticles]);
-
-  useEffect(() => {
-    if (!open) return;
-    const id = window.setTimeout(() => {
-      onAutoDismiss();
-    }, 8000);
-    return () => {
-      window.clearTimeout(id);
-    };
-  }, [open, onAutoDismiss]);
+  }, [open, showConfettiBurst]);
 
   return (
     <AnimatePresence>
@@ -153,7 +146,7 @@ export function WinOverlay({
           exit={{ opacity: reducedMotion ? 1 : 0 }}
           transition={{ duration: reducedMotion ? 0 : 0.25 }}
         >
-          {showParticles && engineReady ? (
+          {showConfettiBurst && engineReady ? (
             <div className="pointer-events-none absolute inset-0">
               <Particles id={pid} className="h-full w-full" options={options} />
             </div>
@@ -177,12 +170,6 @@ export function WinOverlay({
             >
               {headline}
             </h2>
-            <p
-              className="text-sm text-(--na-text-muted)"
-              style={{ fontFamily: "var(--na-font-display)" }}
-            >
-              W: {scoreWins} | L: {scoreLosses} | D: {scoreDraws}
-            </p>
             <div className="flex flex-wrap justify-center gap-3">
               <Button
                 type="button"

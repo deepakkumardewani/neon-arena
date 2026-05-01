@@ -1,9 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import {
-  NICKNAME_MAX_LEN,
-  validateNickname,
-} from "@/components/NicknameInput/nicknameRules";
+import { NICKNAME_MAX_LEN, validateNickname } from "@/components/NicknameInput/nicknameRules";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 export interface NicknameInputProps {

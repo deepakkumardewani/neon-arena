@@ -206,16 +206,10 @@ export function NicknameEntryPage() {
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={isLocal ? `step-${localStep}` : "solo-flow"}
-            initial={
-              reducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: 36 }
-            }
+            initial={reducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: 36 }}
             animate={{ opacity: 1, x: 0 }}
             exit={reducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -36 }}
-            transition={
-              reducedMotion
-                ? { duration: 0 }
-                : { duration: 0.26, ease: STEP_EASE }
-            }
+            transition={reducedMotion ? { duration: 0 } : { duration: 0.26, ease: STEP_EASE }}
           >
             <NicknameInput
               id={isLocal ? `nick-${localStep}` : "nick-solo"}
@@ -231,9 +225,7 @@ export function NicknameEntryPage() {
           style={{ gap: "var(--na-space-7)" }}
           initial={reducedMotion ? { opacity: 1 } : { opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={
-            reducedMotion ? { duration: 0 } : { delay: 0.12, duration: 0.35 }
-          }
+          transition={reducedMotion ? { duration: 0 } : { delay: 0.12, duration: 0.35 }}
         >
           <motion.span
             className="inline-block"

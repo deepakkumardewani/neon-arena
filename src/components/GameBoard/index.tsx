@@ -39,10 +39,14 @@ function CellGlyph({ mark }: { readonly mark: BoardCell }) {
   }, [mark]);
 
   if (mark === "X") {
-    return <GlyphX animate={animate} className="h-full w-full p-2" />;
+    return (
+      <GlyphX animate={animate} className="box-border h-full min-h-0 w-full min-w-0 shrink p-2" />
+    );
   }
   if (mark === "O") {
-    return <GlyphO animate={animate} className="h-full w-full p-2" />;
+    return (
+      <GlyphO animate={animate} className="box-border h-full min-h-0 w-full min-w-0 shrink p-2" />
+    );
   }
   return null;
 }
@@ -105,20 +109,14 @@ function BoardCellButton({
       type="button"
       aria-label={ariaLabel}
       disabled={occupied || interactionLocked}
-      className="relative flex min-h-0 min-w-0 items-center justify-center overflow-hidden border-0 bg-(--na-surface) p-0 outline-none focus-visible:ring-2 focus-visible:ring-(--na-cyan) focus-visible:ring-offset-2 focus-visible:ring-offset-(--na-bg) disabled:cursor-not-allowed enabled:cursor-pointer enabled:hover:brightness-110"
+      className="relative flex min-h-0 min-w-0 items-center justify-center overflow-hidden border-0 bg-(--na-bg) p-0 outline-none focus-visible:ring-2 focus-visible:ring-(--na-cyan) focus-visible:ring-offset-2 focus-visible:ring-offset-(--na-bg) disabled:cursor-not-allowed enabled:cursor-pointer enabled:hover:brightness-110"
       style={winPulse}
       onClick={() => {
         onCellClick(index);
       }}
       initial={false}
-      animate={
-        reducedMotion || !placePop ? { scale: 1 } : { scale: [0.85, 1] }
-      }
-      transition={
-        reducedMotion
-          ? { duration: 0 }
-          : { type: "spring", stiffness: 520, damping: 30 }
-      }
+      animate={reducedMotion || !placePop ? { scale: 1 } : { scale: [0.85, 1] }}
+      transition={reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 520, damping: 30 }}
       onAnimationComplete={() => {
         setPlacePop(false);
       }}
@@ -131,7 +129,7 @@ function BoardCellButton({
           }`}
         />
       ) : null}
-      <span className="relative z-[1] flex h-full w-full items-center justify-center">
+      <span className="relative z-[1] flex h-full min-h-0 w-full min-w-0 shrink items-center justify-center">
         <CellGlyph mark={cell} />
       </span>
     </motion.button>
@@ -153,7 +151,8 @@ export function GameBoard({
       style={{
         aspectRatio: "1",
         display: "grid",
-        gridTemplateColumns: "repeat(3, 1fr)",
+        gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+        gridTemplateRows: "repeat(3, minmax(0, 1fr))",
         gap: "2px",
         backgroundColor: "var(--na-purple)",
       }}

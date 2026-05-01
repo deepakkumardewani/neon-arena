@@ -157,9 +157,7 @@ export function HomePage() {
               initial={reducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={
-                reducedMotion
-                  ? { duration: 0 }
-                  : { duration: 0.48, delay: 0.1, ease: HERO_EASE }
+                reducedMotion ? { duration: 0 } : { duration: 0.48, delay: 0.1, ease: HERO_EASE }
               }
             >
               <p
@@ -199,9 +197,7 @@ export function HomePage() {
             style={{ gap: "var(--na-space-4)" }}
             initial={reducedMotion ? { opacity: 1 } : { opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={
-              reducedMotion ? { duration: 0 } : { delay: 0.14, duration: 0.45 }
-            }
+            transition={reducedMotion ? { duration: 0 } : { delay: 0.14, duration: 0.45 }}
           >
             <p
               className="text-[10px] font-medium tracking-[0.38em] text-(--na-rose) uppercase"

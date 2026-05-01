@@ -23,7 +23,15 @@ export function GlyphO({ animate = false, className }: GlyphOProps) {
       aria-hidden
     >
       <defs>
-        <filter id={`na-glyph-o-glow-${gid}`} colorInterpolationFilters="sRGB">
+        <filter
+          id={`na-glyph-o-glow-${gid}`}
+          colorInterpolationFilters="sRGB"
+          filterUnits="objectBoundingBox"
+          x="-0.45"
+          y="-0.45"
+          width="1.9"
+          height="1.9"
+        >
           <feDropShadow
             dx="0"
             dy="0"
