@@ -18,12 +18,16 @@ vi.mock("@/lib/services", async (importOriginal) => {
 });
 
 import { NicknameEntryPage } from "@/pages/NicknameEntry";
+import { tictactoeConfig } from "@/pages/ModeSelect/tictactoeConfig";
 
 function renderNickname(path: string) {
   return render(
     <MemoryRouter initialEntries={[path]}>
       <Routes>
-        <Route path="/play/tictactoe/nickname" element={<NicknameEntryPage />} />
+        <Route
+          path="/play/tictactoe/nickname"
+          element={<NicknameEntryPage gameConfig={tictactoeConfig} />}
+        />
         <Route path="/play/tictactoe/game" element={<p>Game screen</p>} />
         <Route path="/play/tictactoe/matchmaking" element={<p>Matchmaking</p>} />
         <Route path="/play/tictactoe" element={<p>Mode select</p>} />

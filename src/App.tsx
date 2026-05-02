@@ -7,6 +7,8 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { usePlayerStore } from "@/hooks/usePlayerStore";
 import { usePresenceSession } from "@/hooks/usePresenceSession";
 import { authService } from "@/lib/services/auth";
+import { chessConfig } from "@/pages/Chess/chessConfig";
+import { tictactoeConfig } from "@/pages/ModeSelect/tictactoeConfig";
 import { AppProviders } from "@/providers/AppProviders";
 
 const HomePage = lazy(async () => {
@@ -28,6 +30,10 @@ const MatchmakingPage = lazy(async () => {
 const GamePage = lazy(async () => {
   const m = await import("@/pages/Game");
   return { default: m.GamePage };
+});
+const ChessGamePage = lazy(async () => {
+  const m = await import("@/pages/Chess/GamePage");
+  return { default: m.ChessGamePage };
 });
 
 function RouteLoading(): ReactElement {
@@ -51,7 +57,8 @@ function PageTransitionLayout() {
 
   useEffect(() => {
     const path = location.pathname;
-    const isGame = path === "/play/tictactoe/game" || path.startsWith("/game/");
+    const isGame =
+      path === "/play/tictactoe/game" || path === "/play/chess/game" || path.startsWith("/game/");
     audioManager.playMusic(isGame ? "bg-game" : "bg-home");
   }, [location.pathname]);
 
@@ -83,11 +90,12 @@ const router = createBrowserRouter([
           </PageShell>
         ),
       },
+      // — TicTacToe routes —
       {
         path: "/play/tictactoe",
         element: (
           <PageShell>
-            <ModeSelectPage />
+            <ModeSelectPage gameConfig={tictactoeConfig} />
           </PageShell>
         ),
       },
@@ -95,7 +103,7 @@ const router = createBrowserRouter([
         path: "/play/tictactoe/nickname",
         element: (
           <PageShell>
-            <NicknameEntryPage />
+            <NicknameEntryPage gameConfig={tictactoeConfig} />
           </PageShell>
         ),
       },
@@ -103,7 +111,7 @@ const router = createBrowserRouter([
         path: "/play/tictactoe/matchmaking",
         element: (
           <PageShell>
-            <MatchmakingPage />
+            <MatchmakingPage gameConfig={tictactoeConfig} />
           </PageShell>
         ),
       },
@@ -120,6 +128,47 @@ const router = createBrowserRouter([
         element: (
           <PageShell>
             <GamePage />
+          </PageShell>
+        ),
+      },
+      // — Chess routes —
+      {
+        path: "/play/chess",
+        element: (
+          <PageShell>
+            <ModeSelectPage gameConfig={chessConfig} />
+          </PageShell>
+        ),
+      },
+      {
+        path: "/play/chess/nickname",
+        element: (
+          <PageShell>
+            <NicknameEntryPage gameConfig={chessConfig} />
+          </PageShell>
+        ),
+      },
+      {
+        path: "/play/chess/matchmaking",
+        element: (
+          <PageShell>
+            <MatchmakingPage gameConfig={chessConfig} />
+          </PageShell>
+        ),
+      },
+      {
+        path: "/play/chess/game",
+        element: (
+          <PageShell>
+            <ChessGamePage />
+          </PageShell>
+        ),
+      },
+      {
+        path: "/game/chess/:gameId",
+        element: (
+          <PageShell>
+            <ChessGamePage />
           </PageShell>
         ),
       },

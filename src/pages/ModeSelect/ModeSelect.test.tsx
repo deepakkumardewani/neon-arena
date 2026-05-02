@@ -4,13 +4,14 @@ import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { describe, expect, it } from "vite-plus/test";
 
 import { ModeSelectPage } from "@/pages/ModeSelect";
+import { tictactoeConfig } from "@/pages/ModeSelect/tictactoeConfig";
 
 describe("ModeSelectPage", () => {
   it("navigates to nickname with expected search params per mode", async () => {
     const user = userEvent.setup();
     const router = createMemoryRouter(
       [
-        { path: "/play/tictactoe", element: <ModeSelectPage /> },
+        { path: "/play/tictactoe", element: <ModeSelectPage gameConfig={tictactoeConfig} /> },
         { path: "/play/tictactoe/nickname", element: <div>Nickname stub</div> },
       ],
       { initialEntries: ["/play/tictactoe"] },
@@ -31,7 +32,7 @@ describe("ModeSelectPage", () => {
     const user = userEvent.setup();
     const router = createMemoryRouter(
       [
-        { path: "/play/tictactoe", element: <ModeSelectPage /> },
+        { path: "/play/tictactoe", element: <ModeSelectPage gameConfig={tictactoeConfig} /> },
         { path: "/play/tictactoe/nickname", element: <div>Nickname stub</div> },
       ],
       { initialEntries: ["/play/tictactoe"] },

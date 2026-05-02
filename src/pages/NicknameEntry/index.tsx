@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { usePlayerStore } from "@/hooks/usePlayerStore";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { authService, gameService } from "@/lib/services";
-import type { Difficulty, GameMode } from "@/types/game";
+import type { Difficulty, GameConfig, GameMode } from "@/types/game";
 
 function parseModeParam(value: string | null): GameMode | null {
   if (value === "solo" || value === "local" || value === "online" || value === "friend")
@@ -43,7 +43,11 @@ async function ensurePlayerUid(setUid: (uid: string) => void): Promise<void> {
 
 const STEP_EASE = [0.22, 1, 0.36, 1] as const;
 
-export function NicknameEntryPage() {
+interface NicknameEntryPageProps {
+  readonly gameConfig: GameConfig;
+}
+
+export function NicknameEntryPage({ gameConfig }: NicknameEntryPageProps) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const mode = parseModeParam(searchParams.get("mode"));
@@ -64,9 +68,9 @@ export function NicknameEntryPage() {
 
   useEffect(() => {
     if (mode === null) {
-      void navigate("/play/tictactoe", { replace: true });
+      void navigate(gameConfig.routePrefix, { replace: true });
     }
-  }, [mode, navigate]);
+  }, [gameConfig.routePrefix, mode, navigate]);
 
   const isLocal = mode === "local";
   const onP1Field = localStep === 0 || !isLocal;
@@ -83,12 +87,12 @@ export function NicknameEntryPage() {
     const playerUid = store.uid;
     const trimmedNick = store.nickname.trim() === "" ? "Player" : store.nickname.trim();
     if (mode === "online") {
-      void navigate("/play/tictactoe/matchmaking");
+      void navigate(`${gameConfig.routePrefix}/matchmaking`);
       return;
     }
     if (mode === "solo") {
       const d = difficulty ?? "medium";
-      void navigate(`/play/tictactoe/game?mode=solo&difficulty=${d}`);
+      void navigate(`${gameConfig.routePrefix}/game?mode=solo&difficulty=${d}`);
       return;
     }
     if (mode === "friend") {
@@ -103,8 +107,8 @@ export function NicknameEntryPage() {
       void navigate(`/game/${id}?mode=friend`);
       return;
     }
-    void navigate("/play/tictactoe/game?mode=local");
-  }, [difficulty, joinGameId, mode, navigate, setRole, setUid]);
+    void navigate(`${gameConfig.routePrefix}/game?mode=local`);
+  }, [difficulty, gameConfig.routePrefix, joinGameId, mode, navigate, setRole, setUid]);
 
   const handleContinue = useCallback(async () => {
     if (mode === null) return;
@@ -247,7 +251,7 @@ export function NicknameEntryPage() {
             </Button>
           </motion.span>
           <Link
-            to="/play/tictactoe"
+            to={gameConfig.routePrefix}
             className="inline-flex items-center rounded-tl-full rounded-br-full rounded-tr-full rounded-bl-full border-2 border-(--na-border) px-6 py-3 text-sm font-medium text-(--na-text) transition-colors hover:border-(--na-purple) hover:text-(--na-text)"
             style={{ fontFamily: "var(--na-font-display)" }}
           >

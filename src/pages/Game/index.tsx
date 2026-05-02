@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import { ConnectionLostBanner } from "@/components/ConnectionLostBanner";
 import { GameBoard } from "@/components/GameBoard";
+import { GamePageShell } from "@/components/GamePageShell";
 import { PlayerHUD } from "@/components/PlayerHUD";
-import { SettingsPanel } from "@/components/SettingsPanel";
 import { useConfirm } from "@/components/ui/confirm";
 import { WinOverlay, type WinOverlayPalette } from "@/components/WinOverlay";
 import { FriendLobby } from "@/pages/FriendLobby/FriendLobby";
@@ -146,7 +146,6 @@ export function GamePage() {
   const { gameId: routeGameId } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const searchGameId = searchParams.get("gameId");
   const effectiveGameId =
     routeGameId !== undefined && routeGameId !== "" ? routeGameId : (searchGameId ?? undefined);
@@ -435,38 +434,40 @@ export function GamePage() {
   }, [confirmDialog, mode, navigate, onLeaveLiveGame]);
 
   return (
-    <main className="mx-auto flex min-h-0 w-full max-w-lg flex-col p-4 sm:p-8">
-      <h1 className="sr-only">Game</h1>
-      {networkPlayBlocked ? <ConnectionLostBanner /> : null}
-      {isFriendHostLobby && effectiveGameId !== undefined ? (
-        <section className="mb-6 rounded-tl-xl rounded-br-xl border border-(--na-purple) bg-(--na-surface) p-5 shadow-(--na-glow-grid)">
-          <FriendLobby gameId={effectiveGameId} onHome={handleFriendLobbyHome} />
-        </section>
-      ) : (
-        <PlayerHUD
-          prematchHeadline={friendPrematchHeadline}
-          onOpenSettings={() => setSettingsOpen(true)}
-          onLeaveLiveGame={onLeaveLiveGame}
-        />
+    <GamePageShell>
+      {({ onOpenSettings }) => (
+        <>
+          {networkPlayBlocked ? <ConnectionLostBanner /> : null}
+          {isFriendHostLobby && effectiveGameId !== undefined ? (
+            <section className="mb-6 rounded-tl-xl rounded-br-xl border border-(--na-purple) bg-(--na-surface) p-5 shadow-(--na-glow-grid)">
+              <FriendLobby gameId={effectiveGameId} onHome={handleFriendLobbyHome} />
+            </section>
+          ) : (
+            <PlayerHUD
+              prematchHeadline={friendPrematchHeadline}
+              onOpenSettings={onOpenSettings}
+              onLeaveLiveGame={onLeaveLiveGame}
+            />
+          )}
+          {hideFriendBoard ? null : (
+            <GameBoard
+              board={board}
+              winLine={winLine}
+              winner={winner}
+              onCellClick={handleCellClick}
+              interactionLocked={networkPlayBlocked}
+            />
+          )}
+          <WinOverlay
+            open={endgame.open}
+            headline={endgame.headline}
+            palette={endgame.palette}
+            celebrate={endgame.celebrate}
+            onPlayAgain={withUiFeedback(handlePlayAgain)}
+            onHome={withUiFeedback(handleOverlayHome)}
+          />
+        </>
       )}
-      {hideFriendBoard ? null : (
-        <GameBoard
-          board={board}
-          winLine={winLine}
-          winner={winner}
-          onCellClick={handleCellClick}
-          interactionLocked={networkPlayBlocked}
-        />
-      )}
-      <WinOverlay
-        open={endgame.open}
-        headline={endgame.headline}
-        palette={endgame.palette}
-        celebrate={endgame.celebrate}
-        onPlayAgain={withUiFeedback(handlePlayAgain)}
-        onHome={withUiFeedback(handleOverlayHome)}
-      />
-      <SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} />
-    </main>
+    </GamePageShell>
   );
 }

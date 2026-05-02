@@ -7,10 +7,15 @@ import { useMatchmaking } from "@/hooks/useMatchmaking";
 import { usePlayerStore } from "@/hooks/usePlayerStore";
 import { getMatchmakingQueueEntryId } from "@/lib/matchmaking/queueEntryId";
 import { queueService } from "@/lib/services";
+import type { GameConfig } from "@/types/game";
 
 const AI_FALLBACK_MS = 30_000;
 
-export function MatchmakingPage() {
+interface MatchmakingPageProps {
+  readonly gameConfig: GameConfig;
+}
+
+export function MatchmakingPage({ gameConfig }: MatchmakingPageProps) {
   const navigate = useNavigate();
   const uid = usePlayerStore((s) => s.uid);
   const nickname = usePlayerStore((s) => s.nickname);
@@ -150,7 +155,7 @@ export function MatchmakingPage() {
               className="mt-5 rounded-tl-full rounded-br-full rounded-tr-full rounded-bl-full border-2 border-(--na-rose) bg-(--na-bg) px-6 py-2.5 text-sm font-semibold text-(--na-rose) transition-colors hover:bg-(--na-surface)"
               style={{ fontFamily: "var(--na-font-display)" }}
               onClick={() => {
-                void navigate("/play/tictactoe/game?mode=solo&difficulty=medium");
+                void navigate(`${gameConfig.routePrefix}/game?mode=solo&difficulty=medium`);
               }}
             >
               Play vs AI
@@ -160,7 +165,7 @@ export function MatchmakingPage() {
 
         <div className="mt-auto pt-12">
           <Link
-            to="/play/tictactoe/nickname?mode=online"
+            to={`${gameConfig.routePrefix}/nickname?mode=online`}
             className="inline-flex items-center gap-2 text-sm font-medium text-(--na-cyan) transition-colors hover:text-(--na-text)"
             style={{ fontFamily: "var(--na-font-display)" }}
           >

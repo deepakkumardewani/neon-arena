@@ -10,6 +10,7 @@ import { usePlayerStore } from "@/hooks/usePlayerStore";
 import { queueService } from "@/lib/services";
 
 import { MatchmakingPage } from "@/pages/Matchmaking";
+import { tictactoeConfig } from "@/pages/ModeSelect/tictactoeConfig";
 
 vi.mock("@/hooks/useMatchmaking", () => ({
   useMatchmaking: () => ({ queueDepth: 5 }),
@@ -28,7 +29,7 @@ describe("MatchmakingPage", () => {
   it("renders title", () => {
     render(
       <MemoryRouter>
-        <MatchmakingPage />
+        <MatchmakingPage gameConfig={tictactoeConfig} />
       </MemoryRouter>,
     );
     expect(screen.getByRole("heading", { name: /matchmaking/i })).toBeInTheDocument();
@@ -38,7 +39,7 @@ describe("MatchmakingPage", () => {
     const dequeue = vi.spyOn(queueService, "dequeue");
     const { unmount } = render(
       <MemoryRouter>
-        <MatchmakingPage />
+        <MatchmakingPage gameConfig={tictactoeConfig} />
       </MemoryRouter>,
     );
     unmount();
@@ -49,7 +50,7 @@ describe("MatchmakingPage", () => {
     vi.useFakeTimers();
     render(
       <MemoryRouter>
-        <MatchmakingPage />
+        <MatchmakingPage gameConfig={tictactoeConfig} />
       </MemoryRouter>,
     );
     expect(screen.queryByText(/No opponent found/i)).toBeNull();

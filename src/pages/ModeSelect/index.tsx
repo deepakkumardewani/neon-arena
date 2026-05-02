@@ -6,7 +6,7 @@ import { ModeCard } from "@/components/ModeCard";
 import { Button } from "@/components/ui/Button";
 import { useGameStore } from "@/hooks/useGameStore";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import type { Difficulty, GameMode } from "@/types/game";
+import type { Difficulty, GameConfig, GameMode } from "@/types/game";
 
 function IconVsAi() {
   return (
@@ -89,7 +89,11 @@ const DIFFICULTIES: readonly Difficulty[] = ["easy", "medium", "hard"];
 const STAGGER_SEC = 0.05;
 const MODE_CARD_EASE = [0.22, 1, 0.36, 1] as const;
 
-export function ModeSelectPage() {
+interface ModeSelectPageProps {
+  readonly gameConfig: GameConfig;
+}
+
+export function ModeSelectPage({ gameConfig }: ModeSelectPageProps) {
   const navigate = useNavigate();
   const setMode = useGameStore((s) => s.setMode);
   const setDifficulty = useGameStore((s) => s.setDifficulty);
@@ -103,12 +107,12 @@ export function ModeSelectPage() {
       setMode(mode);
       if (mode === "solo" && difficulty !== undefined) {
         setDifficulty(difficulty);
-        void navigate(`/play/tictactoe/nickname?mode=solo&difficulty=${difficulty}`);
+        void navigate(`${gameConfig.routePrefix}/nickname?mode=solo&difficulty=${difficulty}`);
         return;
       }
-      void navigate(`/play/tictactoe/nickname?mode=${mode}`);
+      void navigate(`${gameConfig.routePrefix}/nickname?mode=${mode}`);
     },
-    [navigate, setDifficulty, setMode],
+    [gameConfig.routePrefix, navigate, setDifficulty, setMode],
   );
 
   const onPickMode = useCallback(
@@ -143,7 +147,7 @@ export function ModeSelectPage() {
             className="text-[10px] font-medium tracking-[0.38em] text-(--na-purple) uppercase"
             style={{ fontFamily: "var(--na-font-display)" }}
           >
-            Tic Tac Toe
+            {gameConfig.title}
           </p>
           <h1
             className="text-3xl font-bold tracking-[0.06em] text-(--na-text) md:text-4xl lg:text-[2.75rem]"
@@ -158,8 +162,7 @@ export function ModeSelectPage() {
             className="max-w-xl text-sm leading-relaxed text-(--na-text-muted) md:text-base"
             style={{ marginTop: "var(--na-space-10)" }}
           >
-            Solo training, couch co-op, random matchmaking, or a private duel — pick how you want to
-            play.
+            {gameConfig.description}
           </p>
         </motion.div>
 
