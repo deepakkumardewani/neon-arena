@@ -4,7 +4,7 @@ import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { describe, expect, it } from "vite-plus/test";
 
 import { ModeSelectPage } from "@/pages/ModeSelect";
-import { tictactoeConfig } from "@/pages/ModeSelect/tictactoeConfig";
+import { tictactoeConfig } from "@/pages/TicTacToeGame/tictactoeConfig";
 
 describe("ModeSelectPage", () => {
   it("navigates to nickname with expected search params per mode", async () => {

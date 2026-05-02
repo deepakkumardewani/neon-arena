@@ -18,7 +18,7 @@ vi.mock("@/lib/services", async (importOriginal) => {
 });
 
 import { NicknameEntryPage } from "@/pages/NicknameEntry";
-import { tictactoeConfig } from "@/pages/ModeSelect/tictactoeConfig";
+import { tictactoeConfig } from "@/pages/TicTacToeGame/tictactoeConfig";
 
 function renderNickname(path: string) {
   return render(

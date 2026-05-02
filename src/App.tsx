@@ -27,9 +27,9 @@ const MatchmakingPage = lazy(async () => {
   const m = await import("@/pages/Matchmaking");
   return { default: m.MatchmakingPage };
 });
-const GamePage = lazy(async () => {
-  const m = await import("@/pages/Game");
-  return { default: m.GamePage };
+const TicTacToeGamePage = lazy(async () => {
+  const m = await import("@/pages/TicTacToeGame");
+  return { default: m.TicTacToeGamePage };
 });
 const ChessGamePage = lazy(async () => {
   const m = await import("@/pages/Chess/GamePage");
@@ -119,7 +119,7 @@ const router = createBrowserRouter([
         path: "/play/tictactoe/game",
         element: (
           <PageShell>
-            <GamePage />
+            <TicTacToeGamePage />
           </PageShell>
         ),
       },
@@ -127,7 +127,7 @@ const router = createBrowserRouter([
         path: "/game/:gameId",
         element: (
           <PageShell>
-            <GamePage />
+            <TicTacToeGamePage />
           </PageShell>
         ),
       },

@@ -10,7 +10,7 @@ import { usePlayerStore } from "@/hooks/usePlayerStore";
 import { queueService } from "@/lib/services";
 
 import { MatchmakingPage } from "@/pages/Matchmaking";
-import { tictactoeConfig } from "@/pages/ModeSelect/tictactoeConfig";
+import { tictactoeConfig } from "@/pages/TicTacToeGame/tictactoeConfig";
 
 vi.mock("@/hooks/useMatchmaking", () => ({
   useMatchmaking: () => ({ queueDepth: 5 }),
