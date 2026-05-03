@@ -11,6 +11,18 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { audioManager } from "@/lib/audio/audioManager";
 import { hapticManager } from "@/lib/haptics/hapticManager";
 
+const HERO_EASE = [0.22, 1, 0.36, 1] as const;
+
+function cardVariants(reducedMotion: boolean) {
+  return {
+    variants: {
+      hidden: reducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 },
+      show: { opacity: 1, y: 0 },
+    },
+    transition: { duration: reducedMotion ? 0 : 0.45, ease: HERO_EASE },
+  };
+}
+
 function TicTacToeThumb() {
   return (
     <div className="flex h-full items-center justify-center p-6">
@@ -86,8 +98,6 @@ function PlaceholderThumb({ label }: { readonly label: string }) {
   );
 }
 
-const HERO_EASE = [0.22, 1, 0.36, 1] as const;
-
 export function HomePage() {
   const navigate = useNavigate();
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -97,6 +107,20 @@ export function HomePage() {
     reducedMotion
       ? { duration: 0, delay: 0 }
       : { duration: 0.45, delay: delaySec, ease: HERO_EASE };
+
+  const cv = cardVariants(reducedMotion);
+
+  function openSettings() {
+    audioManager.play("click");
+    hapticManager.tap();
+    setSettingsOpen(true);
+  }
+
+  function selectTicTacToe() {
+    audioManager.play("click");
+    hapticManager.tap();
+    void navigate("/play/tictactoe");
+  }
 
   return (
     <div className="na-pregame-scene relative min-h-screen">
@@ -115,10 +139,7 @@ export function HomePage() {
               <div className="border-l-2 border-(--na-cyan) pl-5 md:pl-6">
                 <motion.p
                   className="text-[10px] font-medium tracking-[0.42em] text-(--na-purple) uppercase"
-                  style={{
-                    fontFamily: "var(--na-font-display)",
-                    marginBottom: 0,
-                  }}
+                  style={{ fontFamily: "var(--na-font-display)", marginBottom: 0 }}
                   initial={reducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -14 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={heroChild(0)}
@@ -171,13 +192,9 @@ export function HomePage() {
                   type="button"
                   appearance="icon"
                   aria-label="Open settings"
-                  onClick={() => {
-                    audioManager.play("click");
-                    hapticManager.tap();
-                    setSettingsOpen(true);
-                  }}
+                  onClick={openSettings}
                 >
-                  {"\u2699\ufe0f"}
+                  {"⚙️"}
                 </Button>
                 <OnlineCounter className="min-w-0 flex-1 sm:flex-initial" />
               </div>
@@ -224,52 +241,20 @@ export function HomePage() {
               },
             }}
           >
-            <motion.div
-              className="md:col-span-2 xl:col-span-5 xl:row-span-2"
-              variants={{
-                hidden: reducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 },
-                show: { opacity: 1, y: 0 },
-              }}
-              transition={{ duration: reducedMotion ? 0 : 0.45, ease: HERO_EASE }}
-            >
+            <motion.div className="md:col-span-2 xl:col-span-5 xl:row-span-2" {...cv}>
               <GameCard
                 title="Tic Tac Toe"
                 thumbnail={<TicTacToeThumb />}
-                onSelect={() => {
-                  audioManager.play("click");
-                  hapticManager.tap();
-                  void navigate("/play/tictactoe");
-                }}
+                onSelect={selectTicTacToe}
               />
             </motion.div>
-            <motion.div
-              className="xl:col-span-4"
-              variants={{
-                hidden: reducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 },
-                show: { opacity: 1, y: 0 },
-              }}
-              transition={{ duration: reducedMotion ? 0 : 0.45, ease: HERO_EASE }}
-            >
+            <motion.div className="xl:col-span-4" {...cv}>
               <GameCard title="Chess" thumbnail={<PlaceholderThumb label="C" />} comingSoon />
             </motion.div>
-            <motion.div
-              className="xl:col-span-3"
-              variants={{
-                hidden: reducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 },
-                show: { opacity: 1, y: 0 },
-              }}
-              transition={{ duration: reducedMotion ? 0 : 0.45, ease: HERO_EASE }}
-            >
+            <motion.div className="xl:col-span-3" {...cv}>
               <GameCard title="Checkers" thumbnail={<PlaceholderThumb label="K" />} comingSoon />
             </motion.div>
-            <motion.div
-              className="md:col-span-2 xl:col-span-7 xl:col-start-6"
-              variants={{
-                hidden: reducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 },
-                show: { opacity: 1, y: 0 },
-              }}
-              transition={{ duration: reducedMotion ? 0 : 0.45, ease: HERO_EASE }}
-            >
+            <motion.div className="md:col-span-2 xl:col-span-7 xl:col-start-6" {...cv}>
               <GameCard title="Battleship" thumbnail={<PlaceholderThumb label="B" />} comingSoon />
             </motion.div>
           </motion.div>
