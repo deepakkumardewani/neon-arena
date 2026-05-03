@@ -1,3 +1,33 @@
+@keyframes check-flash {
+  0%,
+  100% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: color-mix(in oklch, var(--na-rose) 45%, transparent);
+  }
+}
+
+.na-check-flash {
+  animation: check-flash 0.55s ease-in-out 3;
+}
+
+@keyframes hint-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 2px var(--na-cyan);
+  }
+  50% {
+    box-shadow:
+      0 0 0 3px var(--na-cyan),
+      0 0 12px color-mix(in oklch, var(--na-cyan) 60%, transparent);
+  }
+}
+
+.na-hint-pulse {
+  animation: hint-pulse 0.5s ease-in-out infinite;
+}
+
 @keyframes draw-x-stroke {
   from {
     stroke-dashoffset: 1;

@@ -12,6 +12,12 @@
   --na-purple: oklch(0.58 0.275 285);
   --na-text: oklch(0.92 0.018 260);
   --na-text-muted: oklch(0.58 0.028 260);
+  --na-fg: oklch(0.92 0.018 260); /* white piece fill — near-white */
+  --na-surface-2: oklch(0.19 0.022 285); /* black piece fill — elevated surface */
+
+  /* Chess board squares */
+  --na-board-light: oklch(0.22 0.025 285);
+  --na-board-dark: oklch(0.14 0.02 285);
 
   /* Glows (box-shadow / filter stacks) */
   --na-glow-x:
