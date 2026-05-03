@@ -186,13 +186,27 @@ Add Chess as the second game in NeonArena. The implementation follows the same 4
   - [ ] `promotionPending` is set correctly on `EXECUTE_MOVE` when pawn reaches back rank
   - [ ] `status` transitions follow `ChessStatus` enum correctly
 
+  **Unit tests** (`src/lib/chess/state/chessReducer.test.ts`):
+  - `SELECT_SQUARE` sets `selectedSquare` and populates `legalMoves`
+  - `SELECT_SQUARE` on an occupied enemy square clears selection
+  - `SELECT_SQUARE` on the same square deselects (toggles off)
+  - `EXECUTE_MOVE` appends to `moveHistory` and clears `selectedSquare` + `legalMoves`
+  - `EXECUTE_MOVE` sets `promotionPending` when a pawn reaches the back rank
+  - `EXECUTE_MOVE` does not set `promotionPending` for non-promotion moves
+  - `UNDO_MOVE` removes the last entry from `moveHistory`
+  - `RESOLVE_PROMOTION` clears `promotionPending` and updates the board piece
+  - `SET_HINT` sets `hintMove`; `CLEAR_HINT` nulls it
+  - `RESET_GAME` returns initial state shape
+
   **Verification:**
   - [ ] `vp check` — no errors
+  - [ ] Unit tests pass: `vp test src/lib/chess/state/chessReducer.test.ts`
 
   **Dependencies:** Task 5
 
   **Files likely touched:**
   - `src/lib/chess/state/chessReducer.ts` _(new)_
+  - `src/lib/chess/state/chessReducer.test.ts` _(new)_
 
   **Estimated scope:** M
 
@@ -209,14 +223,31 @@ Add Chess as the second game in NeonArena. The implementation follows the same 4
   - [ ] Castling, en passant, and promotion detection all work
   - [ ] `undoMove` reverts correctly
 
+  **Unit tests** (`src/lib/chess/state/useChessStore.test.ts`):
+  - `selectSquare` on a friendly piece populates `legalMoves` with correct squares
+  - `selectSquare` on a legal target square executes the move and clears selection
+  - `selectSquare` on an enemy piece does nothing when it is not the player's turn
+  - After `selectSquare` executes a move, `moveHistory` length increments by 1
+  - `status` becomes `"check"` after a move that puts the opponent in check (use Scholar's mate setup)
+  - `status` becomes `"checkmate"` on Scholar's mate final move
+  - `status` becomes `"stalemate"` on a known stalemate FEN
+  - Castling move is accepted and king/rook positions update correctly
+  - En passant capture removes the correct captured pawn
+  - `selectSquare` on a pawn reaching back rank sets `promotionPending`
+  - `undoMove` in local mode reverts exactly 1 half-move
+  - `undoMove` in solo mode reverts 2 half-moves (player + AI)
+  - `resetGame` restores starting FEN and clears all state
+
   **Verification:**
   - [ ] Manually import and call store actions in browser console on `/play/chess/game` stub
   - [ ] `vp check` — no errors
+  - [ ] Unit tests pass: `vp test src/lib/chess/state/useChessStore.test.ts`
 
   **Dependencies:** Task 6
 
   **Files likely touched:**
   - `src/lib/chess/state/useChessStore.ts`
+  - `src/lib/chess/state/useChessStore.test.ts` _(new)_
 
   **Estimated scope:** M
 
@@ -359,13 +390,24 @@ Add Chess as the second game in NeonArena. The implementation follows the same 4
   - [ ] Material delta is accurate
   - [ ] Hidden when `showCapturedPieces` is false
 
+  **Unit tests** (`src/lib/chess/utils/materialCount.test.ts`):
+  - Extract a pure `computeMaterialDelta(capturedByWhite, capturedByBlack): number` utility
+  - Returns `0` when no pieces captured
+  - Returns `+3` when white has captured a bishop and black has captured nothing
+  - Returns `-5` when black has captured a rook and white has captured nothing
+  - Returns `0` when captured material is equal on both sides
+  - Sums correctly across mixed piece types (pawn=1, knight=3, bishop=3, rook=5, queen=9)
+
   **Verification:**
   - [ ] Capture several pieces and verify bars update correctly
+  - [ ] Unit tests pass: `vp test src/lib/chess/utils/materialCount.test.ts`
 
   **Dependencies:** Tasks 7, 8
 
   **Files likely touched:**
   - `src/components/chess/CapturedPiecesBar/index.tsx` _(new)_
+  - `src/lib/chess/utils/materialCount.ts` _(new — pure utility extracted for testability)_
+  - `src/lib/chess/utils/materialCount.test.ts` _(new)_
 
   **Estimated scope:** S
 
@@ -573,14 +615,24 @@ Add Chess as the second game in NeonArena. The implementation follows the same 4
   - [ ] `subscribeChessGame` fires callback on every doc change
   - [ ] Queue entries carry `gameType: "chess"`
 
+  **Unit tests** (`src/lib/chess/online/chessGameMappers.test.ts`):
+  - `chessDocToGameState` maps `status: "waiting"` doc to `status: "idle"` game state
+  - `chessDocToGameState` maps `status: "active"` doc with correct `currentTurn` color
+  - `chessDocToGameState` maps `status: "finished"` + `winner: "draw"` to `status: "draw"`
+  - `chessDocToGameState` maps `status: "finished"` + `winner: <uid>` to `status: "win"` with correct winner color
+  - `chessDocToGameState` applies resign override: losing player's uid → `status: "win"` for opponent
+  - `commitMovePayload` returns correct patch shape `{ fen, history, currentTurn, lastMoveAt }`
+
   **Verification:**
   - [ ] Open two browser tabs; verify move from tab A appears in tab B within 300ms
+  - [ ] Unit tests pass: `vp test src/lib/chess/online/chessGameMappers.test.ts`
 
   **Dependencies:** Task 2
 
   **Files likely touched:**
   - `src/lib/chess/online/chessGameService.ts` _(new)_
   - `src/lib/chess/online/chessGameMappers.ts` _(new)_
+  - `src/lib/chess/online/chessGameMappers.test.ts` _(new)_
   - `src/lib/firebase/queue.ts` _(modify — add gameType field)_
 
   **Estimated scope:** M
@@ -633,14 +685,23 @@ Add Chess as the second game in NeonArena. The implementation follows the same 4
   - [ ] `useGameSettings` is generic and reusable (not chess-specific internally)
   - [ ] Existing TicTacToe settings section unaffected
 
+  **Unit tests** (`src/lib/chess/state/useGameSettings.test.ts`):
+  - Returns default values when `localStorage` has no entry for the key
+  - Persists a changed setting to `localStorage` under the correct key
+  - Restores persisted settings from `localStorage` on re-initialisation
+  - Updating one field does not mutate other fields in the settings object
+  - Handles corrupted `localStorage` JSON gracefully by falling back to defaults
+
   **Verification:**
   - [ ] Toggle each setting; refresh page; verify setting is preserved
   - [ ] Disable hints; verify hint button disappears from HUD
+  - [ ] Unit tests pass: `vp test src/lib/chess/state/useGameSettings.test.ts`
 
   **Dependencies:** Task 2
 
   **Files likely touched:**
   - `src/lib/chess/state/useGameSettings.ts` _(new — generic hook)_
+  - `src/lib/chess/state/useGameSettings.test.ts` _(new)_
   - `src/components/SettingsPanel/index.tsx` _(modify — add Chess section)_
 
   **Estimated scope:** M
