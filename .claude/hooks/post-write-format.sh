@@ -2,7 +2,7 @@
 # PostToolUse: auto-fix Biome formatting + import sorting after Write/Edit.
 # Runs biome check --write on the specific file immediately after Claude writes it.
 
-cd /Users/deepakdewani1/Documents/Programs/react/requestly
+cd /Users/deepakdewani1/Documents/Programs/react/neon-arena
 
 INPUT=$(cat)
 TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name')

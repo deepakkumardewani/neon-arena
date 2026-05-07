@@ -3,7 +3,7 @@
 # Formats git-changed files with Biome, then typechecks the whole project.
 # Exits 2 on errors → asyncRewake wakes Claude to fix them automatically.
 
-cd /Users/deepakdewani1/Documents/Programs/react/requestly
+cd /Users/deepakdewani1/Documents/Programs/react/neon-arena
 
 BIOME=./node_modules/.bin/biome
 TSC=./node_modules/.bin/tsc

@@ -41,6 +41,7 @@ export default defineConfig({
       "AGENTS.md",
       "node_modules/**",
       "dist/**",
+      "public/**",
     ],
   },
   lint: {
@@ -51,6 +52,7 @@ export default defineConfig({
       "AGENTS.md",
       "node_modules/**",
       "dist/**",
+      "public/**",
     ],
     options: { typeAware: true, typeCheck: true },
   },
