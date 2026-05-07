@@ -3,13 +3,13 @@ import { PIECE_COLORS } from "../pieceTheme";
 
 interface Props {
   color: PieceColor;
-  size: number;
+  size?: number;
 }
 
 export function Pawn({ color, size }: Props) {
   const { fill, stroke } = PIECE_COLORS[color];
   return (
-    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" aria-hidden>
+    <svg width={size ?? "100%"} height={size ?? "100%"} viewBox="0 0 40 40" fill="none" aria-hidden>
       {/* Head */}
       <circle cx="20" cy="10" r="5.5" fill={fill} stroke={stroke} strokeWidth="1.5" />
       {/* Neck */}

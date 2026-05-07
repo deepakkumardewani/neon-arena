@@ -3,13 +3,13 @@ import { PIECE_COLORS } from "../pieceTheme";
 
 interface Props {
   color: PieceColor;
-  size: number;
+  size?: number;
 }
 
 export function Knight({ color, size }: Props) {
   const { fill, stroke } = PIECE_COLORS[color];
   return (
-    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" aria-hidden>
+    <svg width={size ?? "100%"} height={size ?? "100%"} viewBox="0 0 40 40" fill="none" aria-hidden>
       {/* Horse head silhouette — angular/geometric */}
       <polygon
         points="15,34 15,23 11,18 14,10 21,7 28,11 27,18 23,21 23,34"

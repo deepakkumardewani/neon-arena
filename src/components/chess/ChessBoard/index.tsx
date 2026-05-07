@@ -12,6 +12,8 @@ import { ChessPiece } from "../ChessPiece";
 import { BoardLabels } from "./BoardLabels";
 import { Square } from "./Square";
 
+const DRAG_THRESHOLD_PX = 6;
+
 // ── FEN parser ──────────────────────────────────────────────────────────────
 
 const PIECE_TYPE_MAP: Record<string, PieceType> = {
@@ -24,7 +26,9 @@ const PIECE_TYPE_MAP: Record<string, PieceType> = {
 };
 
 function parseFenBoard(fen: string): (ChessPieceType | null)[] {
-  const board: (ChessPieceType | null)[] = new Array(64).fill(null);
+  const board: (ChessPieceType | null)[] = Array.from({ length: 64 }).fill(
+    null,
+  ) as (ChessPieceType | null)[];
   const ranks = fen.split(" ")[0].split("/"); // rank[0] = rank 8
 
   ranks.forEach((rank, rankIdx) => {
@@ -65,12 +69,15 @@ export function ChessBoard({ flipped = false, locked = false }: Props) {
   const reduced = useReducedMotion();
   const boardRef = useRef<HTMLDivElement>(null);
 
-  // Drag state — stores source square + current pointer position
+  // Drag state — only set after pointer moves past threshold (prevents flicker on click)
   const [dragging, setDragging] = useState<{ from: SquareIndex; x: number; y: number } | null>(
     null,
   );
   const draggingRef = useRef(dragging);
   draggingRef.current = dragging;
+
+  // Stores the initial press before drag threshold is reached
+  const dragOriginRef = useRef<{ from: SquareIndex; startX: number; startY: number } | null>(null);
 
   // Detect coarse pointer (touch/mobile) — disable drag
   const isCoarse = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
@@ -78,11 +85,13 @@ export function ChessBoard({ flipped = false, locked = false }: Props) {
   const board = parseFenBoard(state.fen);
 
   // King in check index for check-flash highlight
-  const checkedKingIndex: SquareIndex | null = (() => {
-    if (state.status !== "check" && state.status !== "checkmate") return null;
-    const idx = board.findIndex((p) => p?.type === "king" && p.color === state.activeColor);
-    return idx === -1 ? null : idx;
-  })();
+  const inCheck = state.status === "check" || state.status === "checkmate";
+  const checkedKingIndex: SquareIndex | null = inCheck
+    ? (() => {
+        const idx = board.findIndex((p) => p?.type === "king" && p.color === state.activeColor);
+        return idx === -1 ? null : idx;
+      })()
+    : null;
 
   const lastMove = state.history.length > 0 ? state.history[state.history.length - 1] : null;
 
@@ -106,26 +115,38 @@ export function ChessBoard({ flipped = false, locked = false }: Props) {
       const piece = board[index];
       if (!piece || piece.color !== state.activeColor) return;
       (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-      setDragging({ from: index, x: e.clientX, y: e.clientY });
+      // Store origin but don't start drag yet — wait for movement threshold
+      dragOriginRef.current = { from: index, startX: e.clientX, startY: e.clientY };
     },
-    // board changes every render (derived from fen) — include fen as dep proxy
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [isCoarse, locked, state.activeColor, state.fen],
   );
 
   const handlePointerMove = useCallback((e: React.PointerEvent) => {
-    if (!draggingRef.current) return;
+    const origin = dragOriginRef.current;
+    if (!origin) return;
+
+    if (!draggingRef.current) {
+      // Activate drag only after crossing the threshold to avoid click flicker
+      const dx = e.clientX - origin.startX;
+      const dy = e.clientY - origin.startY;
+      if (dx * dx + dy * dy >= DRAG_THRESHOLD_PX * DRAG_THRESHOLD_PX) {
+        setDragging({ from: origin.from, x: e.clientX, y: e.clientY });
+      }
+      return;
+    }
+
     setDragging((d) => (d ? { ...d, x: e.clientX, y: e.clientY } : null));
   }, []);
 
   const handlePointerUp = useCallback(
     (e: React.PointerEvent) => {
+      dragOriginRef.current = null;
       const d = draggingRef.current;
-      if (!d) return;
+      if (!d) return; // simple click — let onClick on Square handle it
       setDragging(null);
       const targetIndex = getIndexFromPoint(e.clientX, e.clientY);
       if (targetIndex === null || targetIndex === d.from) return;
-      // Ensure source is selected, then fire destination
       if (state.selectedSquare !== d.from) selectSquare(d.from);
       selectSquare(targetIndex);
     },
@@ -143,7 +164,7 @@ export function ChessBoard({ flipped = false, locked = false }: Props) {
   return (
     <div
       className="relative"
-      style={{ width: "min(100%, min(100vw, calc(100vh - 8rem)))" }}
+      style={{ width: "min(100%, min(100vw, calc(100dvh - 13rem)))" }}
       aria-label="Chess board"
     >
       {/* 8×8 grid */}
@@ -151,9 +172,12 @@ export function ChessBoard({ flipped = false, locked = false }: Props) {
         ref={boardRef}
         className="relative grid"
         style={{ gridTemplateColumns: "repeat(8, 1fr)", aspectRatio: "1" }}
-        onPointerMove={dragging ? handlePointerMove : undefined}
-        onPointerUp={dragging ? handlePointerUp : undefined}
-        onPointerCancel={() => setDragging(null)}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={() => {
+          dragOriginRef.current = null;
+          setDragging(null);
+        }}
       >
         {Array.from({ length: 64 }, (_, i) => {
           const row = Math.floor(i / 8);
@@ -176,6 +200,7 @@ export function ChessBoard({ flipped = false, locked = false }: Props) {
                 isHintFrom={state.hintFrom === index}
                 isHintTo={state.hintTo === index}
                 isInCheck={checkedKingIndex === index}
+                isEnPassant={state.enPassantSquare === index}
                 onClick={locked ? () => undefined : selectSquare}
                 onPointerDown={!isCoarse ? handlePointerDown : undefined}
               />
@@ -184,8 +209,7 @@ export function ChessBoard({ flipped = false, locked = false }: Props) {
               <AnimatePresence>
                 {piece && !isDragSource && (
                   <motion.div
-                    key={`${piece.type}-${piece.color}`}
-                    layoutId={`piece-${piece.color}-${piece.type}-${index}`}
+                    key={`${piece.color}-${piece.type}-${index}`}
                     className="pointer-events-none absolute inset-0 flex items-center justify-center p-[6%]"
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -194,7 +218,7 @@ export function ChessBoard({ flipped = false, locked = false }: Props) {
                       reduced ? { duration: 0 } : { type: "spring", stiffness: 600, damping: 35 }
                     }
                   >
-                    <ChessPiece piece={piece} size={40} className="h-full w-full" />
+                    <ChessPiece piece={piece} className="h-full w-full" />
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -222,10 +246,10 @@ export function ChessBoard({ flipped = false, locked = false }: Props) {
                 dragGhostPiece.color === "white" ? "var(--na-cyan)" : "var(--na-rose)"
               })`,
             }}
-            initial={{ opacity: 0.85, scale: 1.15 }}
-            animate={{ opacity: 0.95, scale: 1.2 }}
+            initial={reduced ? { opacity: 1, scale: 1.2 } : { opacity: 0.85, scale: 1.15 }}
+            animate={reduced ? { opacity: 1, scale: 1.2 } : { opacity: 0.95, scale: 1.2 }}
             exit={{ opacity: 0, scale: 0.85 }}
-            transition={{ duration: 0.08 }}
+            transition={reduced ? { duration: 0 } : { duration: 0.08 }}
           >
             <ChessPiece piece={dragGhostPiece} size={squareSize} className="h-full w-full" />
           </motion.div>

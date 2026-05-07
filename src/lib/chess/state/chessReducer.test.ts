@@ -15,6 +15,7 @@ const createInitialState = (): ChessGameState => ({
   hintFrom: null,
   hintTo: null,
   hintTokens: 3,
+  enPassantSquare: null,
 });
 
 describe("chessReducer", () => {

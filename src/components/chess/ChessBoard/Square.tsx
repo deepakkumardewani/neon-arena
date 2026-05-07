@@ -12,6 +12,7 @@ interface Props {
   isHintFrom: boolean;
   isHintTo: boolean;
   isInCheck: boolean;
+  isEnPassant?: boolean;
   onClick: (index: SquareIndex) => void;
   onPointerDown?: (e: React.PointerEvent, index: SquareIndex) => void;
 }
@@ -27,6 +28,7 @@ export function Square({
   isHintFrom,
   isHintTo,
   isInCheck,
+  isEnPassant = false,
   onClick,
   onPointerDown,
 }: Props) {
@@ -103,6 +105,17 @@ export function Square({
 
       {/* Layer 6: check flash */}
       {isInCheck && <span className="na-check-flash pointer-events-none absolute inset-0" />}
+
+      {/* En passant captured pawn highlight */}
+      {isEnPassant && (
+        <span
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundColor: "color-mix(in oklch, var(--na-rose) 40%, transparent)",
+            boxShadow: "inset 0 0 0 2px var(--na-rose)",
+          }}
+        />
+      )}
 
       {/* Layer 7: piece */}
       {piece && (

@@ -3,13 +3,13 @@ import { PIECE_COLORS } from "../pieceTheme";
 
 interface Props {
   color: PieceColor;
-  size: number;
+  size?: number;
 }
 
 export function King({ color, size }: Props) {
   const { fill, stroke } = PIECE_COLORS[color];
   return (
-    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" aria-hidden>
+    <svg width={size ?? "100%"} height={size ?? "100%"} viewBox="0 0 40 40" fill="none" aria-hidden>
       {/* Cross — vertical bar */}
       <rect
         x="18.5"

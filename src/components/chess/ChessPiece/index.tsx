@@ -8,11 +8,12 @@ import { Pawn } from "./pieces/Pawn";
 
 interface Props {
   piece: ChessPieceType;
+  /** Explicit pixel size. Omit to let the SVG fill its container via 100%. */
   size?: number;
   className?: string;
 }
 
-export function ChessPiece({ piece, size = 40, className }: Props) {
+export function ChessPiece({ piece, size, className }: Props) {
   const props = { color: piece.color, size };
   const Component = {
     king: King,
@@ -24,8 +25,8 @@ export function ChessPiece({ piece, size = 40, className }: Props) {
   }[piece.type];
 
   return (
-    <span className={className} aria-label={`${piece.color} ${piece.type}`}>
+    <div className={className} aria-label={`${piece.color} ${piece.type}`}>
       <Component {...props} />
-    </span>
+    </div>
   );
 }

@@ -45,6 +45,8 @@ export interface ChessGameState {
   readonly hintFrom: SquareIndex | null;
   readonly hintTo: SquareIndex | null;
   readonly hintTokens: number;
+  /** Square of the captured pawn during en passant — highlighted briefly then cleared. */
+  readonly enPassantSquare: SquareIndex | null;
 }
 
 export interface ChessSettings {

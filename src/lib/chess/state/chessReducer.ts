@@ -52,6 +52,17 @@ export type ChessAction =
       type: "CLEAR_HINT";
     }
   | {
+      type: "APPLY_REMOTE_STATE";
+      payload: {
+        fen: string;
+        history: readonly ChessMove[];
+        activeColor: PieceColor;
+        status: ChessStatus;
+        capturedByWhite: readonly PieceType[];
+        capturedByBlack: readonly PieceType[];
+      };
+    }
+  | {
       type: "RESET_GAME";
       payload: {
         initialState: ChessGameState;
@@ -138,6 +149,25 @@ export function chessReducer(state: ChessGameState, action: ChessAction): ChessG
     case "CLEAR_HINT": {
       return {
         ...state,
+        hintFrom: null,
+        hintTo: null,
+      };
+    }
+
+    case "APPLY_REMOTE_STATE": {
+      const { fen, history, activeColor, status, capturedByWhite, capturedByBlack } =
+        action.payload;
+      return {
+        ...state,
+        fen,
+        history: [...history],
+        activeColor,
+        status,
+        capturedByWhite: [...capturedByWhite],
+        capturedByBlack: [...capturedByBlack],
+        selectedSquare: null,
+        legalMoves: [],
+        promotionPending: null,
         hintFrom: null,
         hintTo: null,
       };

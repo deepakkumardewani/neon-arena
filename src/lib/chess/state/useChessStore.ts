@@ -36,6 +36,7 @@ function colorFromChess(color: "w" | "b"): PieceColor {
 interface ChessStoreState {
   state: ChessGameState;
   chess: Chess; // Not in state — mutable reference
+  postMoveCallback: ((state: ChessGameState) => void) | null;
 }
 
 interface ChessStoreActions {
@@ -43,9 +44,21 @@ interface ChessStoreActions {
   executeMove: (from: SquareIndex, to: SquareIndex, promotion?: PieceType) => void;
   undoMove: (mode: "solo" | "local") => void;
   resolvePromotion: (piece: PieceType) => void;
-  requestHint: () => void;
+  /** Apply a hint UCI move (e.g. "e2e4") to the store state. Called by GamePage after Stockfish responds. */
+  applyHint: (uciMove: string) => void;
   clearHint: () => void;
   resetGame: () => void;
+  /** Apply remote state from Firestore snapshot (online/friend modes). */
+  applyRemoteState: (payload: {
+    fen: string;
+    history: readonly import("../types").ChessMove[];
+    activeColor: import("../types").PieceColor;
+    status: import("../types").ChessStatus;
+    capturedByWhite: readonly import("../types").PieceType[];
+    capturedByBlack: readonly import("../types").PieceType[];
+  }) => void;
+  /** Register a callback invoked after executeMove or resolvePromotion completes. Used for online Firestore writes. */
+  setPostMoveCallback: (cb: ((state: ChessGameState) => void) | null) => void;
 }
 
 const initialState: ChessGameState = {
@@ -61,12 +74,14 @@ const initialState: ChessGameState = {
   hintFrom: null,
   hintTo: null,
   hintTokens: 3,
+  enPassantSquare: null,
 };
 
 export const useChessStore = create<ChessStoreState & ChessStoreActions>((set, get) => {
   return {
     state: initialState,
     chess: new Chess(STARTING_FEN),
+    postMoveCallback: null,
 
     selectSquare: (square: SquareIndex) => {
       const { state, chess } = get();
@@ -138,18 +153,40 @@ export const useChessStore = create<ChessStoreState & ChessStoreActions>((set, g
       const fromAlgebraic = indexToAlgebraic(from);
       const toAlgebraic = indexToAlgebraic(to);
 
+      // Detect promotion intent BEFORE calling chess.js — a pawn on the 7th rank (white)
+      // or 2nd rank (black) moving to the back rank requires a promotion piece.
+      // If none is provided, gate on promotionPending instead of letting chess.js reject.
+      if (!promotion) {
+        const movingPiece = chess.get(fromAlgebraic as any);
+        const isPromotionMove =
+          movingPiece?.type === "p" &&
+          ((movingPiece.color === "w" && Math.floor(to / 8) === 7) ||
+            (movingPiece.color === "b" && Math.floor(to / 8) === 0));
+
+        if (isPromotionMove) {
+          set((store) => ({
+            state: {
+              ...store.state,
+              promotionPending: { from, to },
+              selectedSquare: null,
+              legalMoves: [],
+            },
+          }));
+          return;
+        }
+      }
+
       // Attempt the move on chess.js
+      const promotionMap: Record<PieceType, string> = {
+        queen: "q",
+        rook: "r",
+        bishop: "b",
+        knight: "n",
+        king: "k",
+        pawn: "p",
+      };
       const movePayload: any = { from: fromAlgebraic, to: toAlgebraic };
       if (promotion) {
-        // Map our piece type to chess.js piece type
-        const promotionMap: Record<PieceType, string> = {
-          queen: "q",
-          rook: "r",
-          bishop: "b",
-          knight: "n",
-          king: "k",
-          pawn: "p",
-        };
         movePayload.promotion = promotionMap[promotion];
       }
 
@@ -158,33 +195,45 @@ export const useChessStore = create<ChessStoreState & ChessStoreActions>((set, g
         return; // Invalid move
       }
 
+      // Detect en passant captured pawn square
+      let enPassantSquare: SquareIndex | null = null;
+      if (moveResult.flags.includes("e")) {
+        // The captured pawn is on the destination file, source rank
+        enPassantSquare = (to % 8) + (from - (from % 8));
+      }
+
       // Build captured pieces tracking
       const capturedByWhite = [...state.capturedByWhite];
       const capturedByBlack = [...state.capturedByBlack];
 
       if (moveResult.captured) {
-        const capturedPiece = moveResult.captured as PieceType;
-        if (moveResult.color === "w") {
-          capturedByWhite.push(capturedPiece);
-        } else {
-          capturedByBlack.push(capturedPiece);
+        const CHESS_JS_PIECE_MAP: Record<string, PieceType> = {
+          k: "king",
+          q: "queen",
+          r: "rook",
+          b: "bishop",
+          n: "knight",
+          p: "pawn",
+        };
+        const capturedPiece = CHESS_JS_PIECE_MAP[moveResult.captured];
+        if (capturedPiece) {
+          if (moveResult.color === "w") {
+            capturedByWhite.push(capturedPiece);
+          } else {
+            capturedByBlack.push(capturedPiece);
+          }
         }
       }
 
-      // Check for promotion requirement
-      const toPiece = chess.get(toAlgebraic as any);
-      const isPawnOnBackRank =
-        toPiece?.type === "p" &&
-        ((toPiece.color === "w" && Math.floor(to / 8) === 7) ||
-          (toPiece.color === "b" && Math.floor(to / 8) === 0));
-
-      const promotionPending = isPawnOnBackRank ? { from, to } : null;
+      const promotionPending = null;
 
       const newStatus = getStatusFromChess(chess);
       const newActiveColor = colorFromChess(chess.turn());
 
-      set((store) => ({
-        state: chessReducer(store.state, {
+      const newFen = chess.fen();
+
+      set((store) => {
+        const nextState = chessReducer(store.state, {
           type: "EXECUTE_MOVE",
           payload: {
             move: {
@@ -200,9 +249,18 @@ export const useChessStore = create<ChessStoreState & ChessStoreActions>((set, g
             capturedByBlack,
             promotionPending,
           },
-        }),
-        chess,
-      }));
+        });
+        const finalState = { ...nextState, fen: newFen, enPassantSquare };
+        store.postMoveCallback?.(finalState);
+        return { state: finalState, chess };
+      });
+
+      // Clear en passant highlight after 100ms
+      if (enPassantSquare !== null) {
+        setTimeout(() => {
+          set((s) => ({ state: { ...s.state, enPassantSquare: null } }));
+        }, 100);
+      }
     },
 
     undoMove: (mode: "solo" | "local") => {
@@ -219,17 +277,19 @@ export const useChessStore = create<ChessStoreState & ChessStoreActions>((set, g
       // For now, we'll track from remaining moves; a full rebuild would require iterating history
       // This is a simplified approach — in production, you'd maintain this in state
 
-      set((store) => ({
-        state: chessReducer(store.state, {
+      const fenAfterUndo = chess.fen();
+
+      set((store) => {
+        const nextState = chessReducer(store.state, {
           type: "UNDO_MOVE",
           payload: {
             currentTurn: newActiveColor,
             status: newStatus,
             movesToRemove,
           },
-        }),
-        chess,
-      }));
+        });
+        return { state: { ...nextState, fen: fenAfterUndo }, chess };
+      });
     },
 
     resolvePromotion: (piece: PieceType) => {
@@ -242,9 +302,22 @@ export const useChessStore = create<ChessStoreState & ChessStoreActions>((set, g
       get().executeMove(state.promotionPending.from, state.promotionPending.to, piece);
     },
 
-    requestHint: () => {
-      // Stub for Phase 5 — will be wired to Stockfish
-      console.log("requestHint placeholder — wired in Phase 5");
+    applyHint: (uciMove: string) => {
+      const { state } = get();
+      if (state.hintTokens <= 0) return;
+
+      // Parse UCI move string (e.g. "e2e4") into square indices
+      const fromAlg = uciMove.slice(0, 2);
+      const toAlg = uciMove.slice(2, 4);
+      const fromSquare = algebraicToIndex(fromAlg);
+      const toSquare = algebraicToIndex(toAlg);
+
+      set((store) => ({
+        state: chessReducer(store.state, {
+          type: "SET_HINT",
+          payload: { fromSquare, toSquare },
+        }),
+      }));
     },
 
     clearHint: () => {
@@ -255,10 +328,34 @@ export const useChessStore = create<ChessStoreState & ChessStoreActions>((set, g
       }));
     },
 
+    applyRemoteState: (payload) => {
+      const { fen, history, activeColor, status, capturedByWhite, capturedByBlack } = payload;
+      const newChess = new Chess(fen);
+      set({
+        state: chessReducer(get().state, {
+          type: "APPLY_REMOTE_STATE",
+          payload: {
+            fen,
+            history,
+            activeColor,
+            status,
+            capturedByWhite,
+            capturedByBlack,
+          },
+        }),
+        chess: newChess,
+      });
+    },
+
+    setPostMoveCallback: (cb) => {
+      set({ postMoveCallback: cb });
+    },
+
     resetGame: () => {
       set({
         state: initialState,
         chess: new Chess(STARTING_FEN),
+        postMoveCallback: null,
       });
     },
   };
