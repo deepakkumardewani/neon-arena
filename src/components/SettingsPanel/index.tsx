@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { useAudioStore } from "@/hooks/useAudioStore";
@@ -9,9 +9,10 @@ import { hapticManager } from "@/lib/haptics/hapticManager";
 export interface SettingsPanelProps {
   readonly open: boolean;
   readonly onClose: () => void;
+  readonly children?: ReactNode;
 }
 
-export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
+export function SettingsPanel({ open, onClose, children }: SettingsPanelProps) {
   const masterMuted = useAudioStore((s) => s.masterMuted);
   const sfxVolume = useAudioStore((s) => s.sfxVolume);
   const musicVolume = useAudioStore((s) => s.musicVolume);
@@ -144,6 +145,7 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                   }}
                 />
               </div>
+              {children}
             </div>
           </motion.aside>
         </>

@@ -10,6 +10,14 @@ import { SettingsPanel } from "@/components/SettingsPanel";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { audioManager } from "@/lib/audio/audioManager";
 import { hapticManager } from "@/lib/haptics/hapticManager";
+import {
+  TicTacToeThumb,
+  ChessThumb,
+  Connect4Thumb,
+  GomukuThumb,
+  CheckersThumb,
+  DotsAndBoxesThumb,
+} from "./thumbs";
 
 const HERO_EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -21,81 +29,6 @@ function cardVariants(reducedMotion: boolean) {
     },
     transition: { duration: reducedMotion ? 0 : 0.45, ease: HERO_EASE },
   };
-}
-
-function TicTacToeThumb() {
-  return (
-    <div className="flex h-full items-center justify-center p-6">
-      <svg viewBox="0 0 100 100" className="h-full max-h-28 w-full max-w-28" aria-hidden>
-        <defs>
-          <filter id="home-ttt-glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feDropShadow
-              dx="0"
-              dy="0"
-              stdDeviation="1.5"
-              floodColor="var(--na-purple)"
-              floodOpacity="0.5"
-            />
-          </filter>
-        </defs>
-        <g
-          stroke="var(--na-purple)"
-          strokeWidth="2"
-          filter="url(#home-ttt-glow)"
-          opacity="0.85"
-          className="na-ttt-thumb-grid"
-        >
-          <line x1="35" y1="10" x2="35" y2="90" />
-          <line x1="65" y1="10" x2="65" y2="90" />
-          <line x1="10" y1="35" x2="90" y2="35" />
-          <line x1="10" y1="65" x2="90" y2="65" />
-        </g>
-        <line
-          className="na-ttt-thumb-x-arm"
-          x1="18"
-          y1="18"
-          x2="30"
-          y2="30"
-          stroke="var(--na-cyan)"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-        />
-        <line
-          className="na-ttt-thumb-x-arm"
-          x1="30"
-          y1="18"
-          x2="18"
-          y2="30"
-          stroke="var(--na-cyan)"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-        />
-        <circle
-          className="na-ttt-thumb-o-ring"
-          cx="78"
-          cy="24"
-          r="9"
-          fill="none"
-          stroke="var(--na-rose)"
-          strokeWidth="2.5"
-        />
-      </svg>
-    </div>
-  );
-}
-
-function PlaceholderThumb({ label }: { readonly label: string }) {
-  return (
-    <div className="flex h-full items-center justify-center p-6">
-      <span
-        className="text-4xl font-bold text-(--na-border)"
-        style={{ fontFamily: "var(--na-font-display)" }}
-        aria-hidden
-      >
-        {label}
-      </span>
-    </div>
-  );
 }
 
 export function HomePage() {
@@ -230,7 +163,7 @@ export function HomePage() {
             </motion.h2>
           </motion.div>
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
             style={{ gap: "var(--na-space-8)" }}
             initial="hidden"
             animate="show"
@@ -241,21 +174,27 @@ export function HomePage() {
               },
             }}
           >
-            <motion.div className="md:col-span-2 xl:col-span-5 xl:row-span-2" {...cv}>
+            <motion.div {...cv}>
               <GameCard
                 title="Tic Tac Toe"
                 thumbnail={<TicTacToeThumb />}
                 onSelect={selectTicTacToe}
               />
             </motion.div>
-            <motion.div className="xl:col-span-4" {...cv}>
-              <GameCard title="Chess" thumbnail={<PlaceholderThumb label="C" />} comingSoon />
+            <motion.div {...cv}>
+              <GameCard title="Chess" thumbnail={<ChessThumb />} comingSoon />
             </motion.div>
-            <motion.div className="xl:col-span-3" {...cv}>
-              <GameCard title="Checkers" thumbnail={<PlaceholderThumb label="K" />} comingSoon />
+            <motion.div {...cv}>
+              <GameCard title="Checkers" thumbnail={<CheckersThumb />} comingSoon />
             </motion.div>
-            <motion.div className="md:col-span-2 xl:col-span-7 xl:col-start-6" {...cv}>
-              <GameCard title="Battleship" thumbnail={<PlaceholderThumb label="B" />} comingSoon />
+            <motion.div {...cv}>
+              <GameCard title="Connect 4" thumbnail={<Connect4Thumb />} comingSoon />
+            </motion.div>
+            <motion.div {...cv}>
+              <GameCard title="Gomuku" thumbnail={<GomukuThumb />} comingSoon />
+            </motion.div>
+            <motion.div {...cv}>
+              <GameCard title="Dots & Boxes" thumbnail={<DotsAndBoxesThumb />} comingSoon />
             </motion.div>
           </motion.div>
         </main>

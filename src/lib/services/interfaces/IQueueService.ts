@@ -5,6 +5,7 @@ export interface QueueWaiterSnapshot {
   readonly authUid: string;
   readonly nickname: string;
   readonly joinedAtMs: number;
+  readonly gameType?: string;
 }
 
 export interface MyQueueDocState {
@@ -13,7 +14,12 @@ export interface MyQueueDocState {
 }
 
 export interface IQueueService {
-  enqueue(queueEntryId: string, authUid: string, nickname: string): Promise<void>;
+  enqueue(
+    queueEntryId: string,
+    authUid: string,
+    nickname: string,
+    gameType?: string,
+  ): Promise<void>;
   dequeue(queueEntryId: string): Promise<void>;
   subscribeToQueue(cb: (queue: readonly QueueWaiterSnapshot[]) => void): () => void;
   /** Listen to this player's queue row for `status: matched` + game id. */
@@ -23,7 +29,7 @@ export interface IQueueService {
    * (later `joinedAtMs`) to reduce duplicate attempts. Returns game id on success.
    */
   attemptPair(
-    first: { queueEntryId: string; authUid: string; nickname: string },
-    second: { queueEntryId: string; authUid: string; nickname: string },
+    first: { queueEntryId: string; authUid: string; nickname: string; gameType?: string },
+    second: { queueEntryId: string; authUid: string; nickname: string; gameType?: string },
   ): Promise<string | null>;
 }

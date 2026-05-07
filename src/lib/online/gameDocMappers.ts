@@ -43,7 +43,12 @@ export function firestoreDataToGameDoc(id: string, data: DocumentData): GameDoc 
     throw new Error("Invalid game: playerX missing");
   }
   const playerO = readPlayer(data, "playerO");
+  const gameType =
+    data.gameType === "chess" || data.gameType === "tictactoe" ? data.gameType : undefined;
+
+  // Chess games use FEN/moveHistory, not board
   const board = readBoard(data.board);
+
   const currentTurn =
     typeof data.currentTurn === "string" && data.currentTurn.length > 0
       ? data.currentTurn
@@ -75,8 +80,21 @@ export function firestoreDataToGameDoc(id: string, data: DocumentData): GameDoc 
   const rematchDeclinedBy =
     typeof data.rematchDeclinedBy === "string" ? data.rematchDeclinedBy : undefined;
 
+  // Chess-specific fields
+  const fen = typeof data.fen === "string" && data.fen.length > 0 ? data.fen : undefined;
+  const moveHistory = Array.isArray(data.moveHistory)
+    ? data.moveHistory.filter((v: unknown): v is string => typeof v === "string")
+    : undefined;
+  const capturedByWhite = Array.isArray(data.capturedByWhite)
+    ? data.capturedByWhite.filter((v: unknown): v is string => typeof v === "string")
+    : undefined;
+  const capturedByBlack = Array.isArray(data.capturedByBlack)
+    ? data.capturedByBlack.filter((v: unknown): v is string => typeof v === "string")
+    : undefined;
+
   return {
     gameId: typeof data.gameId === "string" ? data.gameId : id,
+    gameType,
     playerX,
     playerO,
     board,
@@ -91,6 +109,10 @@ export function firestoreDataToGameDoc(id: string, data: DocumentData): GameDoc 
     nextGameId,
     rematchDeclined,
     rematchDeclinedBy,
+    fen,
+    moveHistory,
+    capturedByWhite,
+    capturedByBlack,
   };
 }
 

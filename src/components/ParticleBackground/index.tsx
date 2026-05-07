@@ -20,7 +20,7 @@ function buildAmbientOptions(purple: string, cyan: string, particleCount: number
       number: { value: particleCount, density: { enable: false } },
       color: { value: [purple, cyan] },
       shape: { type: "circle" },
-      opacity: { value: { min: 0.22, max: 0.55 } },
+      opacity: { value: { min: 0.45, max: 0.85 } },
       size: { value: { min: 2.5, max: 6 } },
       move: {
         enable: true,
@@ -34,8 +34,8 @@ function buildAmbientOptions(purple: string, cyan: string, particleCount: number
         enable: true,
         distance: 150,
         color: purple,
-        opacity: 0.1,
-        width: 0.75,
+        opacity: 0.28,
+        width: 0.9,
       },
     },
     interactivity: {

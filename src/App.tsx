@@ -8,6 +8,7 @@ import { usePlayerStore } from "@/hooks/usePlayerStore";
 import { usePresenceSession } from "@/hooks/usePresenceSession";
 import { authService } from "@/lib/services/auth";
 import { chessConfig } from "@/pages/Chess/chessConfig";
+import { ChessErrorBoundary } from "@/components/ErrorBoundary/ChessErrorBoundary";
 import { tictactoeConfig } from "@/pages/ModeSelect/tictactoeConfig";
 import { AppProviders } from "@/providers/AppProviders";
 
@@ -159,17 +160,21 @@ const router = createBrowserRouter([
       {
         path: "/play/chess/game",
         element: (
-          <PageShell>
-            <ChessGamePage />
-          </PageShell>
+          <ChessErrorBoundary>
+            <PageShell>
+              <ChessGamePage />
+            </PageShell>
+          </ChessErrorBoundary>
         ),
       },
       {
         path: "/game/chess/:gameId",
         element: (
-          <PageShell>
-            <ChessGamePage />
-          </PageShell>
+          <ChessErrorBoundary>
+            <PageShell>
+              <ChessGamePage />
+            </PageShell>
+          </ChessErrorBoundary>
         ),
       },
     ],

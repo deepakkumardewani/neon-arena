@@ -20,14 +20,14 @@ export function MatchmakingPage({ gameConfig }: MatchmakingPageProps) {
   const uid = usePlayerStore((s) => s.uid);
   const nickname = usePlayerStore((s) => s.nickname);
   const queueEntryId = useMemo(() => getMatchmakingQueueEntryId(uid), [uid]);
-  const { queueDepth } = useMatchmaking();
+  const { queueDepth } = useMatchmaking(gameConfig.gameType);
 
   const [showAiFallback, setShowAiFallback] = useState(false);
 
   useEffect(() => {
     const trimmed = nickname.trim();
     if (uid.length > 0 && trimmed.length > 0 && queueEntryId.length > 0) {
-      void queueService.enqueue(queueEntryId, uid, trimmed);
+      void queueService.enqueue(queueEntryId, uid, trimmed, gameConfig.gameType);
     }
     return () => {
       if (queueEntryId.length > 0) {

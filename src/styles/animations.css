@@ -333,6 +333,232 @@
   );
 }
 
+/* ── Chess thumb ──────────────────────────────────────────────────────────── */
+@keyframes chess-thumb-grid-shimmer {
+  0%,
+  100% {
+    opacity: 0.72;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes chess-thumb-white-float {
+  0%,
+  100% {
+    transform: translateY(0);
+    filter: drop-shadow(0 0 4px var(--na-cyan));
+  }
+  50% {
+    transform: translateY(-3px);
+    filter: drop-shadow(0 0 10px var(--na-cyan));
+  }
+}
+
+@keyframes chess-thumb-black-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 3px var(--na-rose));
+  }
+  50% {
+    filter: drop-shadow(0 0 10px var(--na-rose));
+  }
+}
+
+.group:hover .na-chess-thumb-grid {
+  animation: chess-thumb-grid-shimmer 1.6s ease-in-out infinite;
+}
+
+.group:hover .na-chess-thumb-white {
+  animation: chess-thumb-white-float 1.2s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: bottom center;
+}
+
+.group:hover .na-chess-thumb-black {
+  animation: chess-thumb-black-glow 1.2s ease-in-out infinite 0.4s;
+}
+
+/* ── Connect 4 thumb ──────────────────────────────────────────────────────── */
+@keyframes c4-thumb-board-shimmer {
+  0%,
+  100% {
+    opacity: 0.72;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes c4-thumb-disc-cyan-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 3px var(--na-cyan));
+    opacity: 1;
+  }
+  50% {
+    filter: drop-shadow(0 0 8px var(--na-cyan));
+    opacity: 0.88;
+  }
+}
+
+@keyframes c4-thumb-disc-rose-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 3px var(--na-rose));
+    opacity: 1;
+  }
+  50% {
+    filter: drop-shadow(0 0 8px var(--na-rose));
+    opacity: 0.88;
+  }
+}
+
+.group:hover .na-c4-thumb-board {
+  animation: c4-thumb-board-shimmer 1.6s ease-in-out infinite;
+}
+
+.group:hover .na-c4-thumb-disc-cyan {
+  animation: c4-thumb-disc-cyan-pulse 1.1s ease-in-out infinite;
+}
+
+.group:hover .na-c4-thumb-disc-rose {
+  animation: c4-thumb-disc-rose-pulse 1.1s ease-in-out infinite 0.35s;
+}
+
+/* ── Gomoku thumb ─────────────────────────────────────────────────────────── */
+@keyframes gmk-thumb-grid-shimmer {
+  0%,
+  100% {
+    opacity: 0.72;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes gmk-thumb-stone-cyan-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 3px var(--na-cyan));
+  }
+  50% {
+    filter: drop-shadow(0 0 8px var(--na-cyan));
+  }
+}
+
+@keyframes gmk-thumb-stone-rose-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 3px var(--na-rose));
+  }
+  50% {
+    filter: drop-shadow(0 0 8px var(--na-rose));
+  }
+}
+
+.group:hover .na-gmk-thumb-grid {
+  animation: gmk-thumb-grid-shimmer 1.6s ease-in-out infinite;
+}
+
+.group:hover .na-gmk-thumb-stone-cyan {
+  animation: gmk-thumb-stone-cyan-pulse 1.15s ease-in-out infinite;
+}
+
+.group:hover .na-gmk-thumb-stone-rose {
+  animation: gmk-thumb-stone-rose-pulse 1.15s ease-in-out infinite 0.38s;
+}
+
+/* ── Checkers thumb ───────────────────────────────────────────────────────── */
+@keyframes chk-thumb-board-shimmer {
+  0%,
+  100% {
+    opacity: 0.72;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes chk-thumb-piece-cyan-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+    filter: drop-shadow(0 0 4px var(--na-cyan));
+  }
+  50% {
+    transform: translateY(-2.5px);
+    filter: drop-shadow(0 0 9px var(--na-cyan));
+  }
+}
+
+@keyframes chk-thumb-piece-rose-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+    filter: drop-shadow(0 0 4px var(--na-rose));
+  }
+  50% {
+    transform: translateY(-2.5px);
+    filter: drop-shadow(0 0 9px var(--na-rose));
+  }
+}
+
+.group:hover .na-chk-thumb-board {
+  animation: chk-thumb-board-shimmer 1.6s ease-in-out infinite;
+}
+
+.group:hover .na-chk-thumb-piece-cyan {
+  animation: chk-thumb-piece-cyan-bob 1.2s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.group:hover .na-chk-thumb-piece-rose {
+  animation: chk-thumb-piece-rose-bob 1.2s ease-in-out infinite 0.4s;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* ── Dots & Boxes thumb ───────────────────────────────────────────────────── */
+@keyframes dab-line-draw {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes dab-dot-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 2px var(--na-purple));
+  }
+  50% {
+    filter: drop-shadow(0 0 6px var(--na-purple));
+  }
+}
+
+.na-dab-thumb-line-cyan,
+.na-dab-thumb-line-rose {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+}
+
+.group:hover .na-dab-thumb-line-cyan {
+  animation: dab-line-draw 0.38s ease-out forwards;
+}
+
+.group:hover .na-dab-thumb-line-rose {
+  animation: dab-line-draw 0.38s ease-out 0.18s forwards;
+}
+
+.group:hover .na-dab-thumb-dot {
+  animation: dab-dot-pulse 1.1s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -387,6 +613,29 @@
   .na-cell-place-burst {
     animation: none;
     opacity: 0;
+  }
+
+  .group:hover .na-chess-thumb-grid,
+  .group:hover .na-chess-thumb-white,
+  .group:hover .na-chess-thumb-black,
+  .group:hover .na-c4-thumb-board,
+  .group:hover .na-c4-thumb-disc-cyan,
+  .group:hover .na-c4-thumb-disc-rose,
+  .group:hover .na-gmk-thumb-grid,
+  .group:hover .na-gmk-thumb-stone-cyan,
+  .group:hover .na-gmk-thumb-stone-rose,
+  .group:hover .na-chk-thumb-board,
+  .group:hover .na-chk-thumb-piece-cyan,
+  .group:hover .na-chk-thumb-piece-rose,
+  .group:hover .na-dab-thumb-line-cyan,
+  .group:hover .na-dab-thumb-line-rose,
+  .group:hover .na-dab-thumb-dot {
+    animation: none;
+  }
+
+  .na-dab-thumb-line-cyan,
+  .na-dab-thumb-line-rose {
+    stroke-dashoffset: 0;
   }
 
   *,

@@ -41,15 +41,20 @@ export function GameCard({ title, thumbnail, comingSoon = false, onSelect }: Gam
     </>
   );
 
+  const hoverAnimation = reducedMotion
+    ? { boxShadow: "var(--na-glow-x)", borderColor: "var(--na-cyan)" }
+    : { y: -3, boxShadow: "var(--na-glow-x)", borderColor: "var(--na-cyan)" };
+
   if (!interactive) {
     return (
-      <article
-        className={`${shellClass} opacity-50`}
-        style={{ pointerEvents: "none" }}
+      <motion.div
+        className={`${shellClass} cursor-not-allowed`}
         aria-label={`${title}, coming soon`}
+        whileHover={hoverAnimation}
+        transition={{ type: "spring", stiffness: 440, damping: 30 }}
       >
         {body}
-      </article>
+      </motion.div>
     );
   }
 
@@ -59,18 +64,7 @@ export function GameCard({ title, thumbnail, comingSoon = false, onSelect }: Gam
       className={`${shellClass} cursor-pointer`}
       onClick={onSelect}
       aria-label={`${title}, play now`}
-      whileHover={
-        reducedMotion
-          ? {
-              boxShadow: "var(--na-glow-x)",
-              borderColor: "var(--na-cyan)",
-            }
-          : {
-              y: -3,
-              boxShadow: "var(--na-glow-x)",
-              borderColor: "var(--na-cyan)",
-            }
-      }
+      whileHover={hoverAnimation}
       whileTap={{ scale: 0.992 }}
       transition={{ type: "spring", stiffness: 440, damping: 30 }}
     >

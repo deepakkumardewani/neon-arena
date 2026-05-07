@@ -13,7 +13,7 @@ function sortWaiters(waiters: readonly QueueWaiterSnapshot[]): QueueWaiterSnapsh
   });
 }
 
-export function useMatchmaking(): { readonly queueDepth: number } {
+export function useMatchmaking(gameType?: string): { readonly queueDepth: number } {
   const navigate = useNavigate();
   const uid = usePlayerStore((s) => s.uid);
   const queueEntryId = useMemo(() => getMatchmakingQueueEntryId(uid), [uid]);
@@ -30,7 +30,8 @@ export function useMatchmaking(): { readonly queueDepth: number } {
     if (uid === "" || queueEntryId === "") return;
     return queueService.subscribeMyQueue(queueEntryId, (st) => {
       if (st !== null && st.status === "matched" && st.gameId !== null) {
-        void navigate(`/game/${st.gameId}?mode=online`);
+        const basePath = gameType === "chess" ? "/game/chess" : "/game";
+        void navigate(`${basePath}/${st.gameId}?mode=online`);
       }
     });
   }, [navigate, uid, queueEntryId]);
@@ -38,7 +39,8 @@ export function useMatchmaking(): { readonly queueDepth: number } {
   useEffect(() => {
     if (uid === "" || queueEntryId === "") return;
     return queueService.subscribeToQueue((waiters) => {
-      const sorted = sortWaiters(waiters);
+      const filtered = gameType ? waiters.filter((w) => w.gameType === gameType) : waiters;
+      const sorted = sortWaiters(filtered);
       if (sorted.length < 2) return;
       const first = sorted[0];
       const second = sorted[1];
@@ -51,18 +53,20 @@ export function useMatchmaking(): { readonly queueDepth: number } {
             queueEntryId: first.queueEntryId,
             authUid: first.authUid,
             nickname: first.nickname,
+            gameType,
           },
           {
             queueEntryId: second.queueEntryId,
             authUid: second.authUid,
             nickname: second.nickname,
+            gameType,
           },
         )
         .finally(() => {
           pairingBusy.current = false;
         });
     });
-  }, [uid, queueEntryId]);
+  }, [uid, queueEntryId, gameType]);
 
   return { queueDepth };
 }

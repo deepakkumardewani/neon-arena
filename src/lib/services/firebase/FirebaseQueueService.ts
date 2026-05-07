@@ -20,6 +20,7 @@ import type { BoardCell } from "@/types/game";
 
 const QUEUE = "queue";
 const GAMES = "games";
+const STARTING_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 function authUidFromQueueDoc(docId: string, rawAuthUid: unknown): string {
   if (typeof rawAuthUid === "string" && rawAuthUid.length > 0) return rawAuthUid;
@@ -39,17 +40,22 @@ function readJoinedAtMs(value: Timestamp | null | undefined): number {
 }
 
 export class FirebaseQueueService implements IQueueService {
-  async enqueue(queueEntryId: string, authUid: string, nickname: string): Promise<void> {
-    await setDoc(
-      doc(db, QUEUE, queueEntryId),
-      {
-        authUid,
-        nickname,
-        joinedAt: serverTimestamp(),
-        status: "waiting",
-      },
-      { merge: true },
-    );
+  async enqueue(
+    queueEntryId: string,
+    authUid: string,
+    nickname: string,
+    gameType?: string,
+  ): Promise<void> {
+    const data: Record<string, unknown> = {
+      authUid,
+      nickname,
+      joinedAt: serverTimestamp(),
+      status: "waiting",
+    };
+    if (gameType) {
+      data.gameType = gameType;
+    }
+    await setDoc(doc(db, QUEUE, queueEntryId), data, { merge: true });
   }
 
   async dequeue(queueEntryId: string): Promise<void> {
@@ -65,11 +71,13 @@ export class FirebaseQueueService implements IQueueService {
         if (status !== "waiting") continue;
         const nickname = typeof raw.nickname === "string" ? raw.nickname : "Player";
         const joinedAtMs = readJoinedAtMs(raw.joinedAt as Timestamp | undefined);
+        const gameType = typeof raw.gameType === "string" ? raw.gameType : undefined;
         out.push({
           queueEntryId: d.id,
           authUid: authUidFromQueueDoc(d.id, raw.authUid),
           nickname,
           joinedAtMs,
+          gameType,
         });
       }
       cb(out);
@@ -90,14 +98,15 @@ export class FirebaseQueueService implements IQueueService {
   }
 
   async attemptPair(
-    first: { queueEntryId: string; authUid: string; nickname: string },
-    second: { queueEntryId: string; authUid: string; nickname: string },
+    first: { queueEntryId: string; authUid: string; nickname: string; gameType?: string },
+    second: { queueEntryId: string; authUid: string; nickname: string; gameType?: string },
   ): Promise<string | null> {
     const gameRef = doc(collection(db, GAMES));
     const gid = gameRef.id;
     const q0 = doc(db, QUEUE, first.queueEntryId);
     const q1 = doc(db, QUEUE, second.queueEntryId);
     const now = Date.now();
+    const isChess = first.gameType === "chess" && second.gameType === "chess";
     const out = await runTransaction(db, async (tx) => {
       const s0 = await tx.get(q0);
       const s1 = await tx.get(q1);
@@ -105,8 +114,10 @@ export class FirebaseQueueService implements IQueueService {
       const d0 = s0.data();
       const d1 = s1.data();
       if (d0.status !== "waiting" || d1.status !== "waiting") return null;
-      tx.set(gameRef, {
+
+      const baseGameDoc: Record<string, unknown> = {
         gameId: gid,
+        gameType: isChess ? "chess" : "tictactoe",
         playerX: {
           uid: first.authUid,
           nickname: first.nickname,
@@ -117,7 +128,6 @@ export class FirebaseQueueService implements IQueueService {
           nickname: second.nickname,
           queueEntryId: second.queueEntryId,
         },
-        board: emptyBoard(),
         currentTurn: first.queueEntryId,
         status: "active",
         winner: null,
@@ -126,7 +136,18 @@ export class FirebaseQueueService implements IQueueService {
         disconnectedAt: null,
         disconnectedBy: null,
         rematch: {},
-      });
+      };
+
+      if (isChess) {
+        baseGameDoc.fen = STARTING_FEN;
+        baseGameDoc.moveHistory = [];
+        baseGameDoc.capturedByWhite = [];
+        baseGameDoc.capturedByBlack = [];
+      } else {
+        baseGameDoc.board = emptyBoard();
+      }
+
+      tx.set(gameRef, baseGameDoc);
       tx.update(q0, { status: "matched", gameId: gid });
       tx.update(q1, { status: "matched", gameId: gid });
       return gid;

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { usePlayerStore } from "@/hooks/usePlayerStore";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { authService, gameService } from "@/lib/services";
+import { chessGameService } from "@/lib/chess/online/chessGameService";
 import type { Difficulty, GameConfig, GameMode } from "@/types/game";
 
 function parseModeParam(value: string | null): GameMode | null {
@@ -96,15 +97,28 @@ export function NicknameEntryPage({ gameConfig }: NicknameEntryPageProps) {
       return;
     }
     if (mode === "friend") {
+      const isChess = gameConfig.gameType === "chess";
+      const friendRoute = (gameId: string) =>
+        isChess ? `/game/chess/${gameId}?mode=friend` : `/game/${gameId}?mode=friend`;
+
       if (joinGameId !== null && joinGameId !== "") {
-        await gameService.joinGame(joinGameId, { uid: playerUid, nickname: trimmedNick });
+        if (isChess) {
+          await chessGameService.joinChessGame(joinGameId, {
+            uid: playerUid,
+            nickname: trimmedNick,
+          });
+        } else {
+          await gameService.joinGame(joinGameId, { uid: playerUid, nickname: trimmedNick });
+        }
         setRole("O");
-        void navigate(`/game/${joinGameId}?mode=friend`);
+        void navigate(friendRoute(joinGameId));
         return;
       }
-      const id = await gameService.createGame({ uid: playerUid, nickname: trimmedNick });
+      const id = isChess
+        ? await chessGameService.createChessGame({ uid: playerUid, nickname: trimmedNick })
+        : await gameService.createGame({ uid: playerUid, nickname: trimmedNick });
       setRole("X");
-      void navigate(`/game/${id}?mode=friend`);
+      void navigate(friendRoute(id));
       return;
     }
     void navigate(`${gameConfig.routePrefix}/game?mode=local`);

@@ -7,6 +7,7 @@ export interface QueueEntry {
   readonly nickname: string;
   readonly joinedAt: Timestamp;
   readonly status: "waiting" | "matched";
+  readonly gameType?: string;
 }
 
 /** Optional per-tab queue doc id so two clients with the same Firebase uid (same browser) stay distinct. */
@@ -18,6 +19,7 @@ export interface GameDocPlayer {
 
 export interface GameDoc {
   readonly gameId: string;
+  readonly gameType?: "tictactoe" | "chess";
   readonly playerX: GameDocPlayer;
   readonly playerO: GameDocPlayer | null;
   readonly board: readonly BoardCell[];
@@ -36,6 +38,11 @@ export interface GameDoc {
   /** When a player declines leaving after game (e.g. navigates home from overlay). */
   readonly rematchDeclined?: boolean;
   readonly rematchDeclinedBy?: string;
+  /** Chess-specific fields */
+  readonly fen?: string;
+  readonly moveHistory?: readonly string[];
+  readonly capturedByWhite?: readonly string[];
+  readonly capturedByBlack?: readonly string[];
 }
 
 export interface PresenceEntry {
