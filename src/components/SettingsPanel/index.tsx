@@ -5,6 +5,133 @@ import { Button } from "@/components/ui/Button";
 import { useAudioStore } from "@/hooks/useAudioStore";
 import { audioManager } from "@/lib/audio/audioManager";
 import { hapticManager } from "@/lib/haptics/hapticManager";
+import { useConnect4Settings } from "@/lib/connect4/state/useConnect4Settings";
+
+// ── Animation speed values (ms per row) ─────────────────────────────────────
+const ANIMATION_SPEED_OPTIONS = [
+  { label: "Off", value: 0 },
+  { label: "Slow", value: 120 },
+  { label: "Normal", value: 60 },
+  { label: "Fast", value: 30 },
+] as const;
+
+const AUTO_HINT_DELAY_OPTIONS = [
+  { label: "Off", value: 0 },
+  { label: "15s", value: 15_000 },
+  { label: "30s", value: 30_000 },
+  { label: "60s", value: 60_000 },
+] as const;
+
+// ── Connect 4 settings section ───────────────────────────────────────────────
+
+function C4Toggle({
+  id,
+  label,
+  checked,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <label htmlFor={id} className="flex cursor-pointer items-center justify-between gap-4">
+      <span className="text-sm text-(--na-text-muted)" style={{ fontFamily: "var(--na-font-display)" }}>
+        {label}
+      </span>
+      <input
+        id={id}
+        type="checkbox"
+        className="h-5 w-5 accent-(--na-cyan)"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+      />
+    </label>
+  );
+}
+
+export function Connect4SettingsSection() {
+  const showLastMove = useConnect4Settings((s) => s.showLastMove);
+  const allowUndo = useConnect4Settings((s) => s.allowUndo);
+  const hintsEnabled = useConnect4Settings((s) => s.hintsEnabled);
+  const autoHintDelayMs = useConnect4Settings((s) => s.autoHintDelayMs);
+  const animationSpeedMs = useConnect4Settings((s) => s.animationSpeedMs);
+  const updateSetting = useConnect4Settings((s) => s.updateSetting);
+
+  return (
+    <div className="space-y-5">
+      <p
+        className="text-xs tracking-[0.22em] text-(--na-cyan) uppercase"
+        style={{ fontFamily: "var(--na-font-display)" }}
+      >
+        Connect 4
+      </p>
+      <C4Toggle
+        id="c4-show-last-move"
+        label="Show last move"
+        checked={showLastMove}
+        onChange={(v) => updateSetting("showLastMove", v)}
+      />
+      <C4Toggle
+        id="c4-allow-undo"
+        label="Allow undo"
+        checked={allowUndo}
+        onChange={(v) => updateSetting("allowUndo", v)}
+      />
+      <C4Toggle
+        id="c4-hints"
+        label="Hints"
+        checked={hintsEnabled}
+        onChange={(v) => updateSetting("hintsEnabled", v)}
+      />
+      <div>
+        <label
+          htmlFor="c4-auto-hint-delay"
+          className="mb-2 block text-sm text-(--na-text-muted)"
+          style={{ fontFamily: "var(--na-font-display)" }}
+        >
+          Auto-hint delay
+        </label>
+        <select
+          id="c4-auto-hint-delay"
+          value={autoHintDelayMs}
+          className="w-full rounded border border-(--na-border) bg-(--na-surface-2) px-3 py-2 text-sm text-(--na-text) accent-(--na-cyan)"
+          style={{ fontFamily: "var(--na-font-display)" }}
+          onChange={(e) => updateSetting("autoHintDelayMs", Number(e.target.value))}
+        >
+          {AUTO_HINT_DELAY_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label
+          htmlFor="c4-animation-speed"
+          className="mb-2 block text-sm text-(--na-text-muted)"
+          style={{ fontFamily: "var(--na-font-display)" }}
+        >
+          Animation speed
+        </label>
+        <select
+          id="c4-animation-speed"
+          value={animationSpeedMs}
+          className="w-full rounded border border-(--na-border) bg-(--na-surface-2) px-3 py-2 text-sm text-(--na-text) accent-(--na-cyan)"
+          style={{ fontFamily: "var(--na-font-display)" }}
+          onChange={(e) => updateSetting("animationSpeedMs", Number(e.target.value))}
+        >
+          {ANIMATION_SPEED_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
+  );
+}
 
 export interface SettingsPanelProps {
   readonly open: boolean;
