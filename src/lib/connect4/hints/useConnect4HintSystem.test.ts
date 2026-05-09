@@ -19,16 +19,16 @@ import { useHintSystem } from "../../chess/hints/useHintSystem";
 const mockRequestHint = vi.fn();
 
 function setupMocks({
-  status = "playing" as const,
+  status = "playing" as "playing" | "finished" | "idle",
   hintTokens = 3,
   hintsEnabled = true,
   autoHintDelayMs = 30_000,
   isThinking = false,
 } = {}) {
   vi.mocked(useConnect4Store).mockReturnValue({
-    state: { status, hintTokens } as ReturnType<typeof useConnect4Store>["state"],
+    state: { status, hintTokens } as any,
     requestHint: mockRequestHint,
-  } as unknown as ReturnType<typeof useConnect4Store>);
+  } as any);
 
   vi.mocked(useConnect4Settings).mockImplementation((selector: unknown) => {
     const store = { hintsEnabled, autoHintDelayMs };
@@ -52,9 +52,7 @@ describe("useConnect4HintSystem", () => {
 
     renderHook(() => useConnect4HintSystem({ isThinking }));
 
-    expect(useHintSystem).toHaveBeenCalledWith(
-      expect.objectContaining({ isPlayerTurn: true }),
-    );
+    expect(useHintSystem).toHaveBeenCalledWith(expect.objectContaining({ isPlayerTurn: true }));
   });
 
   it("passes isPlayerTurn=false when AI is thinking", () => {
@@ -62,19 +60,15 @@ describe("useConnect4HintSystem", () => {
 
     renderHook(() => useConnect4HintSystem({ isThinking: true }));
 
-    expect(useHintSystem).toHaveBeenCalledWith(
-      expect.objectContaining({ isPlayerTurn: false }),
-    );
+    expect(useHintSystem).toHaveBeenCalledWith(expect.objectContaining({ isPlayerTurn: false }));
   });
 
   it("passes isPlayerTurn=false when game is not playing", () => {
-    setupMocks({ status: "finished" as const, isThinking: false });
+    setupMocks({ status: "finished", isThinking: false });
 
     renderHook(() => useConnect4HintSystem({ isThinking: false }));
 
-    expect(useHintSystem).toHaveBeenCalledWith(
-      expect.objectContaining({ isPlayerTurn: false }),
-    );
+    expect(useHintSystem).toHaveBeenCalledWith(expect.objectContaining({ isPlayerTurn: false }));
   });
 
   it("forwards tokens from store to useHintSystem", () => {
@@ -82,9 +76,7 @@ describe("useConnect4HintSystem", () => {
 
     renderHook(() => useConnect4HintSystem({ isThinking: false }));
 
-    expect(useHintSystem).toHaveBeenCalledWith(
-      expect.objectContaining({ tokens: 1 }),
-    );
+    expect(useHintSystem).toHaveBeenCalledWith(expect.objectContaining({ tokens: 1 }));
   });
 
   it("canHint is false when tokens are 0", () => {

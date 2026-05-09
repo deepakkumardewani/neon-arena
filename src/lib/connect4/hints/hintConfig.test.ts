@@ -1,9 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  HINT_TOKENS_PER_GAME,
-  AUTO_HINT_INACTIVITY_MS,
-  HINT_DISPLAY_MS,
-} from "./hintConfig";
+import { HINT_TOKENS_PER_GAME, AUTO_HINT_INACTIVITY_MS, HINT_DISPLAY_MS } from "./hintConfig";
 
 describe("hintConfig", () => {
   it("exports correct HINT_TOKENS_PER_GAME", () => {

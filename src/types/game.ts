@@ -14,7 +14,7 @@ export type BoardCell = "X" | "O" | null;
 
 export type GameStatus = "idle" | "playing" | "win" | "draw";
 
-export type GameType = "tictactoe" | "chess";
+export type GameType = "tictactoe" | "chess" | "connect4";
 
 export interface WinResult {
   readonly winner: "X" | "O";
