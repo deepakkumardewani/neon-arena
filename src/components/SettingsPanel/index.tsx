@@ -37,7 +37,10 @@ function C4Toggle({
 }) {
   return (
     <label htmlFor={id} className="flex cursor-pointer items-center justify-between gap-4">
-      <span className="text-sm text-(--na-text-muted)" style={{ fontFamily: "var(--na-font-display)" }}>
+      <span
+        className="text-sm text-(--na-text-muted)"
+        style={{ fontFamily: "var(--na-font-display)" }}
+      >
         {label}
       </span>
       <input
