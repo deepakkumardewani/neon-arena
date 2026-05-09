@@ -1,5 +1,5 @@
 import { render } from "@testing-library/react";
-import { describe, it } from "vite-plus/test";
+import { describe, expect, it } from "vite-plus/test";
 import { Cell } from "./Cell";
 
 describe("Cell", () => {
@@ -39,5 +39,30 @@ describe("Cell", () => {
     // Disc div with player color should be present
     const cyanDivs = container.querySelectorAll('[style*="na-cyan"]');
     expect(cyanDivs.length).toBeGreaterThan(0);
+  });
+
+  // T22: win highlight + desaturation
+  it("applies win-pulse glow class on winning disc", () => {
+    const { container } = render(<Cell value={1} isWinning />);
+    const disc = container.querySelector(".na-c4-win-pulse");
+    expect(disc).not.toBeNull();
+  });
+
+  it("does not apply win-pulse class on non-winning disc", () => {
+    const { container } = render(<Cell value={1} />);
+    expect(container.querySelector(".na-c4-win-pulse")).toBeNull();
+  });
+
+  it("applies opacity 0.4 on desaturated disc", () => {
+    const { container } = render(<Cell value={2} isDesaturated />);
+    // Disc div has inline opacity; find the div with rose color in style
+    const disc = container.querySelector<HTMLElement>('[style*="na-rose"]');
+    expect(disc?.style.opacity).toBe("0.4");
+  });
+
+  it("has opacity 1 on non-desaturated disc", () => {
+    const { container } = render(<Cell value={2} />);
+    const disc = container.querySelector<HTMLElement>('[style*="na-rose"]');
+    expect(disc?.style.opacity).toBe("1");
   });
 });
