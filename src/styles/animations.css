@@ -521,6 +521,36 @@
   transform-origin: center;
 }
 
+/* ── Connect 4 board ──────────────────────────────────────────────────────── */
+@keyframes c4-win-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 6px var(--na-c4-player-color, var(--na-cyan)));
+  }
+  50% {
+    filter: drop-shadow(0 0 18px var(--na-c4-player-color, var(--na-cyan)));
+  }
+}
+
+.na-c4-win-pulse {
+  animation: c4-win-pulse 0.5s ease-in-out infinite;
+}
+
+@keyframes c4-last-placed-ring {
+  0% {
+    box-shadow: 0 0 0 2px var(--na-c4-player-color, var(--na-cyan));
+    opacity: 1;
+  }
+  100% {
+    box-shadow: 0 0 0 4px var(--na-c4-player-color, var(--na-cyan));
+    opacity: 0;
+  }
+}
+
+.na-c4-last-placed {
+  animation: c4-last-placed-ring 1.5s ease-out forwards;
+}
+
 /* ── Dots & Boxes thumb ───────────────────────────────────────────────────── */
 @keyframes dab-line-draw {
   from {
