@@ -112,14 +112,8 @@ export function Connect4Board({ isThinking = false }: Connect4BoardProps) {
 
   const lastMove = state.history.length > 0 ? state.history[state.history.length - 1] : null;
 
-  const renderGrid = (
-    winningCells: ReadonlySet<string>,
-    desaturatedCells: ReadonlySet<string>,
-  ) => (
-    <div
-      className="grid"
-      style={{ gridTemplateColumns: `repeat(${COLS}, 1fr)` }}
-    >
+  const renderGrid = (winningCells: ReadonlySet<string>, desaturatedCells: ReadonlySet<string>) => (
+    <div className="grid" style={{ gridTemplateColumns: `repeat(${COLS}, 1fr)` }}>
       {Array.from({ length: COLS }, (_, col) => {
         const isFull = board[col][ROWS - 1] !== null;
         const isHovered = hoverCol === col;
@@ -152,9 +146,7 @@ export function Connect4Board({ isThinking = false }: Connect4BoardProps) {
               const isLastPlaced =
                 lastMove !== null && lastMove.col === col && lastMove.row === dataRow;
               const isAnimating =
-                showFallingDisc &&
-                animatingDisc?.col === col &&
-                animatingDisc?.toRow === dataRow;
+                showFallingDisc && animatingDisc?.col === col && animatingDisc?.toRow === dataRow;
 
               return (
                 <Cell

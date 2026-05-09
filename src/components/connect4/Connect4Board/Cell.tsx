@@ -16,8 +16,7 @@ export function Cell({
   isLastPlaced = false,
   isAnimating = false,
 }: CellProps) {
-  const playerColor =
-    value === 1 ? "var(--na-cyan)" : value === 2 ? "var(--na-rose)" : null;
+  const playerColor = value === 1 ? "var(--na-cyan)" : value === 2 ? "var(--na-rose)" : null;
 
   const hasDisc = playerColor !== null && !isAnimating;
 
@@ -46,9 +45,7 @@ export function Cell({
             {
               background: playerColor,
               opacity: isDesaturated ? 0.4 : 1,
-              filter: !isWinning
-                ? `drop-shadow(0 0 4px ${playerColor})`
-                : undefined,
+              filter: !isWinning ? `drop-shadow(0 0 4px ${playerColor})` : undefined,
               "--na-c4-player-color": playerColor,
             } as React.CSSProperties
           }
