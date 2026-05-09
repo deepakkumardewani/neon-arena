@@ -44,7 +44,9 @@ export function firestoreDataToGameDoc(id: string, data: DocumentData): GameDoc 
   }
   const playerO = readPlayer(data, "playerO");
   const gameType =
-    data.gameType === "chess" || data.gameType === "tictactoe" ? data.gameType : undefined;
+    data.gameType === "chess" || data.gameType === "tictactoe" || data.gameType === "connect4"
+      ? data.gameType
+      : undefined;
 
   // Chess games use FEN/moveHistory, not board
   const board = readBoard(data.board);
@@ -92,6 +94,36 @@ export function firestoreDataToGameDoc(id: string, data: DocumentData): GameDoc 
     ? data.capturedByBlack.filter((v: unknown): v is string => typeof v === "string")
     : undefined;
 
+  // Connect 4-specific fields
+  const c4board = Array.isArray(data.c4board)
+    ? data.c4board.map((col: unknown) =>
+        Array.isArray(col)
+          ? col.map((c: unknown) => (typeof c === "number" ? c : 0))
+          : [],
+      )
+    : undefined;
+
+  const c4history = Array.isArray(data.c4history)
+    ? data.c4history.filter(
+        (m: unknown): m is { col: number; row: number; player: number } =>
+          typeof m === "object" &&
+          m !== null &&
+          typeof (m as Record<string, unknown>).col === "number" &&
+          typeof (m as Record<string, unknown>).row === "number" &&
+          typeof (m as Record<string, unknown>).player === "number",
+      )
+    : undefined;
+
+  const c4winCells = Array.isArray(data.c4winCells)
+    ? data.c4winCells.filter(
+        (c: unknown): c is [number, number] =>
+          Array.isArray(c) &&
+          c.length === 2 &&
+          typeof c[0] === "number" &&
+          typeof c[1] === "number",
+      )
+    : undefined;
+
   return {
     gameId: typeof data.gameId === "string" ? data.gameId : id,
     gameType,
@@ -113,6 +145,9 @@ export function firestoreDataToGameDoc(id: string, data: DocumentData): GameDoc 
     moveHistory,
     capturedByWhite,
     capturedByBlack,
+    c4board,
+    c4history,
+    c4winCells,
   };
 }
 

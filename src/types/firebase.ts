@@ -19,7 +19,7 @@ export interface GameDocPlayer {
 
 export interface GameDoc {
   readonly gameId: string;
-  readonly gameType?: "tictactoe" | "chess";
+  readonly gameType?: "tictactoe" | "chess" | "connect4";
   readonly playerX: GameDocPlayer;
   readonly playerO: GameDocPlayer | null;
   readonly board: readonly BoardCell[];
@@ -43,6 +43,10 @@ export interface GameDoc {
   readonly moveHistory?: readonly string[];
   readonly capturedByWhite?: readonly string[];
   readonly capturedByBlack?: readonly string[];
+  /** Connect 4-specific fields */
+  readonly c4board?: readonly (readonly number[])[];
+  readonly c4history?: readonly { col: number; row: number; player: number }[];
+  readonly c4winCells?: readonly [number, number][] | null;
 }
 
 export interface PresenceEntry {
