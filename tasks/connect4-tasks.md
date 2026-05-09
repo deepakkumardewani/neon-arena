@@ -271,7 +271,7 @@ Add Connect 4 as a first-class game in NeonArena. Same neon-cyberpunk aesthetic,
 
 ---
 
-- [ ] **T15: Cell.tsx — single cell**
+- [x] **T15: Cell.tsx — single cell**
       **Description:** Implement `src/components/connect4/Connect4Board/Cell.tsx`. Renders one board cell: empty dark circle, Player 1 cyan disc, or Player 2 rose disc. Handles win-highlight (glow) and post-win desaturation states.
       **Acceptance criteria:**
   - Empty cell: dark circle using `--na-surface-2`, subtle inner shadow
@@ -290,7 +290,7 @@ Add Connect 4 as a first-class game in NeonArena. Same neon-cyberpunk aesthetic,
 
 ---
 
-- [ ] **T16: ColumnDropZone.tsx — hit area + hover arrow**
+- [x] **T16: ColumnDropZone.tsx — hit area + hover arrow**
       **Description:** Implement `src/components/connect4/Connect4Board/ColumnDropZone.tsx`. Invisible hit area spanning full column height + 44px above top row. Shows a hover arrow above the column in the current player's color.
       **Acceptance criteria:**
   - Tap target width ≥ 44px (enforced via `min-w-[44px]`)
@@ -309,7 +309,7 @@ Add Connect 4 as a first-class game in NeonArena. Same neon-cyberpunk aesthetic,
 
 ---
 
-- [ ] **T17: WinLine.tsx — winning cells highlight overlay**
+- [x] **T17: WinLine.tsx — winning cells highlight overlay**
       **Description:** Implement `src/components/connect4/Connect4Board/WinLine.tsx`. Receives `winResult` (4 `[col, row]` pairs) and applies glow pulse to those specific cells. This is an overlay component that communicates cell positions down to `Cell.tsx` via a shared `winningCells: Set<string>` derived value — not a drawn line.
       **Acceptance criteria:**
   - Given 4 `[col, row]` pairs, marks those cells as `isWinning`
@@ -324,7 +324,7 @@ Add Connect 4 as a first-class game in NeonArena. Same neon-cyberpunk aesthetic,
 
 ---
 
-- [ ] **T18: Connect4Board/index.tsx — grid + interaction**
+- [x] **T18: Connect4Board/index.tsx — grid + interaction**
       **Description:** Implement `src/components/connect4/Connect4Board/index.tsx`. Renders the 7×6 grid using `Cell` + `ColumnDropZone`. Wires hover, click, and animation state from the store. Board frame uses `--na-surface-1` + neon border.
       **Acceptance criteria:**
   - 7 columns × 6 rows rendered; board is column-major (col 0 = left)
@@ -343,7 +343,7 @@ Add Connect 4 as a first-class game in NeonArena. Same neon-cyberpunk aesthetic,
 
 ---
 
-- [ ] **T19: Connect4HUD/index.tsx — turn indicator + tokens + undo**
+- [x] **T19: Connect4HUD/index.tsx — turn indicator + tokens + undo**
       **Description:** Implement `src/components/connect4/Connect4HUD/index.tsx`. Shows active player chip, hint token icons, optional undo button, and "Thinking…" spinner state.
       **Acceptance criteria:**
   - Active-player chip pulses in player color (`--na-cyan` or `--na-rose`), shows nickname
@@ -360,7 +360,7 @@ Add Connect 4 as a first-class game in NeonArena. Same neon-cyberpunk aesthetic,
 
 ---
 
-- [ ] **T20: Connect4ScoreBoard/index.tsx — session scores**
+- [x] **T20: Connect4ScoreBoard/index.tsx — session scores**
       **Description:** Implement `src/components/connect4/Connect4ScoreBoard/index.tsx`. Tracks and displays win/draw counts across games in the current session (local state, not persisted).
       **Acceptance criteria:**
   - Shows P1 wins, P2 wins, draws
@@ -379,7 +379,7 @@ Add Connect 4 as a first-class game in NeonArena. Same neon-cyberpunk aesthetic,
 
 ---
 
-- [ ] **T21: Disc fall animation**
+- [x] **T21: Disc fall animation**
       **Description:** Implement the gravity animation in `Connect4Board`. Disc appears at top of column (row 0 visually) and translates down to its final row. Duration = `animationSpeedMs × rowsTravelled`. Easing: `cubic-bezier(0.55, 0, 1, 0.45)`. Landing pulse: scale 1.0 → 1.12 → 1.0 (120ms, spring stiffness 300 damping 20).
       **Acceptance criteria:**
   - Disc animates from top to `toRow` on every `dropDisc` call
@@ -397,7 +397,7 @@ Add Connect 4 as a first-class game in NeonArena. Same neon-cyberpunk aesthetic,
 
 ---
 
-- [ ] **T22: Win highlight + desaturation animation**
+- [x] **T22: Win highlight + desaturation animation**
       **Description:** On win: winning 4 cells glow-pulse at 2Hz indefinitely; all other discs desaturate to 40% opacity (200ms ease-out). Optional confetti via existing `tsparticles`, color-coded to winner.
       **Acceptance criteria:**
   - Winning cells: `drop-shadow` glow pulses 1.0 → 1.6 → 1.0 at 2Hz via CSS animation
@@ -414,7 +414,7 @@ Add Connect 4 as a first-class game in NeonArena. Same neon-cyberpunk aesthetic,
 
 ---
 
-- [ ] **T23: Column hover arrow + hint column animation**
+- [x] **T23: Column hover arrow + hint column animation**
       **Description:** Animate the column hover arrow (slide + fade). Animate the hint column highlight (arrow + background pulse at 2Hz). Use `AnimatePresence` for mount/unmount of both.
       **Acceptance criteria:**
   - Hover arrow: slides down 4px + fades in (120ms) on hover; reverses on leave
@@ -434,7 +434,7 @@ Add Connect 4 as a first-class game in NeonArena. Same neon-cyberpunk aesthetic,
 
 ---
 
-- [ ] **T24: Connect4GamePage — solo + local modes**
+- [x] **T24: Connect4GamePage — solo + local modes**
       **Description:** Replace the stub `GamePage.tsx` with a real implementation handling solo (vs AI) and local (pass-and-play) game modes. Wire: store, AI hook, HUD, board, scoreboard, settings, hints, win overlay.
       **Acceptance criteria:**
   - Solo mode: AI plays as Player 2 after each human move; difficulty from mode select
@@ -458,7 +458,7 @@ Add Connect 4 as a first-class game in NeonArena. Same neon-cyberpunk aesthetic,
 
 ---
 
-- [ ] **T25: connect4GameMappers.ts — Firebase serialization**
+- [x] **T25: connect4GameMappers.ts — Firebase serialization**
       **Description:** Implement `src/lib/connect4/online/connect4GameMappers.ts`. Converts between `Connect4OnlineDoc` (Firebase RTDB schema) and `Connect4GameState`.
       **Acceptance criteria:**
   - `docToState(doc)` correctly maps `board` (2D array), `history`, `currentPlayer`, `winner`, `winCells` → `Connect4GameState`
@@ -473,7 +473,7 @@ Add Connect 4 as a first-class game in NeonArena. Same neon-cyberpunk aesthetic,
 
 ---
 
-- [ ] **T26: connect4GameService.ts — RTDB service**
+- [x] **T26: connect4GameService.ts — RTDB service**
       **Description:** Implement `src/lib/connect4/online/connect4GameService.ts`. Mirrors `chessGameService.ts` structure. Implements: `createConnect4Game`, `joinConnect4Game`, `commitMove`, `subscribeConnect4Game`, `resignGame`.
       **Acceptance criteria:**
   - `createConnect4Game` writes to `/games/connect4/{gameId}` with `status: "waiting"`
@@ -489,7 +489,7 @@ Add Connect 4 as a first-class game in NeonArena. Same neon-cyberpunk aesthetic,
 
 ---
 
-- [ ] **T27: Connect4GamePage — online + friend modes**
+- [x] **T27: Connect4GamePage — online + friend modes**
       **Description:** Extend `GamePage.tsx` to handle online (matchmaking) and friend (direct invite) modes. Wire Firebase subscription, real-time sync, and resign flow.
       **Acceptance criteria:**
   - Online mode: subscribes to Firebase doc; only active player can write; moves sync within 300ms
@@ -559,16 +559,16 @@ Add Connect 4 as a first-class game in NeonArena. Same neon-cyberpunk aesthetic,
 - [x] T12 — [x] Impl — [x] Test
 - [x] T13 — [x] Impl — [x] Test
 - [x] T14 — [x] Impl — [x] Test
-- [ ] T15 — [ ] Impl — [ ] Test
-- [ ] T16 — [ ] Impl — [ ] Test
-- [ ] T17 — [ ] Impl — [ ] Test
-- [ ] T18 — [ ] Impl — [ ] Test
-- [ ] T19 — [ ] Impl — [ ] Test
-- [ ] T20 — [ ] Impl — [ ] Test
-- [ ] T21 — [ ] Impl — [ ] Test
-- [ ] T22 — [ ] Impl — [ ] Test
-- [ ] T23 — [ ] Impl — [ ] Test
-- [ ] T24 — [ ] Impl — [ ] Test
-- [ ] T25 — [ ] Impl — [ ] Test
-- [ ] T26 — [ ] Impl — [ ] Test
-- [ ] T27 — [ ] Impl — [ ] Test
+- [x] T15 — [x] Impl — [x] Test
+- [x] T16 — [x] Impl — [x] Test
+- [x] T17 — [x] Impl — [x] Test
+- [x] T18 — [x] Impl — [x] Test
+- [x] T19 — [x] Impl — [x] Test
+- [x] T20 — [x] Impl — [x] Test
+- [x] T21 — [x] Impl — [x] Test
+- [x] T22 — [x] Impl — [x] Test
+- [x] T23 — [x] Impl — [x] Test
+- [x] T24 — [x] Impl — [x] Test
+- [x] T25 — [x] Impl — [x] Test
+- [x] T26 — [x] Impl — [x] Test
+- [x] T27 — [x] Impl — [x] Test
