@@ -6,6 +6,7 @@ import { connect4Reducer } from "./connect4Reducer";
 
 const HINT_DISPLAY_MS = 3_000;
 const ROWS = 6;
+const LAND_PULSE_MS = 120;
 
 interface Connect4StoreState {
   state: Connect4GameState;
@@ -54,7 +55,7 @@ export const useConnect4Store = create<Connect4StoreState & Connect4StoreActions
         set((store) => ({
           state: connect4Reducer(store.state, { type: "CLEAR_ANIMATING_DISC" }),
         }));
-      }, animDuration);
+      }, animDuration + LAND_PULSE_MS);
     } else {
       // Instant placement — clear immediately
       set((store) => ({

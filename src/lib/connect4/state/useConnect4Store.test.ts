@@ -76,9 +76,9 @@ describe("useConnect4Store", () => {
       // animatingDisc should be set immediately
       expect(getStore().state.animatingDisc).not.toBeNull();
 
-      // After animation duration (5 rows from top to row 0 = 5 * 60 = 300ms)
+      // After animation duration (5 rows × 60ms = 300ms fall + 120ms landing pulse = 420ms total)
       act(() => {
-        vi.advanceTimersByTime(400);
+        vi.advanceTimersByTime(500);
       });
       expect(getStore().state.animatingDisc).toBeNull();
     });
