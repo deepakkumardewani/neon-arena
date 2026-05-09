@@ -10,6 +10,7 @@ import { authService } from "@/lib/services/auth";
 import { chessConfig } from "@/pages/Chess/chessConfig";
 import { ChessErrorBoundary } from "@/components/ErrorBoundary/ChessErrorBoundary";
 import { tictactoeConfig } from "@/pages/ModeSelect/tictactoeConfig";
+import { connect4Config } from "@/pages/Connect4/connect4Config";
 import { AppProviders } from "@/providers/AppProviders";
 
 const HomePage = lazy(async () => {
@@ -36,6 +37,10 @@ const ChessGamePage = lazy(async () => {
   const m = await import("@/pages/Chess/GamePage");
   return { default: m.ChessGamePage };
 });
+const Connect4GamePage = lazy(async () => {
+  const m = await import("@/pages/Connect4/GamePage");
+  return { default: m.Connect4GamePage };
+});
 
 function RouteLoading(): ReactElement {
   return (
@@ -59,7 +64,10 @@ function PageTransitionLayout() {
   useEffect(() => {
     const path = location.pathname;
     const isGame =
-      path === "/play/tictactoe/game" || path === "/play/chess/game" || path.startsWith("/game/");
+      path === "/play/tictactoe/game" ||
+      path === "/play/chess/game" ||
+      path === "/play/connect4/game" ||
+      path.startsWith("/game/");
     audioManager.playMusic(isGame ? "bg-game" : "bg-home");
   }, [location.pathname]);
 
@@ -175,6 +183,47 @@ const router = createBrowserRouter([
               <ChessGamePage />
             </PageShell>
           </ChessErrorBoundary>
+        ),
+      },
+      // — Connect 4 routes —
+      {
+        path: "/play/connect4",
+        element: (
+          <PageShell>
+            <ModeSelectPage gameConfig={connect4Config} />
+          </PageShell>
+        ),
+      },
+      {
+        path: "/play/connect4/nickname",
+        element: (
+          <PageShell>
+            <NicknameEntryPage gameConfig={connect4Config} />
+          </PageShell>
+        ),
+      },
+      {
+        path: "/play/connect4/matchmaking",
+        element: (
+          <PageShell>
+            <MatchmakingPage gameConfig={connect4Config} />
+          </PageShell>
+        ),
+      },
+      {
+        path: "/play/connect4/game",
+        element: (
+          <PageShell>
+            <Connect4GamePage />
+          </PageShell>
+        ),
+      },
+      {
+        path: "/game/connect4/:gameId",
+        element: (
+          <PageShell>
+            <Connect4GamePage />
+          </PageShell>
         ),
       },
     ],

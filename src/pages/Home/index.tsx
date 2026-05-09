@@ -55,6 +55,12 @@ export function HomePage() {
     void navigate("/play/tictactoe");
   }
 
+  function selectConnect4() {
+    audioManager.play("click");
+    hapticManager.tap();
+    void navigate("/play/connect4");
+  }
+
   return (
     <div className="na-pregame-scene relative min-h-screen">
       <ParticleBackground densityBoost />
@@ -188,7 +194,7 @@ export function HomePage() {
               <GameCard title="Checkers" thumbnail={<CheckersThumb />} comingSoon />
             </motion.div>
             <motion.div {...cv}>
-              <GameCard title="Connect 4" thumbnail={<Connect4Thumb />} comingSoon />
+              <GameCard title="Connect 4" thumbnail={<Connect4Thumb />} onSelect={selectConnect4} />
             </motion.div>
             <motion.div {...cv}>
               <GameCard title="Gomuku" thumbnail={<GomukuThumb />} comingSoon />
