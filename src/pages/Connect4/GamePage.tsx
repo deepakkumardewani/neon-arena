@@ -39,7 +39,8 @@ function deriveOverlay(
   mode: GameMode,
   isNetworked: boolean,
 ) {
-  if (status !== "finished") return { open: false, headline: "", palette: "cyan" as const, celebrate: false };
+  if (status !== "finished")
+    return { open: false, headline: "", palette: "cyan" as const, celebrate: false };
 
   if (isDraw) {
     return { open: true, headline: "Draw!", palette: "purple" as const, celebrate: false };
@@ -211,14 +212,12 @@ export function Connect4GamePage() {
   // ── Labels ────────────────────────────────────────────────────────────────
 
   const p1Label = isNetworked ? p1Name : mode === "solo" ? "You" : "Player 1";
-  const p2Label = isNetworked
-    ? p2Name
-    : mode === "solo"
-      ? `AI (${difficulty})`
-      : "Player 2";
+  const p2Label = isNetworked ? p2Name : mode === "solo" ? `AI (${difficulty})` : "Player 2";
 
   const modeLabel = isNetworked
-    ? (mode === "friend" ? "Friend" : "Online")
+    ? mode === "friend"
+      ? "Friend"
+      : "Online"
     : mode === "solo"
       ? `Solo · ${difficulty}`
       : "Local";

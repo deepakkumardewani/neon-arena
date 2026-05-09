@@ -61,6 +61,12 @@ export function HomePage() {
     void navigate("/play/connect4");
   }
 
+  function selectChess() {
+    audioManager.play("click");
+    hapticManager.tap();
+    void navigate("/play/chess");
+  }
+
   return (
     <div className="na-pregame-scene relative min-h-screen">
       <ParticleBackground densityBoost />
@@ -188,7 +194,7 @@ export function HomePage() {
               />
             </motion.div>
             <motion.div {...cv}>
-              <GameCard title="Chess" thumbnail={<ChessThumb />} comingSoon />
+              <GameCard title="Chess" thumbnail={<ChessThumb />} onSelect={selectChess} />
             </motion.div>
             <motion.div {...cv}>
               <GameCard title="Checkers" thumbnail={<CheckersThumb />} comingSoon />

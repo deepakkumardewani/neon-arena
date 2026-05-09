@@ -5,11 +5,14 @@ import { describe, expect, it, vi } from "vite-plus/test";
 import { Connect4GamePage } from "./GamePage";
 
 // Worker is not available in jsdom
-vi.stubGlobal("Worker", class {
-  onmessage: ((e: MessageEvent) => void) | null = null;
-  postMessage() {}
-  terminate() {}
-});
+vi.stubGlobal(
+  "Worker",
+  class {
+    onmessage: ((e: MessageEvent) => void) | null = null;
+    postMessage() {}
+    terminate() {}
+  },
+);
 
 // Mock Firebase connected hook
 vi.mock("@/hooks/useFirebaseConnected", () => ({
@@ -17,7 +20,7 @@ vi.mock("@/hooks/useFirebaseConnected", () => ({
 }));
 
 // Mock online hook
-const mockUseConnect4Online = vi.fn(() => ({
+const mockUseConnect4Online = vi.fn((_opts?: any) => ({
   commitMoveToFirebase: vi.fn(),
   resignGame: vi.fn(),
   acceptRematch: vi.fn(),
