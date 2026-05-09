@@ -9,7 +9,11 @@ export type Connect4Action =
   | { type: "SET_HINT"; payload: { col: number } }
   | { type: "CLEAR_HINT" }
   | { type: "SET_ANIMATING_DISC"; payload: { disc: AnimatingDisc } }
-  | { type: "CLEAR_ANIMATING_DISC" };
+  | { type: "CLEAR_ANIMATING_DISC" }
+  | {
+      type: "APPLY_REMOTE_STATE";
+      payload: { state: Connect4GameState };
+    };
 
 export function connect4Reducer(
   state: Connect4GameState,
@@ -69,6 +73,16 @@ export function connect4Reducer(
 
     case "CLEAR_ANIMATING_DISC": {
       return { ...state, animatingDisc: null };
+    }
+
+    case "APPLY_REMOTE_STATE": {
+      return {
+        ...action.payload.state,
+        hintTokens: state.hintTokens,
+        hoverCol: null,
+        hintCol: null,
+        animatingDisc: null,
+      };
     }
 
     default:

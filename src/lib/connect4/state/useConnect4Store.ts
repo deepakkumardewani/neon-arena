@@ -19,6 +19,8 @@ interface Connect4StoreActions {
   requestHint: () => void;
   clearHint: () => void;
   resetGame: () => void;
+  startGame: () => void;
+  applyRemoteState: (payload: { state: Connect4GameState }) => void;
 }
 
 export const useConnect4Store = create<Connect4StoreState & Connect4StoreActions>((set, get) => ({
@@ -99,5 +101,20 @@ export const useConnect4Store = create<Connect4StoreState & Connect4StoreActions
 
   resetGame: () => {
     set({ state: createInitialState() });
+  },
+
+  startGame: () => {
+    set((store) => ({
+      state: { ...store.state, status: "playing" },
+    }));
+  },
+
+  applyRemoteState: (payload) => {
+    set((store) => ({
+      state: connect4Reducer(store.state, {
+        type: "APPLY_REMOTE_STATE",
+        payload,
+      }),
+    }));
   },
 }));
