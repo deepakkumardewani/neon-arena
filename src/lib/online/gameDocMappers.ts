@@ -97,9 +97,7 @@ export function firestoreDataToGameDoc(id: string, data: DocumentData): GameDoc 
   // Connect 4-specific fields
   const c4board = Array.isArray(data.c4board)
     ? data.c4board.map((col: unknown) =>
-        Array.isArray(col)
-          ? col.map((c: unknown) => (typeof c === "number" ? c : 0))
-          : [],
+        Array.isArray(col) ? col.map((c: unknown) => (typeof c === "number" ? c : 0)) : [],
       )
     : undefined;
 

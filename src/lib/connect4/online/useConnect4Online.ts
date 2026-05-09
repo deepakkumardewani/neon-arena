@@ -127,9 +127,7 @@ export function useConnect4Online({ gameId, mode }: UseConnect4OnlineOptions): {
     if (playerId === null) return;
 
     // Check it's our turn
-    const myIdentity = isPlayer1
-      ? playerIdentity(doc.playerX)
-      : playerIdentity(doc.playerO);
+    const myIdentity = isPlayer1 ? playerIdentity(doc.playerX) : playerIdentity(doc.playerO);
     if (doc.currentTurn !== myIdentity) return;
 
     const nextTurnIdentity =

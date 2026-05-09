@@ -11,7 +11,7 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("@/lib/firebase/firestoreDb", () => ({
-  db: ({} as unknown) as never,
+  db: {} as unknown as never,
 }));
 
 vi.mock("@/lib/firebase/client", () => ({

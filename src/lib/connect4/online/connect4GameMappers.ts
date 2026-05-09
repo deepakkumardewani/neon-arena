@@ -135,10 +135,7 @@ export function docToState(doc: GameDoc): Connect4GameState {
   };
 }
 
-export function stateToDoc(
-  state: Connect4GameState,
-  move: Connect4Move,
-): Connect4CommitPayload {
+export function stateToDoc(state: Connect4GameState, move: Connect4Move): Connect4CommitPayload {
   return {
     c4board: serializeBoard(state.board),
     c4history: serializeHistory(state.history),

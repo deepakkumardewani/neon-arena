@@ -24,10 +24,7 @@ function emptyC4Board(): readonly (readonly number[])[] {
 }
 
 export interface Connect4GameService {
-  createConnect4Game(
-    playerX: GameDocPlayer,
-    playerO?: GameDocPlayer,
-  ): Promise<string>;
+  createConnect4Game(playerX: GameDocPlayer, playerO?: GameDocPlayer): Promise<string>;
   joinConnect4Game(gameId: string, playerO: GameDocPlayer): Promise<void>;
   commitMove(
     gameId: string,
@@ -48,10 +45,7 @@ export interface Connect4GameService {
 }
 
 export const connect4GameService: Connect4GameService = {
-  async createConnect4Game(
-    playerX: GameDocPlayer,
-    playerO?: GameDocPlayer,
-  ): Promise<string> {
+  async createConnect4Game(playerX: GameDocPlayer, playerO?: GameDocPlayer): Promise<string> {
     const ref = doc(collection(db, GAMES));
     const gameId = ref.id;
     const now = Date.now();
@@ -164,11 +158,7 @@ export const connect4GameService: Connect4GameService = {
     });
   },
 
-  async acceptRematch(
-    gameId: string,
-    uid: string,
-    clientQueueEntryId?: string,
-  ): Promise<string> {
+  async acceptRematch(gameId: string, uid: string, clientQueueEntryId?: string): Promise<string> {
     return runTransaction(db, async (tx) => {
       const ref = doc(db, GAMES, gameId);
       const snap = await tx.get(ref);
