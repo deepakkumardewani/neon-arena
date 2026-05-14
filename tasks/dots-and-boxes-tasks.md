@@ -22,7 +22,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T01: Core types + GameType extension**
+- [x] **T01: Core types + GameType extension**
       **Description:** Create `src/lib/dotsAndBoxes/types.ts` with all Dots & Boxes–specific types exactly as specified. Extend the `GameType` union in `src/types/game.ts` to include `"dots-and-boxes"`.
       **Acceptance criteria:**
   - `src/lib/dotsAndBoxes/types.ts` exports: `PlayerId`, `EdgeOrientation`, `EdgeRef`, `DotsMove`, `BoxRef`, `DotsStatus`, `BoardSize`, `DotsGameState`, `DotsSettings`
@@ -38,7 +38,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T02: dotsConfig + route registration**
+- [x] **T02: dotsConfig + route registration**
       **Description:** Create `src/pages/DotsAndBoxes/dotsConfig.ts` (mirrors `chessConfig.ts`). Register the `/play/dots-and-boxes` route family in the router — `ModeSelectPage`, `NicknameEntryPage`, `MatchmakingPage` routes are shared; `DotsAndBoxesGamePage` route is a stub that renders `<div>Dots & Boxes</div>` for now. Add a Dots & Boxes `GameCard` on the homepage.
       **Acceptance criteria:**
   - `dotsConfig` has `gameType: "dots-and-boxes"`, all 4 modes, correct `routePrefix`
@@ -62,7 +62,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T03: rules.ts — edge and board helpers**
+- [x] **T03: rules.ts — edge and board helpers**
       **Description:** Implement the pure board helper functions in `src/lib/dotsAndBoxes/engine/rules.ts`: `createInitialState`, `isEdgeDrawn`, `listLegalEdges`.
       **Acceptance criteria:**
   - `createInitialState(size)` returns a valid `DotsGameState` with all edges `false`, all `boxOwner` `null`, `currentPlayer: 1`, `status: "idle"`, `scores: { 1: 0, 2: 0 }`, `hintTokens: 3`, `history: []`, `hoveredEdge: null`, `hintEdge: null`, `lastClaimedBoxes: []`
@@ -78,7 +78,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T04: rules.ts — claimEdge + box completion**
+- [x] **T04: rules.ts — claimEdge + box completion**
       **Description:** Implement `claimEdge`, `isBoxComplete`, and the bonus-turn rule in `rules.ts`.
       **Acceptance criteria:**
   - `isBoxComplete(state, box)` returns `true` iff all 4 edges surrounding `box` are drawn
@@ -95,7 +95,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T05: rules.ts — game over**
+- [x] **T05: rules.ts — game over**
       **Description:** Implement `isGameOver` and `computeWinner` in `rules.ts`. Wire both into `claimEdge` so `status` and `winner` are set when the board is full.
       **Acceptance criteria:**
   - `isGameOver(state)` returns `true` iff all edges are drawn (no legal edges remain)
@@ -113,7 +113,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T06: aiEasy.ts — random strategy**
+- [x] **T06: aiEasy.ts — random strategy**
       **Description:** Implement `src/lib/dotsAndBoxes/engine/aiEasy.ts`. Exports `chooseEdge(state: DotsGameState): EdgeRef` — picks a uniformly random edge from `listLegalEdges`.
       **Acceptance criteria:**
   - Never returns an already-drawn edge
@@ -127,7 +127,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T07: aiMedium.ts — greedy strategy**
+- [x] **T07: aiMedium.ts — greedy strategy**
       **Description:** Implement `src/lib/dotsAndBoxes/engine/aiMedium.ts`. Priority: (1) claim any edge that completes a box (prefer 2-box if available), (2) play any "safe" edge (does not give a 3rd side to a box), (3) if only loony moves remain, sacrifice the shortest chain.
       **Acceptance criteria:**
   - If an edge completes 2 boxes, plays it (greedy best)
@@ -143,7 +143,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T08: chainAnalysis.ts — chain detection helpers**
+- [x] **T08: chainAnalysis.ts — chain detection helpers**
       **Description:** Implement `src/lib/dotsAndBoxes/engine/chainAnalysis.ts`. Exports utilities used by `aiHard` and `aiMedium`: `detectChains`, `chainLength`, `isLoonySacrifice`, `doubleCrossEdge`.
       **Acceptance criteria:**
   - `detectChains(state)` returns an array of chains (each chain is an array of `BoxRef` in the chain)
@@ -159,7 +159,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T09: aiHard.ts — minimax + alpha-beta**
+- [x] **T09: aiHard.ts — minimax + alpha-beta**
       **Description:** Implement `src/lib/dotsAndBoxes/engine/aiHard.ts`. Minimax with alpha-beta pruning, `maxDepth: 8`. Evaluation: `myScore - oppScore + chainParityBonus`. Move ordering: completing moves first, then safe moves, then sacrifices. Uses `chainAnalysis.ts` for double-cross decisions. Hint extraction uses depth 6.
       **Acceptance criteria:**
   - Returns a legal `EdgeRef` on any non-terminal board
@@ -174,7 +174,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T10: ai.ts + difficultyMap.ts + Web Worker + useDotsAI**
+- [x] **T10: ai.ts + difficultyMap.ts + Web Worker + useDotsAI**
       **Description:** Create `src/lib/dotsAndBoxes/engine/ai.ts` (difficulty router), `difficultyMap.ts` (config constants), and `src/lib/dotsAndBoxes/engine/ai.worker.ts` (Web Worker wrapper for Hard AI). Create `useDotsAI` hook in `src/lib/dotsAndBoxes/engine/useDotsAI.ts`.
       **Acceptance criteria:**
   - `difficultyMap.ts` exports `DIFFICULTY_CONFIG` with easy/medium/hard entries matching spec (`thinkMs`, `strategy`, `maxDepth`)
@@ -197,7 +197,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T11: dotsReducer.ts — pure state transitions**
+- [x] **T11: dotsReducer.ts — pure state transitions**
       **Description:** Implement `src/lib/dotsAndBoxes/state/dotsReducer.ts`. Pure `(state, action) => state` — no side effects. Actions: `CLAIM_EDGE`, `UNDO_MOVE`, `RESET_GAME`, `HOVER_EDGE`, `SET_HINT`, `CLEAR_HINT`.
       **Acceptance criteria:**
   - `CLAIM_EDGE` delegates to `rules.claimEdge`; no-ops on `status === "finished"` or already-drawn edge
@@ -213,7 +213,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T12: useDotsStore.ts — Zustand store**
+- [x] **T12: useDotsStore.ts — Zustand store**
       **Description:** Implement `src/lib/dotsAndBoxes/state/useDotsStore.ts`. Wraps the reducer; exposes `hoverEdge`, `claimEdge`, `undoMove`, `requestHint`, `clearHint`, `resetGame`. `requestHint` deducts a token, runs `aiHard.chooseEdge` at depth 6, sets `hintEdge`, schedules `clearHint` after `HINT_DISPLAY_MS`.
       **Acceptance criteria:**
   - Store state reflects all reducer transitions
@@ -233,7 +233,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T13: DotsSettings + useGameSettings wiring**
+- [x] **T13: DotsSettings + useGameSettings wiring**
       **Description:** Create `DotsSettings` default values and wire `useGameSettings<DotsSettings>` (reuse existing hook) with `localStorage` key `neon-arena:dots-and-boxes-settings`.
       **Acceptance criteria:**
   - Default settings: `defaultSize: { rows: 5, cols: 5 }`, `showLastMove: true`, `allowUndo: true`, `hintsEnabled: true`, `autoHintDelayMs: 30_000`
@@ -247,7 +247,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T14: SettingsPanel — Dots & Boxes section**
+- [x] **T14: SettingsPanel — Dots & Boxes section**
       **Description:** Add a "Dots & Boxes" collapsible section to the existing `SettingsPanel` component with the 5 settings from the spec.
       **Acceptance criteria:**
   - Default Size picker: 3×3 / 4×4 / 5×5 (solo + local only)
@@ -270,7 +270,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T15: hintConfig.ts + useHintSystem wiring**
+- [x] **T15: hintConfig.ts + useHintSystem wiring**
       **Description:** Create `src/lib/dotsAndBoxes/hints/hintConfig.ts` with the spec's constants. Wire `useHintSystem` (reused from Chess) into the Dots store layer by creating a thin adapter hook `useDotsHintSystem`.
       **Acceptance criteria:**
   - `hintConfig.ts` exports `HINT_TOKENS_PER_GAME = 3`, `AUTO_HINT_INACTIVITY_MS = 30_000`, `HINT_DISPLAY_MS = 3_000`
@@ -290,7 +290,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T16: Dot.tsx — single dot node**
+- [x] **T16: Dot.tsx — single dot node**
       **Description:** Implement `src/components/dotsAndBoxes/DotsBoard/Dot.tsx`. Renders one dot node at a grid intersection.
       **Acceptance criteria:**
   - Filled circle using `--na-fg` color
@@ -305,7 +305,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T17: Edge.tsx — horizontal/vertical edge**
+- [x] **T17: Edge.tsx — horizontal/vertical edge**
       **Description:** Implement `src/components/dotsAndBoxes/DotsBoard/Edge.tsx`. Handles both orientations. Renders undrawn guide, hover preview, drawn edge, last-move highlight, and hint highlight states.
       **Acceptance criteria:**
   - Undrawn: 2px line, `--na-surface-2` at 30% opacity
@@ -324,7 +324,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T18: Box.tsx — filled box**
+- [x] **T18: Box.tsx — filled box**
       **Description:** Implement `src/components/dotsAndBoxes/DotsBoard/Box.tsx`. Renders a claimed box with semi-transparent owner color fill and owner initial centered.
       **Acceptance criteria:**
   - Unclaimed: transparent background (not rendered or zero opacity)
@@ -340,7 +340,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T19: DotsBoard/index.tsx — grid layout + interaction**
+- [x] **T19: DotsBoard/index.tsx — grid layout + interaction**
       **Description:** Implement `src/components/dotsAndBoxes/DotsBoard/index.tsx`. Renders dots, edges, and boxes in a layered grid. Wires hover and click to store actions. Scales for 3×3 / 4×4 / 5×5.
       **Acceptance criteria:**
   - Board uses CSS `aspect-ratio: cols / rows` inside `min(90vw, 600px)` container
@@ -359,7 +359,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T20: ScoreBoard/index.tsx — score badges + turn indicator**
+- [x] **T20: ScoreBoard/index.tsx — score badges + turn indicator**
       **Description:** Implement `src/components/dotsAndBoxes/ScoreBoard/index.tsx`. Two player score badges, active-player pulse, and bonus-turn "+1 turn" indicator.
       **Acceptance criteria:**
   - Two badges: P1 (cyan) and P2 (rose) with score numbers
@@ -376,7 +376,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T21: BoardSizePicker/index.tsx — pre-game size selector**
+- [x] **T21: BoardSizePicker/index.tsx — pre-game size selector**
       **Description:** Implement `src/components/dotsAndBoxes/BoardSizePicker/index.tsx`. Radio button group for 3×3 / 4×4 / 5×5. Shown before the first move in solo and local modes only.
       **Acceptance criteria:**
   - Three options: 3×3, 4×4, 5×5; default from `DotsSettings.defaultSize`
@@ -392,7 +392,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T22: DotsHUD/index.tsx — hint tokens + active-player chip**
+- [x] **T22: DotsHUD/index.tsx — hint tokens + active-player chip**
       **Description:** Implement `src/components/dotsAndBoxes/DotsHUD/index.tsx`. Shows active-player chip, hint token counter, undo button, and AI thinking spinner.
       **Acceptance criteria:**
   - Active-player chip pulses in player color, shows nickname
@@ -413,7 +413,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T23: Edge claim animation**
+- [x] **T23: Edge claim animation**
       **Description:** Animate drawn edges using Framer Motion. Edge animates from one dot to the other (line draw, 180ms, ease-out). Color is the claiming player's color.
       **Acceptance criteria:**
   - Drawn edge animates `pathLength` 0 → 1 over 180ms with ease-out (SVG stroke or equivalent CSS)
@@ -428,7 +428,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T24: Box claim animation + bonus-turn indicator**
+- [x] **T24: Box claim animation + bonus-turn indicator**
       **Description:** Animate box fills (scale + opacity) and the "+1 turn" ScoreBoard tag.
       **Acceptance criteria:**
   - Box fill: scales 0.6 → 1.0, opacity 0 → 1 (220ms, spring stiffness 280 damping 24) via Framer Motion
@@ -445,7 +445,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T25: Hint highlight + game-over animations**
+- [x] **T25: Hint highlight + game-over animations**
       **Description:** Animate hint edge highlight and the game-over sequence (unclaimed box fade + `WinOverlay` mount + optional confetti).
       **Acceptance criteria:**
   - Hint edge: pulsing cyan glow at 2Hz, scale 1.0 → 1.15 → 1.0; fade in 200ms, hold `HINT_DISPLAY_MS`, fade out 200ms via `AnimatePresence`
@@ -581,31 +581,31 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ## Completion Checklist
 
-- [ ] T01 — [ ] Impl — [ ] Test
-- [ ] T02 — [ ] Impl — [ ] Test
-- [ ] T03 — [ ] Impl — [ ] Test
-- [ ] T04 — [ ] Impl — [ ] Test
-- [ ] T05 — [ ] Impl — [ ] Test
-- [ ] T06 — [ ] Impl — [ ] Test
-- [ ] T07 — [ ] Impl — [ ] Test
-- [ ] T08 — [ ] Impl — [ ] Test
-- [ ] T09 — [ ] Impl — [ ] Test
-- [ ] T10 — [ ] Impl — [ ] Test
-- [ ] T11 — [ ] Impl — [ ] Test
-- [ ] T12 — [ ] Impl — [ ] Test
-- [ ] T13 — [ ] Impl — [ ] Test
-- [ ] T14 — [ ] Impl — [ ] Test
-- [ ] T15 — [ ] Impl — [ ] Test
-- [ ] T16 — [ ] Impl — [ ] Test
-- [ ] T17 — [ ] Impl — [ ] Test
-- [ ] T18 — [ ] Impl — [ ] Test
-- [ ] T19 — [ ] Impl — [ ] Test
-- [ ] T20 — [ ] Impl — [ ] Test
-- [ ] T21 — [ ] Impl — [ ] Test
-- [ ] T22 — [ ] Impl — [ ] Test
-- [ ] T23 — [ ] Impl — [ ] Test
-- [ ] T24 — [ ] Impl — [ ] Test
-- [ ] T25 — [ ] Impl — [ ] Test
+- [x] T01 — [x] Impl — [x] Test
+- [x] T02 — [x] Impl — [x] Test
+- [x] T03 — [x] Impl — [x] Test
+- [x] T04 — [x] Impl — [x] Test
+- [x] T05 — [x] Impl — [x] Test
+- [x] T06 — [x] Impl — [x] Test
+- [x] T07 — [x] Impl — [x] Test
+- [x] T08 — [x] Impl — [x] Test
+- [x] T09 — [x] Impl — [x] Test
+- [x] T10 — [x] Impl — [x] Test
+- [x] T11 — [x] Impl — [x] Test
+- [x] T12 — [x] Impl — [x] Test
+- [x] T13 — [x] Impl — [x] Test
+- [x] T14 — [x] Impl — [x] Test
+- [x] T15 — [x] Impl — [x] Test
+- [x] T16 — [x] Impl — [x] Test
+- [x] T17 — [x] Impl — [x] Test
+- [x] T18 — [x] Impl — [x] Test
+- [x] T19 — [x] Impl — [x] Test
+- [x] T20 — [x] Impl — [x] Test
+- [x] T21 — [x] Impl — [x] Test
+- [x] T22 — [x] Impl — [x] Test
+- [x] T23 — [x] Impl — [x] Test
+- [x] T24 — [x] Impl — [x] Test
+- [x] T25 — [x] Impl — [x] Test
 - [ ] T26 — [ ] Impl — [ ] Test
 - [ ] T27 — [ ] Impl — [ ] Test
 - [ ] T28 — [ ] Impl — [ ] Test
