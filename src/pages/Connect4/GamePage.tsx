@@ -6,7 +6,7 @@ import { Connect4HUD } from "@/components/connect4/Connect4HUD";
 import { Connect4ScoreBoard } from "@/components/connect4/Connect4ScoreBoard";
 import { Connect4SettingsSection, SettingsPanel } from "@/components/SettingsPanel";
 import { ConnectionLostBanner } from "@/components/ConnectionLostBanner";
-import { WinOverlay } from "@/components/WinOverlay";
+import { GameEndOverlay } from "@/components/WinOverlay";
 
 import { useConnect4Store } from "@/lib/connect4/state/useConnect4Store";
 import { useConnect4Settings } from "@/lib/connect4/state/useConnect4Settings";
@@ -316,14 +316,7 @@ export function Connect4GamePage() {
       </div>
 
       {/* Win overlay */}
-      <WinOverlay
-        open={overlay.open}
-        headline={overlay.headline}
-        palette={overlay.palette}
-        celebrate={overlay.celebrate}
-        onPlayAgain={handlePlayAgain}
-        onHome={handleHome}
-      />
+      <GameEndOverlay presentation={overlay} onPlayAgain={handlePlayAgain} onHome={handleHome} />
 
       {/* Settings panel */}
       <SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)}>

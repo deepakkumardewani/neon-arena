@@ -20,7 +20,9 @@ describe("HomePage", () => {
       [
         { path: "/", element: <HomePage /> },
         { path: "/play/tictactoe", element: <div>Mode stub</div> },
+        { path: "/play/chess", element: <div>Chess stub</div> },
         { path: "/play/connect4", element: <div>Connect4 stub</div> },
+        { path: "/play/dots-and-boxes", element: <div>Dots stub</div> },
       ],
       { initialEntries: ["/"] },
     );
@@ -31,11 +33,12 @@ describe("HomePage", () => {
     expect(screen.getByRole("status")).toHaveTextContent(/players online/i);
 
     expect(screen.getByRole("button", { name: /tic tac toe.*play now/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /chess.*play now/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /connect 4.*play now/i })).toBeInTheDocument();
-    expect(screen.getByLabelText(/chess.*coming soon/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /dots & boxes.*play now/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/checkers.*coming soon/i)).toBeInTheDocument();
 
-    expect(screen.queryByRole("button", { name: /chess/i })).toBeNull();
+    expect(screen.queryByRole("button", { name: /checkers/i })).toBeNull();
 
     await user.click(screen.getByRole("button", { name: /tic tac toe.*play now/i }));
     expect(router.state.location.pathname).toBe("/play/tictactoe");
@@ -44,5 +47,10 @@ describe("HomePage", () => {
     await router.navigate("/");
     await user.click(await screen.findByRole("button", { name: /connect 4.*play now/i }));
     expect(router.state.location.pathname).toBe("/play/connect4");
+
+    // Navigate back to home and test Dots & Boxes navigation
+    await router.navigate("/");
+    await user.click(await screen.findByRole("button", { name: /dots & boxes.*play now/i }));
+    expect(router.state.location.pathname).toBe("/play/dots-and-boxes");
   });
 });

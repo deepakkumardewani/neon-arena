@@ -8,7 +8,7 @@ import { MoveHistoryPanel } from "@/components/chess/MoveHistoryPanel";
 import { PromotionModal } from "@/components/chess/PromotionModal";
 import { ConnectionLostBanner } from "@/components/ConnectionLostBanner";
 import { SettingsPanel } from "@/components/SettingsPanel";
-import { WinOverlay } from "@/components/WinOverlay";
+import { GameEndOverlay } from "@/components/WinOverlay";
 
 import { useChessStore } from "@/lib/chess/state/useChessStore";
 import { useChessSettings } from "@/lib/chess/state/useGameSettings";
@@ -442,14 +442,7 @@ export function ChessGamePage() {
       <PromotionModal />
 
       {/* Win overlay */}
-      <WinOverlay
-        open={overlay.open}
-        headline={overlay.headline}
-        palette={overlay.palette}
-        celebrate={overlay.celebrate}
-        onPlayAgain={handlePlayAgain}
-        onHome={handleHome}
-      />
+      <GameEndOverlay presentation={overlay} onPlayAgain={handlePlayAgain} onHome={handleHome} />
 
       {/* Settings panel */}
       <SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)}>

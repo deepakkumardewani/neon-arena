@@ -67,6 +67,12 @@ export function HomePage() {
     void navigate("/play/chess");
   }
 
+  function selectDotsAndBoxes() {
+    audioManager.play("click");
+    hapticManager.tap();
+    void navigate("/play/dots-and-boxes");
+  }
+
   return (
     <div className="na-pregame-scene relative min-h-screen">
       <ParticleBackground densityBoost />
@@ -206,7 +212,11 @@ export function HomePage() {
               <GameCard title="Gomuku" thumbnail={<GomukuThumb />} comingSoon />
             </motion.div>
             <motion.div {...cv}>
-              <GameCard title="Dots & Boxes" thumbnail={<DotsAndBoxesThumb />} comingSoon />
+              <GameCard
+                title="Dots & Boxes"
+                thumbnail={<DotsAndBoxesThumb />}
+                onSelect={selectDotsAndBoxes}
+              />
             </motion.div>
           </motion.div>
         </main>

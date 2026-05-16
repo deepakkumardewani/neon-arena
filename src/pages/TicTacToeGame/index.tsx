@@ -6,7 +6,7 @@ import { GameBoard } from "@/components/GameBoard";
 import { GamePageShell } from "@/components/GamePageShell";
 import { PlayerHUD } from "@/components/PlayerHUD";
 import { useConfirm } from "@/components/ui/confirm";
-import { WinOverlay, type WinOverlayPalette } from "@/components/WinOverlay";
+import { GameEndOverlay, type WinOverlayPalette } from "@/components/WinOverlay";
 import { FriendLobby } from "@/pages/FriendLobby/FriendLobby";
 import { useFirebaseConnected } from "@/hooks/useFirebaseConnected";
 import { useGameStore } from "@/hooks/useGameStore";
@@ -408,11 +408,8 @@ export function TicTacToeGamePage() {
               interactionLocked={networkPlayBlocked}
             />
           )}
-          <WinOverlay
-            open={endgame.open}
-            headline={endgame.headline}
-            palette={endgame.palette}
-            celebrate={endgame.celebrate}
+          <GameEndOverlay
+            presentation={endgame}
             onPlayAgain={withUiFeedback(handlePlayAgain)}
             onHome={withUiFeedback(handleOverlayHome)}
           />

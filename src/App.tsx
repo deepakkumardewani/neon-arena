@@ -9,8 +9,10 @@ import { usePresenceSession } from "@/hooks/usePresenceSession";
 import { authService } from "@/lib/services/auth";
 import { chessConfig } from "@/pages/Chess/chessConfig";
 import { ChessErrorBoundary } from "@/components/ErrorBoundary/ChessErrorBoundary";
+import { DotsErrorBoundary } from "@/components/ErrorBoundary/DotsErrorBoundary";
 import { tictactoeConfig } from "@/pages/ModeSelect/tictactoeConfig";
 import { connect4Config } from "@/pages/Connect4/connect4Config";
+import { dotsConfig } from "@/pages/DotsAndBoxes/dotsConfig";
 import { AppProviders } from "@/providers/AppProviders";
 
 const HomePage = lazy(async () => {
@@ -41,6 +43,10 @@ const Connect4GamePage = lazy(async () => {
   const m = await import("@/pages/Connect4/GamePage");
   return { default: m.Connect4GamePage };
 });
+const DotsAndBoxesGamePage = lazy(async () => {
+  const m = await import("@/pages/DotsAndBoxes/GamePage");
+  return { default: m.DotsAndBoxesGamePage };
+});
 
 function RouteLoading(): ReactElement {
   return (
@@ -67,6 +73,7 @@ function PageTransitionLayout() {
       path === "/play/tictactoe/game" ||
       path === "/play/chess/game" ||
       path === "/play/connect4/game" ||
+      path === "/play/dots-and-boxes/game" ||
       path.startsWith("/game/");
     audioManager.playMusic(isGame ? "bg-game" : "bg-home");
   }, [location.pathname]);
@@ -223,6 +230,51 @@ const router = createBrowserRouter([
         element: (
           <PageShell>
             <Connect4GamePage />
+          </PageShell>
+        ),
+      },
+      // — Dots & Boxes routes —
+      {
+        path: "/play/dots-and-boxes",
+        element: (
+          <PageShell>
+            <ModeSelectPage gameConfig={dotsConfig} />
+          </PageShell>
+        ),
+      },
+      {
+        path: "/play/dots-and-boxes/nickname",
+        element: (
+          <PageShell>
+            <NicknameEntryPage gameConfig={dotsConfig} />
+          </PageShell>
+        ),
+      },
+      {
+        path: "/play/dots-and-boxes/matchmaking",
+        element: (
+          <PageShell>
+            <MatchmakingPage gameConfig={dotsConfig} />
+          </PageShell>
+        ),
+      },
+      {
+        path: "/play/dots-and-boxes/game",
+        element: (
+          <PageShell>
+            <DotsErrorBoundary>
+              <DotsAndBoxesGamePage />
+            </DotsErrorBoundary>
+          </PageShell>
+        ),
+      },
+      {
+        path: "/game/dots-and-boxes/:gameId",
+        element: (
+          <PageShell>
+            <DotsErrorBoundary>
+              <DotsAndBoxesGamePage />
+            </DotsErrorBoundary>
           </PageShell>
         ),
       },
