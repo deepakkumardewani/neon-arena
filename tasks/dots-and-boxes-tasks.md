@@ -466,7 +466,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T26: DotsAndBoxesGamePage — solo + local modes**
+- [x] **T26: DotsAndBoxesGamePage — solo + local modes**
       **Description:** Replace the stub `GamePage.tsx` with a real implementation handling solo (vs AI) and local (pass-and-play) game modes. Wire: store, AI hook, HUD, board, scoreboard, size picker, settings, hints, win overlay.
       **Acceptance criteria:**
   - Solo mode: AI plays as Player 2 after each human move (or after bonus chain); difficulty from mode select
@@ -491,7 +491,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T27: dotsGameMappers.ts — Firebase serialization**
+- [x] **T27: dotsGameMappers.ts — Firebase serialization**
       **Description:** Implement `src/lib/dotsAndBoxes/online/dotsGameMappers.ts`. Converts between `DotsOnlineDoc` (Firebase RTDB schema) and `DotsGameState`.
       **Acceptance criteria:**
   - `docToState(doc)` correctly maps `horizontalEdges` (2D bool array), `verticalEdges`, `boxOwner`, `history`, `currentPlayer`, `scores`, `winner` → `DotsGameState`
@@ -507,7 +507,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T28: dotsGameService.ts — RTDB service**
+- [x] **T28: dotsGameService.ts — RTDB service**
       **Description:** Implement `src/lib/dotsAndBoxes/online/dotsGameService.ts`. Mirrors `chessGameService.ts` structure. Implements: `createDotsGame`, `joinDotsGame`, `commitMove`, `subscribeDotsGame`, `resignGame`.
       **Acceptance criteria:**
   - `createDotsGame` writes to `/games/dots-and-boxes/{gameId}` with `status: "waiting"`, `gameType: "dots-and-boxes"`, and initial 5×5 state
@@ -523,7 +523,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 
 ---
 
-- [ ] **T29: DotsAndBoxesGamePage — online + friend modes**
+- [x] **T29: DotsAndBoxesGamePage — online + friend modes**
       **Description:** Extend `GamePage.tsx` to handle online (matchmaking) and friend (direct invite) modes. Wire Firebase subscription, real-time sync, and resign flow.
       **Acceptance criteria:**
   - Online mode: subscribes to Firebase doc; only active player can write; moves sync within 300ms
@@ -606,7 +606,7 @@ Add Dots & Boxes as a first-class game in NeonArena. Same neon-cyberpunk aesthet
 - [x] T23 — [x] Impl — [x] Test
 - [x] T24 — [x] Impl — [x] Test
 - [x] T25 — [x] Impl — [x] Test
-- [ ] T26 — [ ] Impl — [ ] Test
-- [ ] T27 — [ ] Impl — [ ] Test
-- [ ] T28 — [ ] Impl — [ ] Test
-- [ ] T29 — [ ] Impl — [ ] Test
+- [x] T26 — [x] Impl — [x] Test
+- [x] T27 — [x] Impl — [x] Test
+- [x] T28 — [x] Impl — [x] Test
+- [x] T29 — [x] Impl — [x] Test
