@@ -1,4 +1,6 @@
 import { motion, useReducedMotion } from "framer-motion";
+
+import { GAME_END_BOARD_DIM_MS } from "@/components/WinOverlay/presentation";
 import type { PlayerId } from "@/lib/dotsAndBoxes/types";
 
 const PLAYER_COLORS: Record<PlayerId, string> = {
@@ -27,7 +29,10 @@ export function Box({ owner, isLastClaimed = false, isGameOver = false }: BoxPro
           width: "100%",
           height: "100%",
           opacity: isGameOver ? 0.2 : 0,
-          transition: isGameOver && !prefersReducedMotion ? "opacity 0.2s ease-out" : undefined,
+          transition:
+            isGameOver && !prefersReducedMotion
+              ? `opacity ${GAME_END_BOARD_DIM_MS}ms cubic-bezier(0.22, 1, 0.36, 1)`
+              : undefined,
         }}
       />
     );

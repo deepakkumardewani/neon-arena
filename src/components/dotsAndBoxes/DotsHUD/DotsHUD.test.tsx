@@ -15,32 +15,24 @@ describe("DotsHUD", () => {
   });
 
   it("hint button is disabled when hintTokens is 0", () => {
-    const { getByRole } = render(
-      <DotsHUD {...baseProps} hintTokens={0} hintsEnabled />,
-    );
+    const { getByRole } = render(<DotsHUD {...baseProps} hintTokens={0} hintsEnabled />);
     const btn = getByRole("button", { name: /hint/i });
     expect(btn).toBeDisabled();
   });
 
   it("hint button is enabled when hintTokens > 0", () => {
-    const { getByRole } = render(
-      <DotsHUD {...baseProps} hintTokens={2} hintsEnabled />,
-    );
+    const { getByRole } = render(<DotsHUD {...baseProps} hintTokens={2} hintsEnabled />);
     const btn = getByRole("button", { name: /hint/i });
     expect(btn).not.toBeDisabled();
   });
 
   it("undo button is hidden when showUndo is false", () => {
-    const { queryByRole } = render(
-      <DotsHUD {...baseProps} showUndo={false} />,
-    );
+    const { queryByRole } = render(<DotsHUD {...baseProps} showUndo={false} />);
     expect(queryByRole("button", { name: /undo/i })).toBeNull();
   });
 
   it("undo button visible when showUndo is true", () => {
-    const { getByRole } = render(
-      <DotsHUD {...baseProps} showUndo historyLength={1} />,
-    );
+    const { getByRole } = render(<DotsHUD {...baseProps} showUndo historyLength={1} />);
     expect(getByRole("button", { name: /undo/i })).toBeDefined();
   });
 

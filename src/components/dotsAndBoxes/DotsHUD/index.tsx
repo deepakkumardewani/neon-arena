@@ -89,9 +89,17 @@ export function DotsHUD({
     >
       {/* Player indicators */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <PlayerChip playerId={leftPlayer} label={leftLabel} isActive={currentPlayer === leftPlayer} />
+        <PlayerChip
+          playerId={leftPlayer}
+          label={leftLabel}
+          isActive={currentPlayer === leftPlayer}
+        />
         <span className="hidden text-xs text-(--na-text-muted) sm:block">vs</span>
-        <PlayerChip playerId={rightPlayer} label={rightLabel} isActive={currentPlayer === rightPlayer} />
+        <PlayerChip
+          playerId={rightPlayer}
+          label={rightLabel}
+          isActive={currentPlayer === rightPlayer}
+        />
       </div>
 
       {/* Thinking indicator */}

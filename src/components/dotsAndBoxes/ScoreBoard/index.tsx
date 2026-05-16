@@ -24,11 +24,11 @@ function ScoreBadge({ playerId, label, score, isActive, showBonusTurn }: ScoreBa
       style={{
         borderColor: isActive ? color : "var(--na-border)",
         background: isActive ? `color-mix(in srgb, ${color} 8%, transparent)` : undefined,
-        boxShadow: isActive
-          ? `0 0 10px color-mix(in srgb, ${color} 30%, transparent)`
-          : undefined,
+        boxShadow: isActive ? `0 0 10px color-mix(in srgb, ${color} 30%, transparent)` : undefined,
         animation:
-          isActive && !prefersReducedMotion ? `na-badge-active-pulse 1.8s ease-in-out infinite` : undefined,
+          isActive && !prefersReducedMotion
+            ? `na-badge-active-pulse 1.8s ease-in-out infinite`
+            : undefined,
       }}
     >
       <span

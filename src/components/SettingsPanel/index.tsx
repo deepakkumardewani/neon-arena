@@ -6,6 +6,8 @@ import { useAudioStore } from "@/hooks/useAudioStore";
 import { audioManager } from "@/lib/audio/audioManager";
 import { hapticManager } from "@/lib/haptics/hapticManager";
 import { useConnect4Settings } from "@/lib/connect4/state/useConnect4Settings";
+import { useDotsSettings } from "@/lib/dotsAndBoxes/state/useDotsSettings";
+import type { BoardSize } from "@/lib/dotsAndBoxes/types";
 
 // ── Animation speed values (ms per row) ─────────────────────────────────────
 const ANIMATION_SPEED_OPTIONS = [
@@ -126,6 +128,132 @@ export function Connect4SettingsSection() {
           onChange={(e) => updateSetting("animationSpeedMs", Number(e.target.value))}
         >
           {ANIMATION_SPEED_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
+  );
+}
+
+// ── Board size options for Dots & Boxes ─────────────────────────────────────
+
+const BOARD_SIZE_OPTIONS: Array<{ label: string; value: BoardSize }> = [
+  { label: "3×3", value: { rows: 3, cols: 3 } },
+  { label: "4×4", value: { rows: 4, cols: 4 } },
+  { label: "5×5", value: { rows: 5, cols: 5 } },
+];
+
+function DotsToggle({
+  id,
+  label,
+  checked,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <label htmlFor={id} className="flex cursor-pointer items-center justify-between gap-4">
+      <span
+        className="text-sm text-(--na-text-muted)"
+        style={{ fontFamily: "var(--na-font-display)" }}
+      >
+        {label}
+      </span>
+      <input
+        id={id}
+        type="checkbox"
+        className="h-5 w-5 accent-(--na-cyan)"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+      />
+    </label>
+  );
+}
+
+export function DotsSettingsSection() {
+  const defaultSize = useDotsSettings((s) => s.defaultSize);
+  const showLastMove = useDotsSettings((s) => s.showLastMove);
+  const allowUndo = useDotsSettings((s) => s.allowUndo);
+  const hintsEnabled = useDotsSettings((s) => s.hintsEnabled);
+  const autoHintDelayMs = useDotsSettings((s) => s.autoHintDelayMs);
+  const updateSetting = useDotsSettings((s) => s.updateSetting);
+
+  const currentSizeLabel = `${defaultSize.rows}×${defaultSize.cols}`;
+
+  return (
+    <div className="space-y-5">
+      <p
+        className="text-xs tracking-[0.22em] text-(--na-cyan) uppercase"
+        style={{ fontFamily: "var(--na-font-display)" }}
+      >
+        Dots &amp; Boxes
+      </p>
+      <div>
+        <p
+          className="mb-2 text-sm text-(--na-text-muted)"
+          style={{ fontFamily: "var(--na-font-display)" }}
+        >
+          Default size
+        </p>
+        <div className="flex gap-2">
+          {BOARD_SIZE_OPTIONS.map((opt) => (
+            <button
+              key={opt.label}
+              type="button"
+              className={[
+                "flex-1 rounded border px-2 py-1 text-sm",
+                currentSizeLabel === opt.label
+                  ? "border-(--na-cyan) text-(--na-cyan)"
+                  : "border-(--na-border) text-(--na-text-muted)",
+              ].join(" ")}
+              style={{ fontFamily: "var(--na-font-display)" }}
+              onClick={() => updateSetting("defaultSize", opt.value)}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <DotsToggle
+        id="dots-show-last-move"
+        label="Show last move"
+        checked={showLastMove}
+        onChange={(v) => updateSetting("showLastMove", v)}
+      />
+      <DotsToggle
+        id="dots-allow-undo"
+        label="Allow undo"
+        checked={allowUndo}
+        onChange={(v) => updateSetting("allowUndo", v)}
+      />
+      <DotsToggle
+        id="dots-hints"
+        label="Hints"
+        checked={hintsEnabled}
+        onChange={(v) => updateSetting("hintsEnabled", v)}
+      />
+      <div>
+        <label
+          htmlFor="dots-auto-hint-delay"
+          className="mb-2 block text-sm text-(--na-text-muted)"
+          style={{ fontFamily: "var(--na-font-display)" }}
+        >
+          Auto-hint delay
+        </label>
+        <select
+          id="dots-auto-hint-delay"
+          value={autoHintDelayMs}
+          className="w-full rounded border border-(--na-border) bg-(--na-surface-2) px-3 py-2 text-sm text-(--na-text) accent-(--na-cyan)"
+          style={{ fontFamily: "var(--na-font-display)" }}
+          onChange={(e) => updateSetting("autoHintDelayMs", Number(e.target.value))}
+        >
+          {AUTO_HINT_DELAY_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
             </option>

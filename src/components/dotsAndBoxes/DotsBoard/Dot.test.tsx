@@ -1,5 +1,5 @@
 import { render } from "@testing-library/react";
-import { describe, it } from "vite-plus/test";
+import { describe, it, expect } from "vite-plus/test";
 import { Dot } from "./Dot";
 
 describe("Dot", () => {

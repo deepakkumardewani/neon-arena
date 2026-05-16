@@ -1,5 +1,6 @@
 import type { BoardSize } from "@/lib/dotsAndBoxes/types";
 import { useDotsSettings } from "@/lib/dotsAndBoxes/state/useDotsSettings";
+import { useDotsStore } from "@/lib/dotsAndBoxes/state/useDotsStore";
 
 const SIZE_OPTIONS: { label: string; size: BoardSize }[] = [
   { label: "3×3", size: { rows: 3, cols: 3 } },
@@ -17,6 +18,7 @@ interface BoardSizePickerProps {
 export function BoardSizePicker({ mode, hasStarted }: BoardSizePickerProps) {
   const defaultSize = useDotsSettings((s) => s.defaultSize);
   const updateSetting = useDotsSettings((s) => s.updateSetting);
+  const resetGameWithSize = useDotsStore((s) => s.resetGame);
 
   if (mode === "online" || mode === "friend" || hasStarted) return null;
 
@@ -31,6 +33,12 @@ export function BoardSizePicker({ mode, hasStarted }: BoardSizePickerProps) {
       >
         Board Size
       </span>
+      <span
+        className="max-w-[15rem] text-center text-[0.625rem] leading-snug tracking-wide text-(--na-text-muted)"
+        style={{ fontFamily: "var(--na-font-display)" }}
+      >
+        Grid size applies before your first move and is remembered for solo play.
+      </span>
       <div className="flex gap-3">
         {SIZE_OPTIONS.map(({ label, size }) => {
           const isSelected = defaultSize.rows === size.rows && defaultSize.cols === size.cols;
@@ -38,7 +46,10 @@ export function BoardSizePicker({ mode, hasStarted }: BoardSizePickerProps) {
             <button
               key={label}
               type="button"
-              onClick={() => updateSetting("defaultSize", size)}
+              onClick={() => {
+                updateSetting("defaultSize", size);
+                resetGameWithSize(size);
+              }}
               className="rounded-lg border px-4 py-2 text-sm font-semibold transition-all"
               style={{
                 fontFamily: "var(--na-font-display)",

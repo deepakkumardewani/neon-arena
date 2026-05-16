@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import type { BoxRef, DotsGameState, EdgeRef, PlayerId } from "@/lib/dotsAndBoxes/types";
 import { Box } from "./Box";
 import { Dot } from "./Dot";
@@ -31,15 +32,24 @@ export function DotsBoard({
   const isGameOver = state.status === "finished";
 
   // Last drawn edge from history
-  const lastMove = showLastMove && state.history.length > 0
-    ? state.history[state.history.length - 1].edge
-    : null;
+  const lastMove =
+    showLastMove && state.history.length > 0 ? state.history[state.history.length - 1].edge : null;
 
   const totalCols = cols;
   const totalRows = rows;
 
-  // Cell size in CSS: the board is min(90vw, 600px) wide, divided equally
-  const cellSize = `min(calc(90vw / ${cols}), calc(600px / ${cols}))`;
+  /** Each visual step (dot, edge segment, box) occupies one square cell in the tessellation */
+  const cellsAcross = cols * 2 + 1;
+  const cellSize = `min(calc((90vw - 32px) / ${cellsAcross}), calc(min(640px, calc(90vw - 32px)) / ${cellsAcross}))`;
+
+  const cellBox: CSSProperties = {
+    width: cellSize,
+    height: cellSize,
+    flexShrink: 0,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  };
 
   return (
     <div
@@ -77,7 +87,7 @@ export function DotsBoard({
 
                 if (isDot) {
                   return (
-                    <div key={`dot-${logicalRow}-${visualCol}`} style={{ flexShrink: 0 }}>
+                    <div key={`dot-${logicalRow}-${visualCol}`} style={cellBox}>
                       <Dot />
                     </div>
                   );
@@ -95,10 +105,7 @@ export function DotsBoard({
                 const isLastMoveEdge = edgesEqual(lastMove, edge);
 
                 return (
-                  <div
-                    key={`he-${logicalRow}-${edgeCol}`}
-                    style={{ width: cellSize, height: cellSize, flexShrink: 0 }}
-                  >
+                  <div key={`he-${logicalRow}-${edgeCol}`} style={cellBox}>
                     <Edge
                       orientation="horizontal"
                       isDrawn={isDrawn}
@@ -146,10 +153,7 @@ export function DotsBoard({
                 const isLastMoveEdge = edgesEqual(lastMove, edge);
 
                 return (
-                  <div
-                    key={`ve-${boxRow}-${edgeCol}`}
-                    style={{ width: cellSize, height: cellSize, flexShrink: 0 }}
-                  >
+                  <div key={`ve-${boxRow}-${edgeCol}`} style={cellBox}>
                     <Edge
                       orientation="vertical"
                       isDrawn={isDrawn}
@@ -174,10 +178,7 @@ export function DotsBoard({
               const isLastClaimed = boxesContain(state.lastClaimedBoxes, boxRow, boxCol);
 
               return (
-                <div
-                  key={`box-${boxRow}-${boxCol}`}
-                  style={{ width: cellSize, height: cellSize, flexShrink: 0 }}
-                >
+                <div key={`box-${boxRow}-${boxCol}`} style={cellBox}>
                   <Box owner={owner} isLastClaimed={isLastClaimed} isGameOver={isGameOver} />
                 </div>
               );

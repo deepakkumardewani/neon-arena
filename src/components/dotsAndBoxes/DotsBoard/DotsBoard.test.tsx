@@ -15,23 +15,17 @@ function countEdges(rows: number, cols: number) {
 describe("DotsBoard", () => {
   it("renders 3×3 board without crash", () => {
     const state = createInitialState(SIZE_3);
-    render(
-      <DotsBoard state={state} onClaimEdge={vi.fn()} onHoverEdge={vi.fn()} />,
-    );
+    render(<DotsBoard state={state} onClaimEdge={vi.fn()} onHoverEdge={vi.fn()} />);
   });
 
   it("renders 4×4 board without crash", () => {
     const state = createInitialState(SIZE_4);
-    render(
-      <DotsBoard state={state} onClaimEdge={vi.fn()} onHoverEdge={vi.fn()} />,
-    );
+    render(<DotsBoard state={state} onClaimEdge={vi.fn()} onHoverEdge={vi.fn()} />);
   });
 
   it("renders 5×5 board without crash", () => {
     const state = createInitialState(SIZE_5);
-    render(
-      <DotsBoard state={state} onClaimEdge={vi.fn()} onHoverEdge={vi.fn()} />,
-    );
+    render(<DotsBoard state={state} onClaimEdge={vi.fn()} onHoverEdge={vi.fn()} />);
   });
 
   it("dispatches claimEdge on edge click", () => {
